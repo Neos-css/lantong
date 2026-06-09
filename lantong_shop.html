@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <style>
 :root {
   --cream:#fdf8f0; --primary:#8B0000; --primary2:#c0392b;
@@ -263,7 +265,7 @@ input,textarea{font-family:inherit}
 
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
-  🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; ทดสอบระบบ AI &nbsp;·&nbsp; ไม่มีการชำระเงินจริง
+  🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ลิซ่า AI ดูแล 24 ชม.
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
 
@@ -274,7 +276,9 @@ input,textarea{font-family:inherit}
     <button class="nav-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
     <button class="nav-btn" onclick="openAbout()">เกี่ยวกับเรา</button>
     <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')">CHAT ลิซ่า</button>
-    <button class="nav-btn solid" onclick="openLogin()">เข้าสู่ระบบ</button>
+    <button class="nav-btn" id="nav-myorders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
+    <button class="nav-btn solid" id="nav-login-btn" onclick="openLogin()">เข้าสู่ระบบ</button>
+    <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
     <button class="cart-btn" onclick="openCart()">
       🛒<span class="cart-badge" id="cart-badge">0</span>
     </button>
@@ -457,6 +461,23 @@ input,textarea{font-family:inherit}
       <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับร้าน@ลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ลิซ่าค่ะ</div>
       <div class="confirm-order-num" id="confirm-order-num"></div>
       <div class="confirm-items" id="confirm-items-list"></div>
+
+      <!-- PromptPay QR -->
+      <div style="background:#fff8ee;border:1px solid #f0d890;border-radius:14px;padding:18px 16px;margin-bottom:16px">
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:10px">📲 สแกนจ่ายด้วย PromptPay</div>
+        <div id="pp-qr" style="width:200px;height:200px;margin:0 auto;display:flex;align-items:center;justify-content:center"></div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:8px">ร้านลานทอง · PromptPay 0982695608</div>
+        <div style="font-size:.95rem;font-weight:700;color:var(--primary);margin-top:2px" id="pp-amount"></div>
+      </div>
+
+      <!-- Slip upload + verify -->
+      <div style="text-align:left;margin-bottom:8px">
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px">📤 แจ้งชำระเงิน — อัปโหลดสลิป</div>
+        <input type="file" id="slip-file" accept="image/*" style="display:none" onchange="uploadSlip(this)">
+        <button class="login-btn" style="background:var(--gold);color:var(--dark)" onclick="document.getElementById('slip-file').click()">เลือกรูปสลิป แล้วตรวจอัตโนมัติ</button>
+        <div id="slip-status" style="font-size:.84rem;margin-top:10px;text-align:center"></div>
+      </div>
+
       <button class="confirm-close-btn" onclick="document.getElementById('confirm-modal').classList.remove('show')">ตกลง ขอบคุณค่ะ</button>
     </div>
   </div>
@@ -467,18 +488,23 @@ input,textarea{font-family:inherit}
   <div class="modal-box" style="max-width:420px">
     <button class="modal-close-btn" onclick="document.getElementById('login-modal').classList.remove('show')">✕</button>
     <div class="login-modal-body">
-      <div class="login-title">เข้าสู่ระบบ</div>
-      <div class="login-sub">เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก</div>
-      <button class="login-google-btn">
+      <div class="login-title" id="login-title">เข้าสู่ระบบ</div>
+      <div class="login-sub" id="login-sub">เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก</div>
+      <div id="login-error" style="display:none;color:var(--primary2);font-size:.82rem;margin-bottom:10px"></div>
+      <button class="login-google-btn" onclick="doMemberGoogle()">
         <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.259c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
         เข้าสู่ระบบด้วย Google
       </button>
       <div class="login-divider">หรือ</div>
       <label class="form-label">อีเมล</label>
-      <input class="form-input" type="email" placeholder="your@email.com">
+      <input class="form-input" id="login-email" type="email" placeholder="your@email.com">
       <label class="form-label">รหัสผ่าน</label>
-      <input class="form-input" type="password" placeholder="••••••••">
-      <button class="login-btn">เข้าสู่ระบบ</button>
+      <input class="form-input" id="login-password" type="password" placeholder="••••••••">
+      <button class="login-btn" id="login-submit" onclick="doMemberAuth()">เข้าสู่ระบบ</button>
+      <div style="text-align:center;font-size:.82rem;color:var(--muted);margin-top:14px">
+        <span id="login-toggle-text">ยังไม่มีบัญชี?</span>
+        <a href="#" onclick="toggleAuthMode(event)" id="login-toggle-link" style="color:var(--primary);font-weight:600">สมัครสมาชิก</a>
+      </div>
     </div>
   </div>
 </div>
@@ -563,7 +589,7 @@ let PRODUCTS = [
    hl:["วิตามินซีสูง","กระเจี๊ยบแท้","สีสวยธรรมชาติ"]},
 ];
 
-let cart = [];
+let cart = JSON.parse(localStorage.getItem('lt_cart') || '[]');
 let currentProduct = null;
 
 function renderProducts(arr) {
@@ -668,6 +694,7 @@ function addCurrentToCart() {
 }
 
 function updateCartUI() {
+  localStorage.setItem('lt_cart', JSON.stringify(cart));
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const count = cart.reduce((s, i) => s + i.qty, 0);
   const badge = document.getElementById('cart-badge');
@@ -753,19 +780,21 @@ async function submitOrder() {
   const items = cart.map(i => ({ product_id: i.id, name: i.name_th, qty: i.qty, price: i.price }));
 
   // ── Save to Supabase (so web orders show up in the admin dashboard) ──
-  const custId = 'CUST-WEB-' + Date.now();
-  await sbInsertAnon('customers', { customer_id: custId, name, phone, address, platform: 'web' });
+  const custId = (window.MEMBER ? 'USER-' + window.MEMBER.id : 'CUST-WEB-' + Date.now());
+  await sbInsertAnon('customers', { customer_id: custId, name, phone, address, platform: 'web', note: window.MEMBER ? window.MEMBER.email : '' });
   const saved = await sbInsertAnon('orders', {
-    order_id: orderNum,
-    customer_id: custId,
-    items: items,
-    total_amount: total,
-    delivery_type: 'delivery',
-    shipping_address: `${name} | ${phone} | ${address}`,
-    status: 'PENDING',
-    note: 'สั่งผ่านเว็บไซต์',
+    order_id: orderNum, customer_id: custId, items: items, total_amount: total,
+    delivery_type: 'delivery', shipping_address: `${name} | ${phone} | ${address}`,
+    status: 'PENDING', note: window.MEMBER ? ('เว็บ · สมาชิก ' + window.MEMBER.email) : 'สั่งผ่านเว็บไซต์',
   });
   if (!saved) showToast('บันทึกออนไลน์มีปัญหา แต่ทีมงานจะติดต่อกลับนะคะ');
+
+  // remember this order on the device for "ออเดอร์ของฉัน"
+  try {
+    const mine = JSON.parse(localStorage.getItem('lt_myorders') || '[]');
+    mine.unshift({ order_id: orderNum, total, items, at: new Date().toISOString() });
+    localStorage.setItem('lt_myorders', JSON.stringify(mine.slice(0, 50)));
+  } catch (e) {}
 
   // ── Confirmation UX ──
   document.getElementById('order-modal').classList.remove('show');
@@ -773,6 +802,9 @@ async function submitOrder() {
   document.getElementById('confirm-items-list').innerHTML =
     items.map(i => `<div class="confirm-item-row"><span>${i.name} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('') +
     `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
+  window.LAST_ORDER = { orderNum, total };
+  showPromptPayQR(total);
+  document.getElementById('slip-status').textContent = '';
   document.getElementById('confirm-modal').classList.add('show');
   cart = [];
   updateCartUI();
@@ -827,18 +859,39 @@ function addChatMsg(text, type) {
   el.scrollTop = el.scrollHeight;
 }
 
+let CHAT_SID = localStorage.getItem('lt_chat_sid') || ('web-' + Math.random().toString(36).slice(2));
+localStorage.setItem('lt_chat_sid', CHAT_SID);
+
+// Ask the real Lisa AI (Dify via the Cloudflare Worker). Falls back to the
+// offline keyword replies if the worker is unreachable.
+async function askLisa(txt) {
+  addChatMsg(txt, 'user');
+  const box = document.getElementById('chat-messages');
+  const typing = document.createElement('div');
+  typing.className = 'chat-msg bot';
+  typing.innerHTML = '<div class="chat-msg-bubble">ลิซ่ากำลังพิมพ์… ✍️</div>';
+  box.appendChild(typing); box.scrollTop = box.scrollHeight;
+  try {
+    const res = await fetch(WEB_API + '/web-chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: txt, sessionId: CHAT_SID }),
+    });
+    const j = await res.json();
+    typing.remove();
+    addChatMsg(j.reply || getLisaReply(txt), 'bot');
+  } catch (e) {
+    typing.remove();
+    addChatMsg(getLisaReply(txt), 'bot');
+  }
+}
 function sendChatMsg() {
   const inp = document.getElementById('chat-input');
   const txt = inp.value.trim();
   if (!txt) return;
-  addChatMsg(txt, 'user'); inp.value = '';
-  setTimeout(() => addChatMsg(getLisaReply(txt), 'bot'), 600);
+  inp.value = '';
+  askLisa(txt);
 }
-
-function sendQuickReply(txt) {
-  addChatMsg(txt, 'user');
-  setTimeout(() => addChatMsg(getLisaReply(txt), 'bot'), 500);
-}
+function sendQuickReply(txt) { askLisa(txt); }
 
 function toggleChat() { document.getElementById('chat-panel').classList.toggle('open'); }
 
@@ -852,6 +905,134 @@ document.addEventListener('keydown', e => {
 });
 
 setTimeout(() => addChatMsg('สวัสดีค่ะ ดิฉันลิซ่า AI Sale ของร้าน@ลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?', 'bot'), 300);
+</script>
+
+<script>
+/* ===== Member auth + PromptPay QR + slip upload — 100% commerce ===== */
+const WEB_API = 'https://lantong-line.neos-css01.workers.dev';
+const sbAuth = supabase.createClient(SUPA_URL, SUPA_ANON);
+window.MEMBER = null;
+let AUTH_MODE = 'login';
+
+function showLoginError(msg){ const e=document.getElementById('login-error'); e.textContent=msg||''; e.style.display=msg?'block':'none'; }
+
+function openLogin(){
+  AUTH_MODE='login';
+  document.getElementById('login-title').textContent='เข้าสู่ระบบ';
+  document.getElementById('login-sub').textContent='เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก';
+  document.getElementById('login-submit').textContent='เข้าสู่ระบบ';
+  document.getElementById('login-toggle-text').textContent='ยังไม่มีบัญชี?';
+  document.getElementById('login-toggle-link').textContent='สมัครสมาชิก';
+  showLoginError('');
+  document.getElementById('login-modal').classList.add('show');
+}
+function toggleAuthMode(ev){
+  if(ev) ev.preventDefault();
+  AUTH_MODE = AUTH_MODE==='login' ? 'signup' : 'login';
+  const s = AUTH_MODE==='signup';
+  document.getElementById('login-title').textContent = s?'สมัครสมาชิก':'เข้าสู่ระบบ';
+  document.getElementById('login-sub').textContent = s?'สมัครเพื่อสะสมแต้มและติดตามออเดอร์ค่ะ':'เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก';
+  document.getElementById('login-submit').textContent = s?'สมัครสมาชิก':'เข้าสู่ระบบ';
+  document.getElementById('login-toggle-text').textContent = s?'มีบัญชีอยู่แล้ว?':'ยังไม่มีบัญชี?';
+  document.getElementById('login-toggle-link').textContent = s?'เข้าสู่ระบบ':'สมัครสมาชิก';
+  showLoginError('');
+}
+async function doMemberAuth(){
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  if(!email||!password){ showLoginError('กรอกอีเมลและรหัสผ่านค่ะ'); return; }
+  showLoginError('');
+  if(AUTH_MODE==='signup'){
+    const {error}=await sbAuth.auth.signUp({email,password});
+    if(error){ showLoginError(error.message); return; }
+    showToast('สมัครสมาชิกสำเร็จค่ะ 🎉');
+  } else {
+    const {error}=await sbAuth.auth.signInWithPassword({email,password});
+    if(error){ showLoginError('อีเมลหรือรหัสผ่านไม่ถูกต้องค่ะ'); return; }
+    showToast('เข้าสู่ระบบแล้วค่ะ ✨');
+  }
+  document.getElementById('login-modal').classList.remove('show');
+}
+async function doMemberGoogle(){
+  await sbAuth.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: window.location.origin+window.location.pathname } });
+}
+async function doMemberLogout(){ await sbAuth.auth.signOut(); showToast('ออกจากระบบแล้วค่ะ'); }
+
+function updateAuthUI(){
+  const u=window.MEMBER;
+  document.getElementById('nav-login-btn').style.display = u?'none':'';
+  document.getElementById('nav-user-btn').style.display = u?'':'none';
+  document.getElementById('nav-myorders').style.display = u?'':'none';
+  if(u) document.getElementById('nav-user-name').textContent = (u.email||'').split('@')[0];
+}
+sbAuth.auth.onAuthStateChange((_e,session)=>{ window.MEMBER = session?session.user:null; updateAuthUI(); });
+sbAuth.auth.getSession().then(({data:{session}})=>{ window.MEMBER = session?session.user:null; updateAuthUI(); });
+
+// ===== My Orders (tracked on this device) =====
+function openMyOrders(){
+  const mine = JSON.parse(localStorage.getItem('lt_myorders')||'[]');
+  let modal=document.getElementById('myorders-modal');
+  if(!modal){
+    modal=document.createElement('div'); modal.id='myorders-modal'; modal.className='modal-overlay';
+    modal.onclick=(e)=>{ if(e.target===modal) modal.classList.remove('show'); };
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML=`<div class="modal-box" style="max-width:460px">
+    <button class="modal-close-btn" onclick="document.getElementById('myorders-modal').classList.remove('show')">✕</button>
+    <div style="padding:28px 26px">
+      <div class="order-modal-title">📦 ออเดอร์ของฉัน</div>
+      <div class="order-modal-sub">รายการที่สั่งจากอุปกรณ์นี้</div>
+      ${mine.length? mine.map(o=>`<div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--primary)"><span>${o.order_id}</span><span>฿${o.total}</span></div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:4px">${(o.items||[]).map(i=>i.name+' ×'+i.qty).join(', ')}</div>
+        <div style="font-size:.72rem;color:#bbb;margin-top:3px">${new Date(o.at).toLocaleString('th-TH')}</div>
+      </div>`).join('') : '<div style="text-align:center;color:var(--muted);padding:30px">ยังไม่มีออเดอร์ค่ะ</div>'}
+    </div></div>`;
+  modal.classList.add('show');
+}
+
+// ===== PromptPay QR (EMVCo standard) =====
+function ppCRC16(s){ let c=0xFFFF; for(let i=0;i<s.length;i++){ c^=s.charCodeAt(i)<<8; for(let j=0;j<8;j++){ c=(c&0x8000)?((c<<1)^0x1021):(c<<1); c&=0xFFFF; } } return c.toString(16).toUpperCase().padStart(4,'0'); }
+function ppF(id,v){ return id+String(v.length).padStart(2,'0')+v; }
+function promptPayPayload(phone, amount){
+  const acc = ppF('00','A000000677010111') + ppF('01','0066'+phone.replace(/\D/g,'').replace(/^0/,''));
+  let p = ppF('00','01') + ppF('01', amount?'12':'11') + ppF('29',acc) + ppF('53','764');
+  if(amount) p += ppF('54', Number(amount).toFixed(2));
+  p += ppF('58','TH') + '6304';
+  return p + ppCRC16(p);
+}
+function showPromptPayQR(amount){
+  document.getElementById('pp-amount').textContent = 'ยอดชำระ ฿'+amount;
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(promptPayPayload('0982695608', amount));
+    qr.make();
+    document.getElementById('pp-qr').innerHTML = qr.createImgTag(5, 8);
+  } catch(e){ console.warn('QR', e); }
+}
+
+// ===== Slip upload + auto verify (SlipOK via worker) =====
+async function uploadSlip(input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  const status=document.getElementById('slip-status');
+  status.style.color='var(--muted)'; status.textContent='⏳ กำลังตรวจสลิป...';
+  const order=window.LAST_ORDER||{};
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    try{
+      const res=await fetch(WEB_API+'/web-slip',{ method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ image:reader.result, order_id:order.orderNum, amount:order.total }) });
+      const j=await res.json();
+      status.style.color = j.ok? '#1e8e4e' : 'var(--primary2)';
+      status.textContent = (j.ok?'✅ ':'⚠️ ') + (j.message||'');
+    }catch(e){ status.style.color='var(--primary2)'; status.textContent='⚠️ อัปโหลดไม่สำเร็จ ลองใหม่นะคะ'; }
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+
+// reflect persisted cart on first load
+updateCartUI();
 </script>
 </body>
 </html>
