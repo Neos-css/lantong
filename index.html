@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ร้าน@ลานทอง — ขนมไทยแท้คัดสรร</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#fdf8f0; --primary:#8B0000; --primary2:#c0392b;
+  --gold:#d4a017; --gold2:#f0c040; --dark:#1a0a04;
+  --text:#2c1a0e; --muted:#7a6355; --border:#e8d5b5;
+  --shadow:rgba(139,0,0,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Sarabun',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+input,textarea{font-family:inherit}
+
+/* ANNOUNCE */
+#announce-bar{background:var(--primary);color:#fff;text-align:center;padding:8px 16px;font-size:.82rem;letter-spacing:.5px;position:relative}
+#announce-bar button{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;color:rgba(255,255,255,.7);font-size:1rem}
+
+/* NAVBAR */
+#navbar{position:sticky;top:0;z-index:900;background:var(--cream);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px var(--shadow)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--primary);letter-spacing:1px}
+.nav-logo span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-btn{padding:7px 16px;border-radius:20px;font-size:.875rem;font-weight:500;color:var(--text);background:none;transition:background .2s,color .2s}
+.nav-btn:hover{background:#f3e8d8;color:var(--primary)}
+.nav-btn.outline{border:1.5px solid var(--border)}
+.nav-btn.solid{background:var(--primary);color:#fff;padding:7px 20px}
+.nav-btn.solid:hover{background:var(--primary2)}
+.cart-btn{position:relative;width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.cart-btn:hover{background:var(--primary2)}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:var(--dark);font-size:.65rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center}
+
+/* HERO */
+#hero{background:linear-gradient(135deg,var(--dark) 0%,#3d0a00 40%,#6b1a00 100%);color:#fff;text-align:center;padding:80px 24px 70px;position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4a017' fill-opacity='.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")}
+.hero-badge{display:inline-block;border:1px solid var(--gold);color:var(--gold);font-size:.78rem;letter-spacing:2px;padding:5px 18px;border-radius:20px;margin-bottom:20px;text-transform:uppercase}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,5.5rem);font-weight:600;line-height:1;color:var(--gold);text-shadow:0 2px 20px rgba(212,160,23,.3);margin-bottom:8px}
+.hero-sub{font-size:1rem;opacity:.85;letter-spacing:1px;margin-bottom:28px;color:#f0d8b0}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
+.hero-cta-primary{background:var(--gold);color:var(--dark);padding:12px 32px;border-radius:30px;font-size:.95rem;font-weight:700;letter-spacing:.5px;transition:background .2s,transform .2s}
+.hero-cta-primary:hover{background:var(--gold2);transform:translateY(-2px)}
+.hero-cta-secondary{background:transparent;border:2px solid rgba(255,255,255,.5);color:#fff;padding:12px 32px;border-radius:30px;font-size:.95rem;font-weight:500;transition:border-color .2s,background .2s}
+.hero-cta-secondary:hover{border-color:var(--gold);background:rgba(212,160,23,.1)}
+.hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;font-size:.9rem;color:rgba(255,255,255,.8)}
+.hero-stats span b{display:block;font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);line-height:1.1}
+
+/* PRODUCTS */
+#products{max-width:1280px;margin:0 auto;padding:56px 24px 64px}
+.section-label{font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--primary);margin-bottom:28px}
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
+.filter-btn{padding:7px 20px;border-radius:20px;border:2px solid var(--border);background:#fff;color:var(--muted);font-size:.85rem;font-weight:500;transition:all .2s}
+.filter-btn:hover{border-color:var(--primary);color:var(--primary)}
+.filter-btn.active{border-color:var(--primary);background:var(--primary);color:#fff}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:24px}
+.product-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px var(--shadow);transition:transform .25s,box-shadow .25s;position:relative}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(139,0,0,.18)}
+.product-card-img-wrap{position:relative;overflow:hidden;height:210px}
+.product-card-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.product-card:hover .product-card-img{transform:scale(1.06)}
+.discount-badge{position:absolute;top:10px;left:10px;background:var(--primary2);color:#fff;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:10px}
+.product-card-body{padding:14px 16px 16px}
+.product-cat{font-size:.7rem;color:var(--gold);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.product-name{font-size:.98rem;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.product-name-en{font-size:.78rem;color:var(--muted);margin-bottom:10px}
+.product-price-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.product-price{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;color:var(--primary)}
+.product-price-orig{font-size:.8rem;color:#bbb;text-decoration:line-through}
+.product-weight{font-size:.72rem;color:var(--muted);margin-left:auto}
+.view-details-btn{width:100%;padding:9px;border-radius:10px;border:2px solid var(--primary);background:transparent;color:var(--primary);font-size:.85rem;font-weight:600;letter-spacing:.5px;transition:all .2s}
+.view-details-btn:hover{background:var(--primary);color:#fff}
+
+/* TESTIMONIALS */
+#testimonials{background:var(--dark);padding:60px 24px}
+#testimonials .section-title{color:var(--gold);text-align:center}
+#testimonials .section-label{color:rgba(212,160,23,.7);text-align:center}
+.testimonials-grid{max-width:1000px;margin:32px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.testimonial-card{background:rgba(255,255,255,.06);border:1px solid rgba(212,160,23,.2);border-radius:14px;padding:24px 20px}
+.testimonial-stars{color:var(--gold);font-size:1rem;margin-bottom:10px}
+.testimonial-text{color:rgba(255,255,255,.85);font-size:.9rem;line-height:1.65;margin-bottom:14px}
+.testimonial-author{color:var(--gold);font-size:.82rem;font-weight:600}
+.testimonial-verified{color:rgba(255,255,255,.4);font-size:.72rem}
+
+/* FOOTER */
+#footer{background:var(--dark);border-top:1px solid rgba(212,160,23,.15);color:rgba(255,255,255,.5);text-align:center;padding:32px 24px;font-size:.82rem}
+#footer .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold);margin-bottom:8px}
+
+/* ABOUT PANEL */
+#about-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1100}
+#about-overlay.show{display:block}
+#about-panel{position:fixed;top:0;left:-420px;width:400px;height:100%;background:var(--cream);z-index:1101;overflow-y:auto;padding:32px 28px;transition:left .35s cubic-bezier(.4,0,.2,1);box-shadow:4px 0 30px rgba(0,0,0,.2)}
+#about-panel.open{left:0}
+.panel-close{position:absolute;top:16px;right:16px;background:#f0e0d0;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--muted);cursor:pointer}
+.about-logo{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--primary);margin:24px 0 6px}
+.about-logo span{color:var(--gold)}
+.about-tagline{font-size:.85rem;color:var(--muted);margin-bottom:20px}
+.about-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.about-text{font-size:.9rem;line-height:1.75;color:var(--text);margin-bottom:18px}
+.about-features{display:grid;gap:14px;margin-bottom:20px}
+.about-feature{display:flex;gap:12px;align-items:flex-start}
+.about-feature-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.about-feature-text strong{display:block;font-size:.88rem;color:var(--text)}
+.about-feature-text span{font-size:.78rem;color:var(--muted)}
+.about-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.about-stat{background:var(--primary);color:#fff;border-radius:12px;padding:14px 8px;text-align:center}
+.about-stat b{font-family:'Cormorant Garamond',serif;font-size:1.5rem;display:block;color:var(--gold2)}
+.about-stat span{font-size:.72rem;opacity:.85}
+
+/* MODAL BASE */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:20px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto;position:relative;animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close-btn{position:absolute;top:14px;right:14px;background:#f0e4d4;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1rem;z-index:2}
+
+/* PRODUCT MODAL */
+.product-modal-img{width:100%;height:280px;object-fit:cover;border-radius:20px 20px 0 0;display:block}
+.product-modal-body{padding:22px 24px 28px}
+.product-modal-cat{font-size:.72rem;color:var(--gold);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.product-modal-name{font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.product-modal-name-en{font-size:.85rem;color:var(--muted);margin-bottom:12px}
+.product-modal-price-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.product-modal-price{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--primary)}
+.product-modal-orig{font-size:.9rem;color:#bbb;text-decoration:line-through}
+.product-modal-save{background:#fde8e8;color:var(--primary2);font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:10px}
+.product-modal-desc{font-size:.88rem;line-height:1.7;color:var(--muted);margin-bottom:14px}
+.product-modal-highlights{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.highlight-chip{font-size:.72rem;background:#fff8ee;color:var(--gold);border:1px solid #f0d890;padding:3px 10px;border-radius:10px}
+.qty-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.qty-label{font-size:.88rem;color:var(--text);font-weight:500}
+.qty-ctrl{display:flex;align-items:center;border:2px solid var(--border);border-radius:12px;overflow:hidden}
+.qty-btn{width:38px;height:38px;background:#f9f0e8;color:var(--primary);font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.qty-btn:hover{background:#f0d8c0}
+.qty-num{width:48px;height:38px;text-align:center;font-weight:700;font-size:1rem;border:none;color:var(--text);background:#fff;outline:none}
+.add-to-cart-btn{width:100%;padding:14px;border-radius:14px;background:var(--primary);color:#fff;font-size:1rem;font-weight:700;letter-spacing:.5px;transition:background .2s,transform .1s}
+.add-to-cart-btn:hover{background:var(--primary2)}
+.add-to-cart-btn:active{transform:scale(.98)}
+
+/* CART SIDEBAR */
+#cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1200}
+#cart-overlay.show{display:block}
+#cart-sidebar{position:fixed;top:0;right:-440px;width:420px;height:100%;background:#fff;z-index:1201;display:flex;flex-direction:column;transition:right .35s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 30px rgba(0,0,0,.18)}
+#cart-sidebar.open{right:0}
+.cart-header{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cart-title{font-size:1.1rem;font-weight:700;color:var(--primary)}
+.cart-items{flex:1;overflow-y:auto;padding:16px 20px}
+.cart-empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.cart-empty-icon{font-size:3rem;margin-bottom:10px}
+.cart-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f5ede0;align-items:center}
+.cart-item-img{width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-name{font-size:.88rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-item-price{font-size:.82rem;color:var(--primary);font-weight:600;margin-top:2px}
+.cart-item-qty{display:flex;align-items:center;gap:6px;margin-top:6px}
+.cart-qty-btn{width:26px;height:26px;border-radius:6px;background:#f0e8de;color:var(--primary);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.cart-qty-num{font-size:.85rem;font-weight:700;min-width:20px;text-align:center}
+.cart-item-remove{color:#ccc;font-size:.9rem;padding:4px;background:none}
+.cart-item-remove:hover{color:var(--primary2)}
+.cart-footer{padding:16px 20px 20px;border-top:1px solid var(--border)}
+.cart-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:1rem;font-weight:700}
+.cart-total-price{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--primary)}
+.checkout-btn{width:100%;padding:14px;border-radius:14px;background:var(--primary);color:#fff;font-size:1rem;font-weight:700;transition:background .2s}
+.checkout-btn:hover{background:var(--primary2)}
+
+/* ORDER FORM */
+#order-modal .modal-box{max-width:540px}
+.order-modal-body{padding:28px 28px 32px}
+.order-modal-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--primary);margin-bottom:6px}
+.order-modal-sub{font-size:.85rem;color:var(--muted);margin-bottom:24px}
+.form-label{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:5px;display:block}
+.form-input{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;color:var(--text);background:#fff;transition:border-color .2s;margin-bottom:14px}
+.form-input:focus{outline:none;border-color:var(--primary)}
+.payment-info{background:#fff8ee;border:1px solid #f0d890;border-radius:12px;padding:16px;margin-bottom:18px}
+.payment-info-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:8px}
+.payment-info-row{display:flex;justify-content:space-between;font-size:.85rem;color:var(--text);margin-bottom:4px}
+.payment-info-row span:last-child{font-weight:700;color:var(--primary)}
+.order-summary-mini{margin-bottom:16px}
+.order-summary-mini-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:8px}
+.order-summary-item{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:3px}
+.order-summary-total{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;color:var(--primary);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.confirm-order-btn{width:100%;padding:13px;border-radius:12px;background:var(--primary);color:#fff;font-size:.95rem;font-weight:700;transition:background .2s}
+.confirm-order-btn:hover{background:var(--primary2)}
+
+/* ORDER CONFIRM */
+#confirm-modal .modal-box{max-width:480px}
+.confirm-modal-body{padding:40px 28px;text-align:center}
+.confirm-icon{width:72px;height:72px;background:linear-gradient(135deg,#4caf50,#66bb6a);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:2rem;color:#fff}
+.confirm-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--text);margin-bottom:6px}
+.confirm-sub{font-size:.88rem;color:var(--muted);margin-bottom:20px}
+.confirm-order-num{background:#f9f0e8;border-radius:10px;padding:12px 16px;font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:20px;letter-spacing:1px}
+.confirm-items{text-align:left;margin-bottom:18px}
+.confirm-item-row{display:flex;justify-content:space-between;font-size:.85rem;color:var(--text);padding:4px 0;border-bottom:1px solid #f5ede0}
+.confirm-total-row{display:flex;justify-content:space-between;font-size:1rem;font-weight:700;color:var(--primary);margin-top:8px}
+.confirm-close-btn{width:100%;padding:12px;border-radius:12px;background:var(--primary);color:#fff;font-size:.95rem;font-weight:700;margin-top:18px;transition:background .2s}
+.confirm-close-btn:hover{background:var(--primary2)}
+
+/* LOGIN */
+#login-modal .modal-box{max-width:420px}
+.login-modal-body{padding:32px 28px 36px}
+.login-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--primary);margin-bottom:4px}
+.login-sub{font-size:.85rem;color:var(--muted);margin-bottom:22px}
+.login-google-btn{width:100%;padding:11px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;cursor:pointer}
+.login-google-btn:hover{border-color:#aaa}
+.login-divider{text-align:center;font-size:.78rem;color:var(--muted);margin-bottom:16px;position:relative}
+.login-divider::before,.login-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.login-divider::before{left:0}
+.login-divider::after{right:0}
+.login-btn{width:100%;padding:12px;border-radius:10px;background:var(--primary);color:#fff;font-size:.95rem;font-weight:700;transition:background .2s}
+.login-btn:hover{background:var(--primary2)}
+
+/* TOAST */
+#toast-container{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--dark);color:#fff;padding:12px 22px;border-radius:30px;font-size:.88rem;white-space:nowrap;animation:toastIn .3s ease,toastOut .3s ease 2.2s forwards}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+
+/* CHAT */
+#chat-btn{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-size:1.4rem;box-shadow:0 4px 18px rgba(139,0,0,.4);z-index:800;display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s}
+#chat-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(139,0,0,.5)}
+.chat-badge{position:absolute;top:-2px;right:-2px;background:var(--gold);color:var(--dark);font-size:.55rem;font-weight:700;padding:2px 5px;border-radius:8px}
+#chat-panel{position:fixed;bottom:90px;right:24px;width:320px;background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:801;display:none;flex-direction:column;overflow:hidden;animation:chatIn .25s ease}
+#chat-panel.open{display:flex}
+@keyframes chatIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.chat-panel-header{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.chat-agent-name{font-weight:700;font-size:.95rem}
+.chat-agent-status{font-size:.72rem;opacity:.85}
+.chat-panel-close{margin-left:auto;background:none;color:rgba(255,255,255,.8);font-size:1rem}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;max-height:280px;display:flex;flex-direction:column;gap:10px;background:#faf5f0}
+.chat-msg{display:flex;gap:8px}
+.chat-msg.user{flex-direction:row-reverse}
+.chat-msg-bubble{max-width:78%;padding:9px 13px;border-radius:14px;font-size:.85rem;line-height:1.55}
+.chat-msg.bot .chat-msg-bubble{background:#fff;color:var(--text);border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.chat-msg.user .chat-msg-bubble{background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.chat-quick-replies{padding:8px 14px;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid #f0e8de}
+.qr-btn{padding:5px 12px;border-radius:14px;border:1px solid var(--primary);color:var(--primary);font-size:.75rem;background:#fff;transition:all .15s}
+.qr-btn:hover{background:var(--primary);color:#fff}
+.chat-input-row{padding:10px 14px;display:flex;gap:8px;border-top:1px solid #f0e8de}
+.chat-input{flex:1;padding:8px 12px;border:2px solid var(--border);border-radius:20px;font-size:.85rem;color:var(--text);background:#fff;outline:none;transition:border-color .2s}
+.chat-input:focus{border-color:var(--primary)}
+.chat-send-btn{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.chat-send-btn:hover{background:var(--primary2)}
+
+@media(max-width:600px){
+  .nav-btn:not(.solid){display:none}
+  #cart-sidebar{width:100%}
+  #about-panel{width:100%;left:-100%}
+  #chat-panel{right:12px;width:calc(100vw - 24px)}
+  #chat-btn{bottom:16px;right:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCEMENT BAR -->
+<div id="announce-bar">
+  🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; ทดสอบระบบ AI &nbsp;·&nbsp; ไม่มีการชำระเงินจริง
+  <button onclick="this.parentElement.style.display='none'">✕</button>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-logo">@ลานทอง<span>·</span></div>
+  <div class="nav-links">
+    <button class="nav-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
+    <button class="nav-btn" onclick="openAbout()">เกี่ยวกับเรา</button>
+    <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')">CHAT ลิซ่า</button>
+    <button class="nav-btn solid" onclick="openLogin()">เข้าสู่ระบบ</button>
+    <button class="cart-btn" onclick="openCart()">
+      🛒<span class="cart-badge" id="cart-badge">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">✦ ขนมไทยแท้คัดสรร ✦</div>
+  <h1 class="hero-title">ลานทอง</h1>
+  <p class="hero-sub">Khanom Lanthong — รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
+  <div class="hero-cta">
+    <button class="hero-cta-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
+    <button class="hero-cta-secondary" onclick="document.getElementById('chat-panel').classList.add('open')">CHAT กับลิซ่า</button>
+  </div>
+  <div class="hero-stats">
+    <span><b>1,200+</b>ลูกค้าประจำ</span>
+    <span><b>98%</b>ความพึงพอใจ</span>
+    <span><b>15</b>สินค้าคัดสรร</span>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="section-label">✦ สินค้าของเรา</div>
+  <h2 class="section-title">ขนมไทยทุกชนิด</h2>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterProducts('all',this)">ทั้งหมด</button>
+    <button class="filter-btn" onclick="filterProducts('ขนมไทยโบราณ',this)">ขนมไทยโบราณ</button>
+    <button class="filter-btn" onclick="filterProducts('ผลไม้แปรรูป',this)">ผลไม้แปรรูป</button>
+    <button class="filter-btn" onclick="filterProducts('คุกกี้/แครกเกอร์',this)">คุกกี้/แครกเกอร์</button>
+    <button class="filter-btn" onclick="filterProducts('ถั่วอบ/ทอด',this)">ถั่วอบ/ทอด</button>
+    <button class="filter-btn" onclick="filterProducts('ขนมนึ่ง',this)">ขนมนึ่ง</button>
+    <button class="filter-btn" onclick="filterProducts('ขนมอบ',this)">ขนมอบ</button>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-label">✦ เสียงจากลูกค้า</div>
+  <h2 class="section-title">รีวิวจากลูกค้าจริง</h2>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"ขนมเปี๊ยะอร่อยมากค่ะ รสชาติต้นตำรับ ลิซ่าตอบไว ซื้อซ้ำแน่นอนค่ะ"</p>
+      <div class="testimonial-author">คุณแนน</div>
+      <div class="testimonial-verified">✓ Verified Purchase</div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"กล้วยเบรคแตกกรอบอร่อยมากครับ ซื้อให้คนในบ้าน ชอบกันทุกคนเลย"</p>
+      <div class="testimonial-author">คุณบอย</div>
+      <div class="testimonial-verified">✓ Verified Purchase</div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"ถั่วตัดโบราณอร่อยมาก เหมาะเป็นของฝากมากๆ บรรจุภัณฑ์สวย"</p>
+      <div class="testimonial-author">คุณมิ้น</div>
+      <div class="testimonial-verified">✓ Verified Purchase</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-logo">@ลานทอง</div>
+  <p>ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
+  <p style="margin-top:8px">🤖 Powered by NEO-S AI Agent System · v1.0 · 2026</p>
+</footer>
+
+<!-- ABOUT PANEL -->
+<div id="about-overlay" onclick="closeAbout()"></div>
+<div id="about-panel">
+  <button class="panel-close" onclick="closeAbout()">✕</button>
+  <div class="about-logo">@ลานทอง<span>·</span></div>
+  <p class="about-tagline">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
+  <hr class="about-divider">
+  <p class="about-text">ร้าน@ลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
+  <div class="about-features">
+    <div class="about-feature">
+      <div class="about-feature-icon">🍯</div>
+      <div class="about-feature-text"><strong>วัตถุดิบแท้ คัดสรร</strong><span>ไม่ใส่สีสังเคราะห์ ไม่ใส่สารกันบูด</span></div>
+    </div>
+    <div class="about-feature">
+      <div class="about-feature-icon">🤖</div>
+      <div class="about-feature-text"><strong>ระบบ AI อัจฉริยะ</strong><span>ลิซ่าดูแลลูกค้า 24/7 อัตโนมัติ</span></div>
+    </div>
+    <div class="about-feature">
+      <div class="about-feature-icon">🚚</div>
+      <div class="about-feature-text"><strong>จัดส่งรวดเร็ว</strong><span>บรรจุภัณฑ์แน่นหนา สินค้าถึงมือสด</span></div>
+    </div>
+  </div>
+  <div class="about-stats">
+    <div class="about-stat"><b>1,200+</b><span>ลูกค้า</span></div>
+    <div class="about-stat"><b>15</b><span>สินค้า</span></div>
+    <div class="about-stat"><b>98%</b><span>พึงพอใจ</span></div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="product-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <button class="modal-close-btn" onclick="document.getElementById('product-modal').classList.remove('show')">✕</button>
+    <img class="product-modal-img" id="pm-img" src="" alt="">
+    <div class="product-modal-body">
+      <div class="product-modal-cat" id="pm-cat"></div>
+      <div class="product-modal-name" id="pm-name"></div>
+      <div class="product-modal-name-en" id="pm-name-en"></div>
+      <div class="product-modal-price-row">
+        <span class="product-modal-price" id="pm-price"></span>
+        <span class="product-modal-orig" id="pm-orig" style="display:none"></span>
+        <span class="product-modal-save" id="pm-save" style="display:none"></span>
+      </div>
+      <div class="product-modal-desc" id="pm-desc"></div>
+      <div class="product-modal-highlights" id="pm-highlights"></div>
+      <div class="qty-row">
+        <span class="qty-label">จำนวน</span>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input class="qty-num" id="pm-qty" type="number" value="1" min="1" max="99" readonly>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+      <button class="add-to-cart-btn" onclick="addCurrentToCart()">เพิ่มในตะกร้า</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div id="cart-overlay" onclick="closeCart()"></div>
+<div id="cart-sidebar">
+  <div class="cart-header">
+    <span class="cart-title">🛒 ตะกร้าสินค้า</span>
+    <button onclick="closeCart()" style="color:var(--muted);font-size:1.2rem;background:none">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items-list">
+    <div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>ยังไม่มีสินค้าในตะกร้า</p></div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span>ยอดรวม</span>
+      <span class="cart-total-price" id="cart-total">฿0</span>
+    </div>
+    <button class="checkout-btn" onclick="openOrderForm()">ชำระเงิน →</button>
+  </div>
+</div>
+
+<!-- ORDER FORM -->
+<div class="modal-overlay" id="order-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box" style="max-width:540px">
+    <button class="modal-close-btn" onclick="document.getElementById('order-modal').classList.remove('show')">✕</button>
+    <div class="order-modal-body">
+      <div class="order-modal-title">กรอกข้อมูลสั่งซื้อ</div>
+      <div class="order-modal-sub">กรอกข้อมูลด้านล่าง จากนั้นโอนเงินและแจ้งสลิปให้ลิซ่าค่ะ</div>
+      <div class="order-summary-mini" id="order-summary-mini"></div>
+      <label class="form-label">ชื่อ-นามสกุล</label>
+      <input class="form-input" id="order-name" type="text" placeholder="เช่น นายสมชาย ใจดี">
+      <label class="form-label">เบอร์โทรศัพท์</label>
+      <input class="form-input" id="order-phone" type="tel" placeholder="0812345678">
+      <label class="form-label">ที่อยู่จัดส่ง</label>
+      <textarea class="form-input" id="order-address" rows="3" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
+      <div class="payment-info">
+        <div class="payment-info-title">💳 ข้อมูลชำระเงิน</div>
+        <div class="payment-info-row"><span>PromptPay</span><span>0982695608</span></div>
+        <div class="payment-info-row"><span>กสิกรไทย</span><span>1443385696</span></div>
+        <div class="payment-info-row"><span>ชื่อบัญชี</span><span>ร้านลานทอง</span></div>
+      </div>
+      <button class="confirm-order-btn" onclick="submitOrder()">ยืนยันออเดอร์</button>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER CONFIRM -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box" style="max-width:480px">
+    <div class="confirm-modal-body">
+      <div class="confirm-icon">✓</div>
+      <div class="confirm-title">สั่งซื้อสำเร็จ!</div>
+      <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับร้าน@ลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ลิซ่าค่ะ</div>
+      <div class="confirm-order-num" id="confirm-order-num"></div>
+      <div class="confirm-items" id="confirm-items-list"></div>
+      <button class="confirm-close-btn" onclick="document.getElementById('confirm-modal').classList.remove('show')">ตกลง ขอบคุณค่ะ</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="modal-overlay" id="login-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box" style="max-width:420px">
+    <button class="modal-close-btn" onclick="document.getElementById('login-modal').classList.remove('show')">✕</button>
+    <div class="login-modal-body">
+      <div class="login-title">เข้าสู่ระบบ</div>
+      <div class="login-sub">เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก</div>
+      <button class="login-google-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.259c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+        เข้าสู่ระบบด้วย Google
+      </button>
+      <div class="login-divider">หรือ</div>
+      <label class="form-label">อีเมล</label>
+      <input class="form-input" type="email" placeholder="your@email.com">
+      <label class="form-label">รหัสผ่าน</label>
+      <input class="form-input" type="password" placeholder="••••••••">
+      <button class="login-btn">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- CHAT BUTTON -->
+<button id="chat-btn" onclick="toggleChat()">
+  💬<span class="chat-badge">AI</span>
+</button>
+
+<!-- CHAT PANEL -->
+<div id="chat-panel">
+  <div class="chat-panel-header">
+    <div class="chat-avatar">🤖</div>
+    <div>
+      <div class="chat-agent-name">ลิซ่า — AI Sale</div>
+      <div class="chat-agent-status">● ออนไลน์อยู่ค่ะ</div>
+    </div>
+    <button class="chat-panel-close" onclick="document.getElementById('chat-panel').classList.remove('open')">✕</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-quick-replies">
+    <button class="qr-btn" onclick="sendQuickReply('ดูสินค้าทั้งหมด')">ดูสินค้า</button>
+    <button class="qr-btn" onclick="sendQuickReply('วิธีสั่งซื้อ')">วิธีสั่งซื้อ</button>
+    <button class="qr-btn" onclick="sendQuickReply('ช่องทางชำระเงิน')">ชำระเงิน</button>
+    <button class="qr-btn" onclick="sendQuickReply('สินค้าแนะนำ')">แนะนำสินค้า</button>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" type="text" placeholder="พิมพ์ข้อความ...">
+    <button class="chat-send-btn" onclick="sendChatMsg()">➤</button>
+  </div>
+</div>
+
+<script>
+let PRODUCTS = [
+  {id:"LT-P01",slug:"chinese-moji",name_th:"ขนมเปี๊ยะชาวจีนไว้ตั้ว",name_en:"Chinese Moji",cat:"ขนมนึ่ง",price:120,orig:150,weight:"150g",
+   desc:"ขนมเปี๊ยะสไตล์จีนโบราณ เนื้อนุ่มหนึบ ไส้หวานละมุน ห่อด้วยถุงลายดอกไม้สีแดงสวยงาม เหมาะเป็นของฝากมงคลในทุกเทศกาล",
+   hl:["ทำจากวัตถุดิบคัดสรร","เหมาะเป็นของขวัญมงคล","รสชาติต้นตำรับ"]},
+  {id:"LT-P02",slug:"buay-khem",name_th:"บ๊วยเค็ม",name_en:"Salted Cured Jujube",cat:"ผลไม้แปรรูป",price:45,orig:null,weight:"80g",
+   desc:"บ๊วยเค็มคัดพิเศษ รสเปรี้ยวเค็มกลมกล่อม กลิ่นหอมเฉพาะตัว บรรจุถุงชมพูน่ารัก เป็นของว่างยอดนิยมที่ชวนติดใจ",
+   hl:["รสชาติต้นตำรับ","คัดพิเศษ","ของว่างยอดนิยม"]},
+  {id:"LT-P03",slug:"donut-cake",name_th:"โดนัทเค้ก",name_en:"DoNuts Cake",cat:"ขนมอบ",price:89,orig:null,weight:"120g",
+   desc:"โดนัทเค้กสไตล์ไทย เนื้อนุ่มเคลือบน้ำตาลแก้วระยิบระยับ อร่อยแบบไทยๆ สไตล์ลานทอง บรรจุถุงส้มสดใส",
+   hl:["สูตรเฉพาะลานทอง","เนื้อนุ่มพิเศษ","รสชาติไทยแท้"]},
+  {id:"LT-P04",slug:"cheese-pineapple-cracker",name_th:"ชีสไส้สับปะรด",name_en:"Pineapple Cheese Crackers",cat:"คุกกี้/แครกเกอร์",price:65,orig:80,weight:"90g",
+   desc:"แครกเกอร์ชีสไส้สับปะรด รสชาติหวานอมเปรี้ยวจากสับปะรดแท้ผสมชีส กรอบอร่อยทุกคำ บรรจุถุงเขียวสดชื่น",
+   hl:["สับปะรดแท้","รสชีสเข้มข้น","กรอบทุกคำ"]},
+  {id:"LT-P05",slug:"tua-tat",name_th:"ถั่วตัด",name_en:"Peanut Bar",cat:"ขนมไทยโบราณ",price:55,orig:null,weight:"100g",
+   desc:"ถั่วตัดสูตรโบราณ ทำจากถั่วลิสงและงาคั่วคลุกน้ำตาลอ้อย แท่งกรอบหอม รสหวานมัน บรรจุถุงแดงน่ารัก",
+   hl:["สูตรโบราณแท้","ไม่ใส่สารกันบูด","กรอบหอมอร่อย"]},
+  {id:"LT-P06",slug:"biscuit-pineapple",name_th:"บิสกิตไส้สับปะรด",name_en:"Biscuit Filling Pineapple",cat:"คุกกี้/แครกเกอร์",price:49,orig:null,weight:"75g",
+   desc:"บิสกิตไส้สับปะรด เนื้อบิสกิตกรอบหอม ไส้แยมสับปะรดหวานอมเปรี้ยว เรียงซ้อนในถุงทองสวยงาม",
+   hl:["ไส้สับปะรดแท้","เรียงสวย","ขนาดพอดีคำ"]},
+  {id:"LT-P07",slug:"cashewnut-cookie",name_th:"คุกกี้มะม่วงหิมพานต์",name_en:"Cashewnut Cookie",cat:"คุกกี้/แครกเกอร์",price:75,orig:null,weight:"85g",
+   desc:"คุกกี้มะม่วงหิมพานต์ เนื้อนุ่มหอมกรอบ ทำจากมะม่วงหิมพานต์แท้ รสหวานมันเนย บรรจุถุงส้มสดใส",
+   hl:["มะม่วงหิมพานต์แท้","ไม่ใส่ผงชูรส","หอมมันเนย"]},
+  {id:"LT-P08",slug:"tua-pak-ar",name_th:"ถั่วปากอ้า",name_en:"Salted Broad Bean",cat:"ถั่วอบ/ทอด",price:55,orig:65,weight:"100g",
+   desc:"ถั่วปากอ้าทอดกรอบ รสเค็มอ่อนๆ กลิ่นหอม กินเพลิน บรรจุถุงเหลืองสดใสลายใบไม้",
+   hl:["กรอบทุกเม็ด","เค็มพอดี","หอมอร่อย"]},
+  {id:"LT-P09",slug:"crispy-fish",name_th:"ปลากรอบ",name_en:"Crispy Fish",cat:"ถั่วอบ/ทอด",price:59,orig:null,weight:"70g",
+   desc:"ปลากรอบ ทอดกรอบบางๆ รสเค็มอมหวาน หอมกลิ่นปลา กินอร่อยไม่หยุด บรรจุถุงแดงสดใส",
+   hl:["กรอบบางพิเศษ","หอมกลิ่นปลาแท้","ไม่ใส่สีสังเคราะห์"]},
+  {id:"LT-P10",slug:"banana-chips",name_th:"กล้วยเบรคแตก",name_en:"Banana Chips",cat:"ผลไม้แปรรูป",price:89,orig:null,weight:"200g",
+   desc:"กล้วยเบรคแตกกรอบ ทำจากกล้วยน้ำว้าแท้ ทอดกรอบหอมหวาน บรรจุถุงซิปล็อคสะดวกใช้",
+   hl:["กล้วยน้ำว้าแท้100%","ถุงซิปล็อคเก็บกรอบ","ขนาดใหญ่คุ้มค่า"]},
+  {id:"LT-P11",slug:"tamarind-4-flavors",name_th:"มะขามคลุก 4 รส",name_en:"Tamarind 4 Flavors",cat:"ผลไม้แปรรูป",price:65,orig:null,weight:"90g",
+   desc:"มะขามคลุก 4 รส รสเปรี้ยว หวาน เค็ม เผ็ด ผสมผสานกลมกล่อม ทำจากมะขามแท้",
+   hl:["มะขามแท้","ครบ 4 รส","ติดใจทุกคำ"]},
+  {id:"LT-P12",slug:"krang-krang-black-pepper",name_th:"ครองแครงพริกไทยดำ",name_en:"Krang Krang Black Pepper",cat:"ขนมไทยโบราณ",price:75,orig:90,weight:"80g",
+   desc:"ครองแครงพริกไทยดำ ขนมอบกรอบรูปทรงเกลียวน่ารัก รสเผ็ดหอมพริกไทยดำ กินอร่อยเพลิน",
+   hl:["พริกไทยดำแท้","รูปทรงน่ารัก","กรอบหอม"]},
+  {id:"LT-P13",slug:"honey-dried-banana",name_th:"กล้วยตากอบน้ำผึ้ง",name_en:"Honey Dried Banana",cat:"ผลไม้แปรรูป",price:99,orig:120,weight:"155g",
+   desc:"กล้วยตากอบน้ำผึ้งคัดพิเศษ ทำจากกล้วยน้ำว้าเลือกสรร อบด้วยน้ำผึ้งแท้ หวานหอมธรรมชาติ",
+   hl:["น้ำผึ้งแท้100%","ไม่ใส่น้ำตาล","หวานธรรมชาติ"]},
+  {id:"LT-P14",slug:"tua-kuan",name_th:"ถั่วกวน",name_en:"Sweet Golden Bean",cat:"ขนมไทยโบราณ",price:65,orig:null,weight:"150g",
+   desc:"ถั่วกวนสูตรโบราณ ทำจากถั่วเขียวกวนกับน้ำตาล หวานมันเนียนนุ่ม กลิ่นหอมถั่วธรรมชาติ",
+   hl:["สูตรโบราณ","ถั่วเขียวแท้","ไม่ใส่สีผสมอาหาร"]},
+  {id:"LT-P15",slug:"roselle",name_th:"กระเจี๊ยบแก้ว",name_en:"Sweetened Roselle",cat:"ผลไม้แปรรูป",price:55,orig:null,weight:"100g",
+   desc:"กระเจี๊ยบแก้วน้ำตาลเคลือบ รสเปรี้ยวอมหวานสดชื่น อุดมด้วยวิตามินซีจากกระเจี๊ยบแท้",
+   hl:["วิตามินซีสูง","กระเจี๊ยบแท้","สีสวยธรรมชาติ"]},
+];
+
+let cart = [];
+let currentProduct = null;
+
+function renderProducts(arr) {
+  document.getElementById('productsGrid').innerHTML = arr.map(p => {
+    const disc = p.orig ? Math.round((1 - p.price/p.orig)*100) : 0;
+    return `<div class="product-card">
+      <div class="product-card-img-wrap">
+        <img class="product-card-img" src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+        ${disc ? `<span class="discount-badge">-${disc}%</span>` : ''}
+      </div>
+      <div class="product-card-body">
+        <div class="product-cat">${p.cat}</div>
+        <div class="product-name">${p.name_th}</div>
+        <div class="product-name-en">${p.name_en}</div>
+        <div class="product-price-row">
+          <span class="product-price">฿${p.price}</span>
+          ${p.orig ? `<span class="product-price-orig">฿${p.orig}</span>` : ''}
+          ${p.weight ? `<span class="product-weight">${p.weight}</span>` : ''}
+        </div>
+        <button class="view-details-btn" onclick="openProductModal('${p.slug}')">VIEW DETAILS</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterProducts(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(cat === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.cat === cat));
+}
+
+renderProducts(PRODUCTS);
+
+// ── Sync live commerce data (price/promo/name/category) from Supabase ──────────
+// Marketing content (image, long desc, highlights) stays local; price & which
+// products exist come from Supabase so the shop always matches the real catalog.
+// Falls back silently to the static list if Supabase is unreachable.
+const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
+const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
+async function syncProductsFromSupabase() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,price,orig_price,category&order=id`, {
+      headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
+    });
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length) return;
+    const byId = {};
+    rows.forEach(r => { byId[r.id] = r; });
+    PRODUCTS = PRODUCTS.filter(p => byId[p.id]).map(p => ({
+      ...p,
+      name_th: byId[p.id].name || p.name_th,
+      price:   byId[p.id].price != null ? Number(byId[p.id].price) : p.price,
+      orig:    byId[p.id].orig_price != null ? Number(byId[p.id].orig_price) : null,
+      cat:     byId[p.id].category || p.cat,
+    }));
+    renderProducts(PRODUCTS);
+  } catch (e) {
+    /* keep static fallback */
+  }
+}
+syncProductsFromSupabase();
+
+function openProductModal(slug) {
+  const p = PRODUCTS.find(x => x.slug === slug);
+  if (!p) return;
+  currentProduct = p;
+  document.getElementById('pm-img').src = `รูปสินค้า_web/${p.slug}.jpg`;
+  document.getElementById('pm-img').alt = p.name_th;
+  document.getElementById('pm-cat').textContent = p.cat;
+  document.getElementById('pm-name').textContent = p.name_th;
+  document.getElementById('pm-name-en').textContent = p.name_en;
+  document.getElementById('pm-price').textContent = `฿${p.price}`;
+  document.getElementById('pm-qty').value = 1;
+  const origEl = document.getElementById('pm-orig');
+  const saveEl = document.getElementById('pm-save');
+  if (p.orig) {
+    origEl.textContent = `฿${p.orig}`; origEl.style.display = 'inline';
+    saveEl.textContent = `ประหยัด ${Math.round((1-p.price/p.orig)*100)}%`; saveEl.style.display = 'inline';
+  } else {
+    origEl.style.display = 'none'; saveEl.style.display = 'none';
+  }
+  document.getElementById('pm-desc').textContent = p.desc;
+  document.getElementById('pm-highlights').innerHTML = p.hl.map(h => `<span class="highlight-chip">✓ ${h}</span>`).join('');
+  document.getElementById('product-modal').classList.add('show');
+}
+
+function changeQty(d) {
+  const el = document.getElementById('pm-qty');
+  const v = parseInt(el.value) + d;
+  if (v >= 1 && v <= 99) el.value = v;
+}
+
+function addCurrentToCart() {
+  if (!currentProduct) return;
+  const qty = parseInt(document.getElementById('pm-qty').value);
+  const ex = cart.find(i => i.slug === currentProduct.slug);
+  if (ex) ex.qty += qty; else cart.push({...currentProduct, qty});
+  updateCartUI();
+  document.getElementById('product-modal').classList.remove('show');
+  showToast(`เพิ่ม "${currentProduct.name_th}" ในตะกร้าแล้วค่ะ 🛒`);
+}
+
+function updateCartUI() {
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'flex' : 'none';
+  document.getElementById('cart-total').textContent = `฿${total}`;
+  const listEl = document.getElementById('cart-items-list');
+  if (cart.length === 0) {
+    listEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>ยังไม่มีสินค้าในตะกร้า</p></div>`;
+  } else {
+    listEl.innerHTML = cart.map((item, idx) => `
+      <div class="cart-item">
+        <img class="cart-item-img" src="รูปสินค้า_web/${item.slug}.jpg" alt="${item.name_th}">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name_th}</div>
+          <div class="cart-item-price">฿${item.price} / ชิ้น · รวม ฿${item.price * item.qty}</div>
+          <div class="cart-item-qty">
+            <button class="cart-qty-btn" onclick="changeCartQty(${idx},-1)">−</button>
+            <span class="cart-qty-num">${item.qty}</span>
+            <button class="cart-qty-btn" onclick="changeCartQty(${idx},1)">+</button>
+          </div>
+        </div>
+        <button class="cart-item-remove" onclick="removeFromCart(${idx})">✕</button>
+      </div>`).join('');
+  }
+}
+
+function changeCartQty(idx, d) {
+  cart[idx].qty += d;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  updateCartUI();
+}
+function removeFromCart(idx) { cart.splice(idx, 1); updateCartUI(); }
+function openCart() {
+  document.getElementById('cart-sidebar').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('show');
+}
+function closeCart() {
+  document.getElementById('cart-sidebar').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('show');
+}
+
+function openOrderForm() {
+  if (cart.length === 0) { showToast('ยังไม่มีสินค้าในตะกร้าค่ะ'); return; }
+  closeCart();
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('order-summary-mini').innerHTML = `
+    <div class="order-summary-mini-title">รายการสั่งซื้อ</div>
+    ${cart.map(i => `<div class="order-summary-item"><span>${i.name_th} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('')}
+    <div class="order-summary-total"><span>รวมทั้งหมด</span><span>฿${total}</span></div>`;
+  document.getElementById('order-modal').classList.add('show');
+}
+
+// Insert a row into Supabase via the anon key (RLS allows anon INSERT on
+// customers/orders). Best-effort — never blocks the confirmation UX.
+async function sbInsertAnon(table, row) {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+      method: "POST",
+      headers: {
+        apikey: SUPA_ANON,
+        Authorization: "Bearer " + SUPA_ANON,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(row),
+    });
+    if (!res.ok) console.warn("sbInsertAnon", table, res.status, await res.text());
+    return res.ok;
+  } catch (e) {
+    console.warn("sbInsertAnon", table, "error", e);
+    return false;
+  }
+}
+
+async function submitOrder() {
+  const name = document.getElementById('order-name').value.trim();
+  const phone = document.getElementById('order-phone').value.trim();
+  const address = document.getElementById('order-address').value.trim();
+  if (!name || !phone || !address) { showToast('กรุณากรอกข้อมูลให้ครบถ้วนค่ะ'); return; }
+  const orderNum = 'LT-' + String(Date.now()).slice(-6);
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const items = cart.map(i => ({ product_id: i.id, name: i.name_th, qty: i.qty, price: i.price }));
+
+  // ── Save to Supabase (so web orders show up in the admin dashboard) ──
+  const custId = 'CUST-WEB-' + Date.now();
+  await sbInsertAnon('customers', { customer_id: custId, name, phone, address, platform: 'web' });
+  const saved = await sbInsertAnon('orders', {
+    order_id: orderNum,
+    customer_id: custId,
+    items: items,
+    total_amount: total,
+    delivery_type: 'delivery',
+    shipping_address: `${name} | ${phone} | ${address}`,
+    status: 'PENDING',
+    note: 'สั่งผ่านเว็บไซต์',
+  });
+  if (!saved) showToast('บันทึกออนไลน์มีปัญหา แต่ทีมงานจะติดต่อกลับนะคะ');
+
+  // ── Confirmation UX ──
+  document.getElementById('order-modal').classList.remove('show');
+  document.getElementById('confirm-order-num').textContent = `เลขออเดอร์: ${orderNum}`;
+  document.getElementById('confirm-items-list').innerHTML =
+    items.map(i => `<div class="confirm-item-row"><span>${i.name} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('') +
+    `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
+  document.getElementById('confirm-modal').classList.add('show');
+  cart = [];
+  updateCartUI();
+}
+
+function openAbout() {
+  document.getElementById('about-overlay').classList.add('show');
+  document.getElementById('about-panel').classList.add('open');
+}
+function closeAbout() {
+  document.getElementById('about-overlay').classList.remove('show');
+  document.getElementById('about-panel').classList.remove('open');
+}
+function openLogin() { document.getElementById('login-modal').classList.add('show'); }
+
+function showToast(msg) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 2700);
+}
+
+const LISA = {
+  'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ร้าน@ลานทอง ดิฉันลิซ่าค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
+  'ว่าไง':'สวัสดีค่ะ ยินดีต้อนรับ มีอะไรให้ช่วยบอกได้เลยนะคะ',
+  'ราคา':'ราคาสินค้าเริ่มต้น ฿45 ถึง ฿99 ค่ะ กด VIEW DETAILS ที่การ์ดสินค้าเพื่อดูราคาได้เลยค่ะ 🏷️',
+  'เท่าไร':'ราคาเริ่มต้น ฿45 ค่ะ กด VIEW DETAILS ที่สินค้าที่สนใจเพื่อดูราคาและรายละเอียดได้เลยค่ะ',
+  'สั่ง':'วิธีสั่งซื้อง่ายมากค่ะ 1) กด VIEW DETAILS 2) เลือกจำนวน กด "เพิ่มในตะกร้า" 3) กดไอคอนตะกร้า 4) กรอกข้อมูลและกด "ยืนยันออเดอร์" ค่ะ 🛒',
+  'วิธีสั่ง':'วิธีสั่งซื้อ: กด VIEW DETAILS → เพิ่มในตะกร้า → กดตะกร้า → ชำระเงิน ง่ายมากค่ะ',
+  'ชำระ':'ชำระผ่าน PromptPay: 0982695608 หรือกสิกรไทย: 1443385696 ชื่อบัญชี ร้านลานทอง ค่ะ 💳',
+  'โอน':'โอนได้ที่ PromptPay: 0982695608 หรือกสิกรไทย: 1443385696 ชื่อบัญชี ร้านลานทอง แล้วส่งสลิปให้ลิซ่าด้วยนะคะ',
+  'ช่องทาง':'ช่องทางชำระเงิน:\n💳 PromptPay: 0982695608\n🏦 กสิกรไทย: 1443385696\nชื่อบัญชี: ร้านลานทอง ค่ะ',
+  'ส่ง':'จัดส่งทั่วไทยค่ะ ปกติ 3-5 วันทำการหลังยืนยันการชำระเงิน 🚚',
+  'ดูสินค้า':'ดูสินค้าทั้งหมด 15 รายการได้ที่หน้านี้เลยค่ะ กดปุ่ม "ทั้งหมด" หรือเลือกหมวดหมู่ได้เลยค่ะ 🛍️',
+  'แนะนำ':'สินค้าขายดีค่ะ ✨\n1. กล้วยตากอบน้ำผึ้ง ฿99\n2. ขนมเปี๊ยะชาวจีน ฿120\n3. ถั่วตัดโบราณ ฿55',
+  'สินค้าแนะนำ':'สินค้าขายดีของลานทองค่ะ 🏆\n1. กล้วยตากอบน้ำผึ้ง ฿99 (ลด 17%)\n2. ขนมเปี๊ยะชาวจีน ฿120 (ลด 20%)\n3. ถั่วตัดโบราณ ฿55\n4. มะขามคลุก 4 รส ฿65',
+};
+
+function getLisaReply(msg) {
+  const m = msg.toLowerCase();
+  for (const [k, v] of Object.entries(LISA)) { if (m.includes(k)) return v; }
+  return 'ขอบคุณที่ติดต่อค่ะ ลิซ่าจะรีบช่วยเหลือค่ะ หากมีคำถามเพิ่มเติมกดปุ่มด้านล่างได้เลยนะคะ 😊';
+}
+
+function addChatMsg(text, type) {
+  const el = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = `chat-msg ${type}`;
+  d.innerHTML = `<div class="chat-msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function sendChatMsg() {
+  const inp = document.getElementById('chat-input');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  addChatMsg(txt, 'user'); inp.value = '';
+  setTimeout(() => addChatMsg(getLisaReply(txt), 'bot'), 600);
+}
+
+function sendQuickReply(txt) {
+  addChatMsg(txt, 'user');
+  setTimeout(() => addChatMsg(getLisaReply(txt), 'bot'), 500);
+}
+
+function toggleChat() { document.getElementById('chat-panel').classList.toggle('open'); }
+
+document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendChatMsg(); });
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+    closeAbout(); closeCart();
+  }
+});
+
+setTimeout(() => addChatMsg('สวัสดีค่ะ ดิฉันลิซ่า AI Sale ของร้าน@ลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?', 'bot'), 300);
+</script>
+</body>
+</html>
