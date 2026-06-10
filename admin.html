@@ -633,6 +633,7 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
           <input type="file" id="pm-file" accept="image/*" onchange="uploadProductImage(this)">
           <small id="pm-imgnote">อัปโหลด JPG/PNG → เก็บใน Supabase Storage → เว็บร้านเห็นทันที</small>
           <input type="hidden" id="pm-image">
+          <button type="button" class="btn btn-gold btn-sm needs-edit" style="margin-top:8px;width:100%" onclick="openAiImage()">✨ สร้างรูปด้วย AI</button>
         </div>
       </div>
     </div>
@@ -701,6 +702,24 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
   </div>
 </div>
 
+<!-- AI image generator modal (สร้างรูปสินค้า) -->
+<div class="modal-bg" id="aiImgBg">
+  <div class="modal" style="max-width:460px">
+    <h3>✨ สร้างรูปสินค้าด้วย AI</h3>
+    <div class="field"><label>อธิบายรูปที่ต้องการ (พรอมป์)</label>
+      <textarea id="aiimg-prompt" rows="3" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:.86rem;background:var(--card);color:var(--text);resize:vertical"></textarea></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" id="aiimg-gen" onclick="genAiImage()">🎨 สร้างรูป</button>
+      <small id="aiimg-note" style="color:var(--muted);font-size:.74rem;flex:1;min-width:160px">โหมดสาธิต — สร้างภาพตัวอย่าง (พร้อมต่อ Gemini จริงเมื่อใส่ API key)</small>
+    </div>
+    <div id="aiimg-preview" style="width:100%;aspect-ratio:1;max-height:300px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px dashed var(--border);font-size:2rem">🖼️</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAiImage()">ปิด</button>
+      <button class="btn btn-gold" id="aiimg-use" onclick="useAiImage()" disabled>ใช้รูปนี้กับสินค้า</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -729,6 +748,16 @@ async function workerPost(path, payload){
 }
 let editingId = null;
 let salesChart = null, statusChart = null, refreshTimer = null;
+let KPI_DONE = false;
+// นับเลขขึ้น (count-up) เฉพาะตอนโหลดครั้งแรก · auto-refresh 20s จะ set เฉยๆ ไม่กระพริบ
+function animateKpi(id, value, prefix='', suffix=''){
+  const el=document.getElementById(id); if(!el) return;
+  const set=v=>el.textContent=prefix+fmt(Math.round(v))+suffix;
+  if(KPI_DONE || !value){ set(value); return; }
+  const dur=700, t0=performance.now();
+  const step=now=>{ const p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3); set(value*e); if(p<1) requestAnimationFrame(step); else set(value); };
+  requestAnimationFrame(step);
+}
 let CHATS = null;
 
 const fmt = n => Number(n||0).toLocaleString('th-TH');
@@ -922,25 +951,26 @@ function renderDashboard(){
   const aov = paidOrders.length ? Math.round(revenue/paidOrders.length) : 0;
   const newCust=customers.filter(c=>(c.created_at||'').slice(0,7)===ym).length;
 
-  document.getElementById('st-orders').textContent=fmt(orders.length);
-  document.getElementById('st-revenue').textContent='฿'+fmt(revenue);
-  document.getElementById('st-waiting').textContent=waiting;
+  animateKpi('st-orders', orders.length);
+  animateKpi('st-revenue', revenue, '฿');
+  animateKpi('st-waiting', waiting);
   document.getElementById('st-pending').textContent=waiting>0?`⏳ ${waiting} รายการรอจัดการ`:'✅ ไม่มีค้าง';
-  document.getElementById('st-month').textContent='฿'+fmt(monthRev);
+  animateKpi('st-month', monthRev, '฿');
   document.getElementById('st-aov').textContent='AOV ฿'+fmt(aov)+' / ออเดอร์';
-  document.getElementById('st-newcust').textContent=fmt(newCust);
+  animateKpi('st-newcust', newCust);
   document.getElementById('st-totcust').textContent='ลูกค้าทั้งหมด '+fmt(customers.length);
   // กำไรขั้นต้น (ประเมินจาก cost_price)
   const _pmaps=finCostMap(); const _cogs=paidOrders.reduce((s,o)=>s+costOfItems(o.items,_pmaps),0);
   const _gp=revenue-_cogs, _mg=revenue?Math.round(_gp/revenue*100):0;
-  document.getElementById('st-profit').textContent='฿'+fmt(Math.round(_gp));
+  animateKpi('st-profit', Math.round(_gp), '฿');
   document.getElementById('st-margin').textContent = _cogs>0 ? ('margin '+_mg+'% · ต้นทุน ฿'+fmt(Math.round(_cogs))) : 'ใส่ราคาทุนเพื่อดูกำไร';
+  KPI_DONE=true;
 
   // A3 repeat-purchase rate
   const byCust={}; orders.forEach(o=>{ const c=o.customer_id||'?'; byCust[c]=(byCust[c]||0)+1; });
   const buyers=Object.keys(byCust).length, repeaters=Object.values(byCust).filter(n=>n>=2).length;
   const repeatPct = buyers? Math.round(repeaters/buyers*100) : 0;
-  document.getElementById('st-repeat').textContent = repeatPct+'%';
+  animateKpi('st-repeat', repeatPct, '', '%');
   document.getElementById('st-repeatsub').textContent = `${repeaters}/${buyers} คน สั่ง ≥ 2 ครั้ง`;
 
   // #3 top products — look up catalog price when the order item has none (legacy items keep qty only)
@@ -1027,16 +1057,22 @@ function renderCharts(){
     if(PAID.has(o.status)) paidDay[d]+=amt; else if(o.status==='PENDING'||o.status==='SLIP_RECEIVED') waitDay[d]+=amt; });
   const paidArr=days.map(d=>paidDay[d]), waitArr=days.map(d=>waitDay[d]);
   const maxV=Math.max(...days.map(d=>paidDay[d]+waitDay[d]),0);
+  // เส้นแนวโน้มกำไร (รายรับยืนยัน − ต้นทุนสินค้า ต่อวัน) — ใช้แกน y1 แยก ไม่ stack กับแท่ง
+  const _cm=finCostMap(); const profDay=Object.fromEntries(days.map(d=>[d,0]));
+  orders.forEach(o=>{ const d=(o.created_at||'').slice(0,10); if((d in profDay)&&PAID.has(o.status)) profDay[d]+=Number(o.total_amount||0)-costOfItems(o.items,_cm); });
+  const profArr=days.map(d=>Math.round(profDay[d]));
   if(salesChart) salesChart.destroy();
   salesChart=new Chart(document.getElementById('salesChart'),{ type:'bar',
     data:{ labels, datasets:[
       { label:'ยืนยันแล้ว', data:paidArr, backgroundColor:'#27ae60', borderRadius:5, maxBarThickness:42, stack:'s' },
-      { label:'รอชำระ', data:waitArr, backgroundColor:'#e8b84b', borderRadius:5, maxBarThickness:42, stack:'s' } ] },
+      { label:'รอชำระ', data:waitArr, backgroundColor:'#e8b84b', borderRadius:5, maxBarThickness:42, stack:'s' },
+      { type:'line', label:'กำไร', data:profArr, yAxisID:'y1', borderColor:'#1f8a5b', backgroundColor:'rgba(31,138,91,.10)', borderWidth:2, tension:.35, pointRadius:2, pointBackgroundColor:'#1f8a5b', fill:true, order:0 } ] },
     options:{ responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:true,position:'top',labels:{color:tickColor,usePointStyle:true,boxWidth:8,font:{size:11}}}, datalabels:{display:false} },
       scales:{ x:{stacked:true,ticks:{color:tickColor,maxRotation:0,autoSkip:true,maxTicksLimit:12}}, y:{ stacked:true, beginAtZero:true,
         suggestedMax: maxV>0 ? undefined : 500,            // #1 sensible empty-state scale
-        ticks:{ color:tickColor, precision:0, callback:v=>'฿'+fmt(v) } } } },
+        ticks:{ color:tickColor, precision:0, callback:v=>'฿'+fmt(v) } },
+        y1:{ display:false, beginAtZero:true, position:'right', grid:{drawOnChartArea:false} } } },
     plugins: window.ChartDataLabels?[window.ChartDataLabels]:[] });
 
   // #2 prettier doughnut: thin ring, total in center, clean legend below
@@ -1169,6 +1205,54 @@ async function uploadProductImage(input){
   document.getElementById('pm-image').value=publicUrl;
   document.getElementById('pm-preview').innerHTML=`<img src="${publicUrl}" style="width:100%;height:100%;border-radius:12px;object-fit:cover">`;
   note.textContent='✅ อัปโหลดแล้ว — กด "บันทึก" เพื่อใช้รูปนี้'; saveBtn.disabled=false;
+}
+
+// ── สร้างรูปสินค้าด้วย AI (โครงสร้างพร้อม · โหมดสาธิตฝั่ง client · ต่อ Gemini จริงได้ภายหลัง) ──
+let AIIMG_DATAURL=null;
+function openAiImage(){
+  if(!requireEdit()) return;
+  const name=document.getElementById('pm-name').value.trim()||'ขนมไทย';
+  document.getElementById('aiimg-prompt').value=`รูปถ่ายสินค้า "${name}" ขนมไทยพรีเมียม จัดวางสวยงาม พื้นหลังสะอาด แสงนุ่ม มุมมองน่ารับประทาน`;
+  document.getElementById('aiimg-preview').innerHTML='🖼️'; AIIMG_DATAURL=null;
+  document.getElementById('aiimg-use').disabled=true;
+  document.getElementById('aiimg-note').textContent='โหมดสาธิต — สร้างภาพตัวอย่าง (พร้อมต่อ Gemini จริงเมื่อใส่ API key)';
+  document.getElementById('aiImgBg').classList.add('open');
+}
+function closeAiImage(){ document.getElementById('aiImgBg').classList.remove('open'); }
+function makeDemoImage(name){
+  const c=document.createElement('canvas'); c.width=c.height=640; const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,640,640); g.addColorStop(0,'#8b0000'); g.addColorStop(1,'#e8b84b');
+  x.fillStyle=g; x.fillRect(0,0,640,640);
+  x.fillStyle='rgba(255,255,255,.92)'; x.beginPath(); x.arc(320,290,150,0,Math.PI*2); x.fill();
+  x.textAlign='center'; x.font='110px serif'; x.fillText('🍮',320,330);
+  x.fillStyle='#fff'; x.font='700 42px Segoe UI,sans-serif'; x.fillText(String(name).slice(0,18),320,520);
+  x.font='500 22px Segoe UI,sans-serif'; x.fillStyle='rgba(255,255,255,.9)'; x.fillText('ร้าน@ลานทอง · ตัวอย่าง AI (สาธิต)',320,560);
+  return c.toDataURL('image/jpeg',0.9);
+}
+async function genAiImage(){
+  const btn=document.getElementById('aiimg-gen'), note=document.getElementById('aiimg-note');
+  const prompt=document.getElementById('aiimg-prompt').value.trim(); if(!prompt){ toast('ใส่คำอธิบายรูปก่อนนะคะ',true); return; }
+  btn.disabled=true; note.textContent='⏳ กำลังสร้างรูป…';
+  await new Promise(r=>setTimeout(r,450));   // จำลองการประมวลผล · จุดนี้ต่อ worker /gen-image → Gemini ได้ภายหลัง
+  AIIMG_DATAURL=makeDemoImage(document.getElementById('pm-name').value.trim()||'ลานทอง');
+  document.getElementById('aiimg-preview').innerHTML=`<img src="${AIIMG_DATAURL}" style="width:100%;height:100%;object-fit:cover">`;
+  document.getElementById('aiimg-use').disabled=false;
+  btn.disabled=false; note.textContent='✅ ตัวอย่าง (สาธิต) — กด "ใช้รูปนี้" เพื่ออัปโหลด · ภาพจริงต่อ Gemini ได้ภายหลัง';
+}
+async function useAiImage(){
+  if(!AIIMG_DATAURL || !requireEdit()) return;
+  const note=document.getElementById('aiimg-note'), saveBtn=document.getElementById('pm-save');
+  note.textContent='⏳ กำลังอัปโหลด…';
+  const blob=await (await fetch(AIIMG_DATAURL)).blob();
+  const id=(document.getElementById('pm-id').value.trim()||'new').replace(/[^A-Za-z0-9_-]/g,'');
+  const path=`products/${id}-ai-${Date.now()}.jpg`;
+  const { error } = await sb.storage.from('product-images').upload(path,blob,{ upsert:true, cacheControl:'3600', contentType:'image/jpeg' });
+  if(error){ note.textContent='❌ อัปโหลดไม่สำเร็จ'; toast('อัปโหลดไม่สำเร็จ: '+error.message,true); return; }
+  const { data:{ publicUrl } } = sb.storage.from('product-images').getPublicUrl(path);
+  document.getElementById('pm-image').value=publicUrl;
+  document.getElementById('pm-preview').innerHTML=`<img src="${publicUrl}" style="width:100%;height:100%;border-radius:12px;object-fit:cover">`;
+  if(saveBtn) saveBtn.disabled=false;
+  closeAiImage(); toast('ใส่รูป AI แล้ว — กด "บันทึก" เพื่อใช้กับสินค้าค่ะ');
 }
 function openProductModal(id){
   if(!requireEdit()) return;
@@ -1734,7 +1818,7 @@ async function renderAiPower(){
     ? `<div class="ai-alert"><div class="aic">ℹ️</div><div class="at"><b>ยังไม่มีการใช้พลัง AI</b><br>เมื่อไพลินตอบลูกค้า หรือ SlipOK ตรวจสลิป ระบบจะบันทึกการใช้จริงให้อัตโนมัติ แล้วมาโชว์ตรงนี้ค่ะ 🔋</div></div>`
     : lows.length
     ? `<div class="ai-alert"><div class="aic">⚠️</div><div class="at"><b>พลอยแจ้งเตือน · พลัง AI</b><br>หมึก AI ของ <b>${lows.map(esc).join(', ')}</b> เหลือน้อยแล้วค่ะ 🖋 แนะนำเติมพลังก่อนงานสะดุดนะคะ</div></div>`
-    : `<div class="ai-alert" style="background:linear-gradient(135deg,#eafaf1,#d6f5e3);border-color:#aee6c6"><div class="aic" style="background:var(--green)">✓</div><div class="at"><b style="color:var(--green)">พลัง AI เพียงพอ</b><br>ทุกโมเดลยังมีพลังเหลือใช้งานปกติค่ะ 🔋</div></div>`;
+    : `<div class="ai-alert" style="background:linear-gradient(135deg,#eafaf1,#d6f5e3);border-color:#aee6c6"><div class="aic" style="background:var(--green)">✓</div><div class="at" style="color:#1b5e20"><b style="color:#145a32">พลัง AI เพียงพอ</b><br>ทุกโมเดลยังมีพลังเหลือใช้งานปกติค่ะ 🔋</div></div>`;
   document.getElementById('aiGrid').innerHTML = AI_ORDER.map(k=>{
     const meta=AI_META[k]; const c=cm[k]||{budget:0,used:0}; const a=agg[k]||{today:0,todayCost:0,wkCost:0,total:0};
     const budget=Number(c.budget||0), used=Number(a.cost||0);   // used = ผลรวมจริงจาก ai_usage (ตรงกับประวัติด้านล่างเสมอ)
