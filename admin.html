@@ -189,9 +189,30 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
 .ai-pct{ font-size:1.9rem; font-weight:800; line-height:1; } .ai-pct small{ font-size:.8rem; font-weight:600; color:var(--muted); }
 .ai-bar-wrap{ height:9px; border-radius:6px; background:var(--border); overflow:hidden; margin:10px 0 8px; }
 .ai-bar{ height:9px; border-radius:6px; transition:width .6s cubic-bezier(.2,.8,.2,1); }
-.ai-used{ font-size:.76rem; color:var(--muted); margin-bottom:14px; }
+.ai-used{ font-size:.76rem; color:var(--muted); margin-bottom:10px; }
+.ai-stat-row{ display:flex; flex-wrap:wrap; gap:6px 12px; font-size:.72rem; color:var(--muted); margin-bottom:13px; padding-top:9px; border-top:1px dashed var(--border); }
+.ai-stat-row b{ color:var(--text); }
 .ai-actions{ display:flex; gap:8px; }
 .usage-foot{ text-align:center; font-size:.74rem; color:var(--muted); margin-top:6px; }
+/* ── การเงิน (Finance) ── */
+.fin-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:13px; }
+.fin-kpi{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:15px 16px; box-shadow:var(--shadow); }
+.fin-kpi .fk-label{ font-size:.76rem; color:var(--muted); margin-bottom:6px; }
+.fin-kpi .fk-val{ font-size:1.45rem; font-weight:800; line-height:1; }
+.fin-kpi .fk-sub{ font-size:.7rem; color:var(--muted); margin-top:5px; }
+.exp-add{ display:flex; flex-wrap:wrap; gap:7px; align-items:center; margin-bottom:14px; }
+.exp-add input,.exp-add select{ padding:8px 9px; border:1px solid var(--border); border-radius:9px; font-family:inherit; font-size:.82rem; background:var(--card); color:var(--text); }
+.exp-add .exp-note{ flex:1; min-width:140px; }
+/* ── 5 AI agents strip (overview) ── */
+.agents-strip{ display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); gap:11px; margin-bottom:20px; }
+.agent-mini{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow); transition:.2s; }
+.agent-mini:hover{ transform:translateY(-2px); }
+.agent-mini .am-top{ display:flex; align-items:center; justify-content:space-between; }
+.agent-mini .am-ic{ font-size:1.3rem; }
+.agent-mini .am-dot{ width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px rgba(46,160,90,.16); }
+.agent-mini .am-name{ font-weight:800; font-size:.82rem; margin-top:7px; }
+.agent-mini .am-sub{ font-size:.68rem; color:var(--muted); margin-top:2px; }
+.agent-mini .am-stat{ font-size:.72rem; color:var(--text); margin-top:7px; padding-top:7px; border-top:1px dashed var(--border); }
 
 /* Modal */
 .modal-bg{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:100; align-items:center; justify-content:center; padding:20px; }
@@ -272,6 +293,7 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
       <div class="nav-item" data-tab="orders" onclick="navTo('orders')"><span class="ic">📋</span> ออเดอร์ <span class="nav-badge" id="cnt-orders">0</span></div>
       <div class="nav-item" data-tab="products" onclick="navTo('products')"><span class="ic">📦</span> สินค้า/สต็อก <span class="nav-badge" id="cnt-products">0</span></div>
       <div class="nav-item" data-tab="customers" onclick="navTo('customers')"><span class="ic">👥</span> ลูกค้า <span class="nav-badge" id="cnt-customers">0</span></div>
+      <div class="nav-item" data-tab="finance" onclick="navTo('finance')"><span class="ic">💰</span> การเงิน</div>
       <div class="nav-item" data-tab="chat" onclick="navTo('chat')"><span class="ic">💬</span> ประวัติแชต</div>
       <div class="nav-item" data-tab="users" onclick="navTo('users')"><span class="ic">🛡️</span> ผู้ใช้งาน</div>
       <div class="nav-item" data-tab="settings" onclick="navTo('settings')"><span class="ic">⚙️</span> ตั้งค่าร้าน</div>
@@ -308,6 +330,7 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
     <!-- ═══ DASHBOARD ═══ -->
     <div class="page active" id="page-dash">
       <div id="ployToday" class="ploy-today"></div>
+      <div id="agentsStrip" class="agents-strip"></div>
       <div class="stats-grid">
         <div class="stat-card" style="--ac:var(--red)"><div class="stat-ic">📦</div><div class="stat-label">ออเดอร์ทั้งหมด</div><div class="stat-value" id="st-orders">0</div><div class="stat-sub" id="st-pending">—</div></div>
         <div class="stat-card" style="--ac:var(--green)"><div class="stat-ic">💰</div><div class="stat-label">รายรับ (ยืนยันแล้ว)</div><div class="stat-value" id="st-revenue">฿0</div><div class="stat-sub">PAID / SHIPPED / DONE</div></div>
@@ -430,7 +453,7 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
       <div class="card">
         <div class="section-title">🧾 ประวัติการใช้พลัง (ล่าสุด)</div>
         <div id="aiHistory"></div>
-        <div class="usage-foot">⚡ ข้อมูลเป็นตัวอย่าง (เดโม) · จะเชื่อมตาราง <code class="idc">ai_usage</code> + worker (RBAC/พลัง AI) เมื่อต่อ backend จริง</div>
+        <div class="usage-foot">⚡ ข้อมูลจริงจากตาราง <code class="idc">ai_usage</code> · <code class="idc">ai_credits</code> — worker บันทึกทุกครั้งที่ไพลินตอบ/SlipOK ตรวจสลิป (ราคาประเมิน ปรับงบได้ที่ปุ่มเติมงบ)</div>
       </div>
     </div>
 
@@ -537,6 +560,41 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
       </div>
     </div>
 
+    <!-- ═══ การเงิน (AI Finance) ═══ -->
+    <div class="page" id="page-finance">
+      <div class="toolbar" style="margin-bottom:16px">
+        <div class="section-title" style="margin:0">💰 บัญชีรายรับ-รายจ่าย · กำไรสุทธิ</div>
+        <div class="spacer"></div>
+        <select id="finRange" onchange="renderFinance()" style="padding:8px 12px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--text);font-family:inherit;font-size:.84rem">
+          <option value="month">เดือนนี้</option>
+          <option value="30">30 วันล่าสุด</option>
+          <option value="all">ทั้งหมด</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="renderFinance()">🔄 รีเฟรช</button>
+        <button class="btn btn-ghost btn-sm" onclick="printFinance()">🖨️ พิมพ์งบ</button>
+        <button class="btn btn-primary btn-sm" onclick="sendFinanceLine()">📤 สรุป LINE</button>
+      </div>
+      <div class="fin-kpis" id="finKpis"></div>
+      <div class="two-col" style="margin-top:18px">
+        <div class="card">
+          <div class="section-title">🧾 รายจ่าย</div>
+          <div class="exp-add needs-edit">
+            <input type="date" id="exp-date">
+            <select id="exp-cat"></select>
+            <input type="text" id="exp-note" class="exp-note" placeholder="รายละเอียด เช่น ซื้อแป้ง น้ำตาล">
+            <input type="number" id="exp-amount" placeholder="บาท" min="0" style="width:92px">
+            <button class="btn btn-primary btn-sm" onclick="addExpense()">➕ เพิ่ม</button>
+          </div>
+          <div id="finExpenses"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">📥 รายรับ (ออเดอร์ที่ชำระแล้ว)</div>
+          <div id="finIncome"></div>
+        </div>
+      </div>
+      <div class="usage-foot">💡 ต้นทุนสินค้า (COGS) ประเมินจากราคาทุน (cost_price) ที่ตั้งในแท็บสินค้า · กำไรสุทธิ = รายรับ − ต้นทุนสินค้า − รายจ่ายอื่น</div>
+    </div>
+
     </main>
   </div>
 </div>
@@ -630,7 +688,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const PAID = new Set(['PAID','SHIPPED','DONE']);
 const STATUSES = ['PENDING','SLIP_RECEIVED','PAID','SHIPPED','DONE','CANCELLED'];
-const PAGE_TITLES = { dash:'📊 ภาพรวม', orders:'📋 ออเดอร์', products:'📦 สินค้า/สต็อก', customers:'👥 ลูกค้า', chat:'💬 ประวัติแชต', marketing:'📣 การตลาด AI', advisor:'🧠 ที่ปรึกษาธุรกิจ AI', aipower:'🔋 พลัง AI', users:'🛡️ ผู้ใช้งาน', settings:'⚙️ ตั้งค่าร้าน' };
+const PAGE_TITLES = { dash:'📊 ภาพรวม', orders:'📋 ออเดอร์', products:'📦 สินค้า/สต็อก', customers:'👥 ลูกค้า', finance:'💰 การเงิน · บัญชี', chat:'💬 ประวัติแชต', marketing:'📣 การตลาด AI', advisor:'🧠 ที่ปรึกษาธุรกิจ AI', aipower:'🔋 พลัง AI', users:'🛡️ ผู้ใช้งาน', settings:'⚙️ ตั้งค่าร้าน' };
 let CONFIG = {};
 let DATA = { products:[], orders:[], customers:[], payments:[], visits:[] };
 let SALES_RANGE = Number(localStorage.getItem('lt_sales_range')||7);  // days; 0 = ทั้งหมด
@@ -723,6 +781,8 @@ function navTo(id){
   if(id==='users') loadAdminUsers();
   if(id==='marketing') renderContentIdeas();
   if(id==='advisor') initAdvisor();
+  if(id==='aipower') renderAiPower();
+  if(id==='finance') renderFinance();
   if(id==='settings') fillConfigForm();
 }
 const CFG_FIELDS=['shop_name','promo_banner','promptpay','bank_name','bank_no','bank_account','shipping_fee','free_threshold','low_stock_default'];
@@ -776,12 +836,26 @@ function setupRealtime(){
 }
 
 // #8 พลอย — concise "today" summary banner
+function renderAgents(){
+  const el=document.getElementById('agentsStrip'); if(!el) return;
+  const m=bizMetrics(); const lowN=m.out.length+m.low.length;
+  const a=[
+    {ic:'🛍️',name:'AI Sale · ไพลิน',sub:'คุย-ปิดการขาย LINE+เว็บ',stat:'ออนไลน์ 24 ชม.'},
+    {ic:'💰',name:'AI Finance',sub:'ตรวจสลิป + บัญชี',stat:`กำไร ฿${fmt(Math.round(m.grossProfit))} (${m.margin}%)`},
+    {ic:'📦',name:'AI Inventory',sub:'ตัดสต็อกอัตโนมัติเมื่อชำระ',stat:lowN?`⚠️ ใกล้หมด/หมด ${lowN}`:'สต็อกปกติ ✅'},
+    {ic:'📣',name:'AI Marketing',sub:'สร้างคอนเทนต์/บรอดแคสต์',stat:'พร้อมใช้งาน'},
+    {ic:'📊',name:'AI Manager · พลอย',sub:'วิเคราะห์ + คาดการณ์',stat:'สรุปเข้า LINE 08:00'},
+  ];
+  el.innerHTML=a.map(x=>`<div class="agent-mini"><div class="am-top"><span class="am-ic">${x.ic}</span><span class="am-dot" title="ทำงานอยู่"></span></div><div class="am-name">${x.name}</div><div class="am-sub">${x.sub}</div><div class="am-stat">${x.stat}</div></div>`).join('');
+}
 function renderDailySummary(){
   const el=document.getElementById('ployToday'); if(!el) return;
   const { orders, products } = DATA;
   const today=new Date().toISOString().slice(0,10);
   const todayOrders=orders.filter(o=>(o.created_at||'').slice(0,10)===today);
-  const todayRev=todayOrders.filter(o=>PAID.has(o.status)).reduce((s,o)=>s+Number(o.total_amount||0),0);
+  const todayPaid=todayOrders.filter(o=>PAID.has(o.status));
+  const todayRev=todayPaid.reduce((s,o)=>s+Number(o.total_amount||0),0);
+  const _m=finCostMap(); const todayProfit=todayRev-todayPaid.reduce((s,o)=>s+costOfItems(o.items,_m),0);
   const todayWait=todayOrders.filter(o=>o.status==='PENDING'||o.status==='SLIP_RECEIVED').length;
   const sold={}; todayOrders.forEach(o=>(o.items||[]).forEach(it=>{ const k=(it.name||it.product_id||'').trim(); if(k) sold[k]=(sold[k]||0)+Number(it.qty||0); }));
   const top=Object.entries(sold).sort((a,b)=>b[1]-a[1])[0];
@@ -789,7 +863,7 @@ function renderDailySummary(){
   const low=products.filter(p=>(p.available||0)>0&&(p.available||0)<=(p.min_stock_alert||10)).length;
   let txt;
   if(!todayOrders.length){ txt=`วันนี้ยังไม่มีออเดอร์เข้ามาค่ะเจ้านาย 🌤️ ${(low+out)?`มีสินค้าใกล้หมด/หมด <b>${low+out}</b> รายการ ลองเช็กสต็อกนะคะ`:'สต็อกพร้อมขาย ลองโพสต์โปรดึงลูกค้าดูไหมคะ'}`; }
-  else { txt=`วันนี้มีออเดอร์ <b>${todayOrders.length}</b> รายการ · ยอดยืนยันแล้ว <b>฿${fmt(todayRev)}</b>${todayWait?` · รอชำระ <b>${todayWait}</b>`:''}${top?` · ขายดีวันนี้ <b>${esc(top[0])}</b> (${top[1]} ชุด)`:''}${(low+out)?` · ⚠️ สต็อกใกล้หมด/หมด <b>${low+out}</b> รายการ`:''} ค่ะเจ้านาย`; }
+  else { txt=`วันนี้มีออเดอร์ <b>${todayOrders.length}</b> รายการ · ยอดยืนยันแล้ว <b>฿${fmt(todayRev)}</b>${todayProfit>0?` · กำไร ~<b>฿${fmt(Math.round(todayProfit))}</b>`:''}${todayWait?` · รอชำระ <b>${todayWait}</b>`:''}${top?` · ขายดีวันนี้ <b>${esc(top[0])}</b> (${top[1]} ชุด)`:''}${(low+out)?` · ⚠️ สต็อกใกล้หมด/หมด <b>${low+out}</b> รายการ`:''} ค่ะเจ้านาย`; }
   el.innerHTML=`<div class="pt-ic">🧠</div><div class="pt-body"><h4>พลอยสรุปให้วันนี้ · ${new Date().toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long'})}</h4><div class="pt-txt">${txt}</div></div>
     <button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;align-self:center;white-space:nowrap" onclick="sendLineSummary('dash')">📤 สรุป LINE</button>`;
 }
@@ -811,6 +885,7 @@ function renderVisitSource(){
 // ── Dashboard (+A3 KPI) ──
 function renderDashboard(){
   renderDailySummary();
+  renderAgents();
   renderVisitSource();
   const { products, orders, customers } = DATA;
   const revenue = orders.filter(o=>PAID.has(o.status)).reduce((s,o)=>s+Number(o.total_amount||0),0);
@@ -1385,7 +1460,15 @@ function bizMetrics(){
   const buyers=Object.keys(byCust).length, repeaters=Object.values(byCust).filter(n=>n>=2).length;
   const repeat=buyers?Math.round(repeaters/buyers*100):0;
   const topCust=customers.map(c=>({c,s:custStats(c.customer_id)})).filter(x=>x.s.count>0).sort((a,b)=>b.s.spent-a.s.spent)[0];
-  return { revenue, monthRev, aov, paidN:paid.length, ordersN:orders.length, waiting:waiting.length, waitVal, conv, topProd, zeroSellers, out, low, repeat, buyers, repeaters, topCust, custN:customers.length };
+  // AI Finance/Manager: ต้นทุน + กำไร + พยากรณ์
+  const _maps=finCostMap();
+  const cogs=paid.reduce((s,o)=>s+costOfItems(o.items,_maps),0);
+  const grossProfit=revenue-cogs, margin=revenue?Math.round(grossProfit/revenue*100):0;
+  const monthPaid=paid.filter(o=>(o.created_at||'').slice(0,7)===ym);
+  const monthCogs=monthPaid.reduce((s,o)=>s+costOfItems(o.items,_maps),0), monthProfit=monthRev-monthCogs;
+  const dnow=new Date(), dim=new Date(dnow.getFullYear(),dnow.getMonth()+1,0).getDate(), dpass=dnow.getDate();
+  const projMonth=dpass?Math.round(monthRev/dpass*dim):monthRev;
+  return { revenue, monthRev, aov, paidN:paid.length, ordersN:orders.length, waiting:waiting.length, waitVal, conv, topProd, zeroSellers, out, low, repeat, buyers, repeaters, topCust, custN:customers.length, cogs, grossProfit, margin, monthProfit, projMonth };
 }
 function runAnalysis(){
   const m=bizMetrics();
@@ -1396,6 +1479,10 @@ function runAnalysis(){
   const cards=[];
   cards.push(card('💰','var(--green)','รายได้',`ยืนยันแล้วรวม <b>฿${fmt(m.revenue)}</b> · เดือนนี้ <b>฿${fmt(m.monthRev)}</b> · เฉลี่ย/ออเดอร์ ฿${fmt(m.aov)}`,
     m.aov<300?'ลองจัดเซ็ต/อัปเซลล์ให้ลูกค้าซื้อเพิ่มต่อบิล เพื่อดัน AOV ให้สูงขึ้น':'AOV อยู่ในเกณฑ์ดี รักษาไว้นะคะ'));
+  cards.push(card('📈', m.grossProfit>=0?'var(--green)':'var(--danger)','กำไร (ขั้นต้น)',`รายรับ − ต้นทุนสินค้า = <b>฿${fmt(Math.round(m.grossProfit))}</b> · margin <b>${m.margin}%</b>`+(m.cogs?'':' · <i>ยังไม่ได้ใส่ราคาทุน</i>'),
+    m.cogs?'ดูกำไรสุทธิ (หักรายจ่ายอื่น) + บันทึกรายจ่ายได้ที่แท็บ "การเงิน" ค่ะ':'ใส่ราคาทุน (cost_price) ในแท็บสินค้า แล้วพลอยจะคำนวณกำไรให้แม่นขึ้นค่ะ'));
+  cards.push(card('🔮','var(--blue)','คาดการณ์ยอดเดือนนี้',`ทำได้แล้ว ฿${fmt(m.monthRev)} · คาดสิ้นเดือน ~<b>฿${fmt(m.projMonth)}</b> (ตามอัตราปัจจุบัน)`,
+    m.projMonth>m.monthRev?`อีกราว ฿${fmt(m.projMonth-m.monthRev)} ตามแนวโน้ม — รักษาการโพสต์/ตอบไวไว้นะคะ`:''));
   cards.push(card('🎯', m.conv<50?'var(--danger)':'var(--blue)','อัตราปิดการขาย (Conversion)',`ออเดอร์ทั้งหมด ${m.ordersN} · ชำระแล้ว ${m.paidN} = <b>${m.conv}%</b> · ค้างชำระ ${m.waiting} ออเดอร์ (฿${fmt(m.waitVal)})`,
     m.waiting>0?`มีออเดอร์รอชำระ ฿${fmt(m.waitVal)} — ลองส่งข้อความเตือน/ตามสลิปผ่าน LINE จะเก็บเงินได้เพิ่ม`:'ไม่มีออเดอร์ค้าง เยี่ยมมากค่ะ'));
   cards.push(card('⭐','var(--gold)','สินค้า',`ขายดีสุด: <b>${m.topProd?esc(m.topProd[0])+' ('+m.topProd[1]+' ชุด)':'—'}</b>`+
@@ -1414,8 +1501,8 @@ function advBubble(role,html){ const el=document.getElementById('advisorChat'); 
 function initAdvisor(){
   const el=document.getElementById('advisorChat'); if(el.dataset.init) return; el.dataset.init='1';
   advBubble('bot','สวัสดีค่ะเจ้านาย พลอยเป็นที่ปรึกษาธุรกิจให้ร้านลานทองเองค่ะ 💛 ถามได้เลยนะคะ หรือกด "วิเคราะห์ธุรกิจ" ด้านบนเพื่อดูภาพรวมค่ะ');
-  document.getElementById('advisorChips').innerHTML=['สินค้าขายดี','ควรเติมสต็อกอะไร','ยอดเดือนนี้','ลูกค้าซื้อซ้ำ','แนะนำสิ่งที่ควรทำ']
-    .map(q=>`<button class="btn btn-ghost btn-sm" onclick="askAdvisor(${JSON.stringify(q)})">${q}</button>`).join('');
+  document.getElementById('advisorChips').innerHTML=['สินค้าขายดี','ควรเติมสต็อกอะไร','ยอดเดือนนี้','กำไรเท่าไหร่','คาดการณ์เดือนนี้','ลูกค้าซื้อซ้ำ','แนะนำสิ่งที่ควรทำ']
+    .map(q=>`<button class="btn btn-ghost btn-sm" onclick="askAdvisor('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('');
 }
 function askAdvisor(preset){
   const inp=document.getElementById('advisorInput'); const q=(preset||inp.value||'').trim(); if(!q) return;
@@ -1452,7 +1539,9 @@ function advisorAnswer(q){
     customer:(has('ลูกค้า','ซื้อซ้ำ','สมาชิก','ขาประจำ','repeat','customer')?3:0),
     channel: (has('ช่องทาง','มาจาก','ที่มา','รู้จักร้าน','เจอร้าน','source')?4:0),
     pending: (has('ค้าง','รอชำระ','รอจ่าย','ตามเงิน','ยังไม่จ่าย','pending')?4:0),
-    revenue: (has('ยอด','รายได้','รายรับ','กำไร','ขายไป','เดือนนี้','วันนี้','aov','เฉลี่ย','revenue')?2:0),
+    revenue: (has('ยอด','รายได้','รายรับ','ขายไป','เดือนนี้','วันนี้','aov','เฉลี่ย','revenue')?2:0),
+    profit:  (has('กำไร','ต้นทุน','ขาดทุน','margin','มาร์จิ้น','profit','cogs')?5:0),
+    forecast:(has('คาดการณ์','พยากรณ์','สิ้นเดือน','แนวโน้ม','เทรนด์','forecast','คาดว่า')?5:0),
   };
   let best='overview',mx=0; for(const k in score){ if(score[k]>mx){mx=score[k];best=k;} }
   switch(best){
@@ -1462,6 +1551,8 @@ function advisorAnswer(q){
     case 'customer': return `มีลูกค้า <b>${m.custN}</b> คน · ซื้อซ้ำ <b>${m.repeat}%</b> ค่ะ`+(m.topCust?`<br>👑 ตัวท็อป: <b>${esc(m.topCust.c.name||m.topCust.c.customer_id.slice(0,12))}</b> (฿${fmt(m.topCust.s.spent)})`:'')+(m.repeat<30?'<br>💡 ลองดูแลลูกค้าเก่าให้กลับมาซื้ออีกนะคะเจ้านาย':'');
     case 'channel': { const byCh={}; DATA.customers.forEach(c=>{ const k=c.platform==='line'?'LINE':(c.source||'ไม่ทราบ'); byCh[k]=(byCh[k]||0)+1; }); const e=Object.entries(byCh).sort((a,b)=>b[1]-a[1]); return 'ช่องทางที่ลูกค้ามาหาเราค่ะเจ้านาย 📍<br>'+(e.length?e.map(([k,v])=>`• ${k}: ${v} คน`).join('<br>'):'ยังไม่มีข้อมูล'); }
     case 'pending': return `มีออเดอร์รอชำระ <b>${m.waiting}</b> รายการ รวม <b>฿${fmt(m.waitVal)}</b> ค่ะ ลองส่ง LINE เตือนลูกค้านะคะเจ้านาย 💸`;
+    case 'profit': return `กำไรขั้นต้น (รายรับ − ต้นทุนสินค้า) <b>฿${fmt(Math.round(m.grossProfit))}</b> · margin <b>${m.margin}%</b> ค่ะเจ้านาย`+(m.cogs?'<br>💡 กำไรสุทธิหลังหักรายจ่ายอื่น + บันทึกรายจ่าย ดูได้ที่แท็บ "การเงิน" นะคะ':'<br>ยังไม่ได้ใส่ราคาทุนสินค้า — ลองใส่ในแท็บสินค้าให้พลอยคำนวณกำไรแม่นขึ้นค่ะ');
+    case 'forecast': return `เดือนนี้ทำได้ ฿${fmt(m.monthRev)} แล้วค่ะ 🌤️<br>ตามอัตราตอนนี้ คาดว่าสิ้นเดือนจะได้ราว <b>฿${fmt(m.projMonth)}</b>`+(m.projMonth>m.monthRev?` (อีกประมาณ ฿${fmt(m.projMonth-m.monthRev)})`:'')+`<br>กำไรขั้นต้นสะสม ฿${fmt(Math.round(m.grossProfit))} (${m.margin}%) ค่ะ`;
     case 'revenue': { const isToday=has('วันนี้'); if(isToday){ const td=new Date().toISOString().slice(0,10); const to=DATA.orders.filter(o=>(o.created_at||'').slice(0,10)===td); const r=to.filter(o=>PAID.has(o.status)).reduce((s,o)=>s+Number(o.total_amount||0),0); return `วันนี้มี <b>${to.length}</b> ออเดอร์ · ยืนยันแล้ว <b>฿${fmt(r)}</b> ค่ะเจ้านาย 🌤️`; } return `รายได้ยืนยันแล้วรวม <b>฿${fmt(m.revenue)}</b> · เดือนนี้ <b>฿${fmt(m.monthRev)}</b> · เฉลี่ย ฿${fmt(m.aov)}/ออเดอร์ ค่ะ`+(m.waiting?`<br>ยังมีค้างชำระอีก ฿${fmt(m.waitVal)} นะคะ`:''); }
     default: return `พลอยสรุปภาพรวมให้เจ้านายนะคะ 📊<br>• ออเดอร์ ${m.ordersN} · ชำระแล้ว ฿${fmt(m.revenue)} · รอชำระ ${m.waiting}<br>• ลูกค้า ${m.custN} คน (ซื้อซ้ำ ${m.repeat}%)<br>• ขายดี: ${m.topProd?esc(m.topProd[0]):'-'}${(m.out.length||m.low.length)?'<br>• ⚠️ สต็อกใกล้หมด/หมด '+(m.out.length+m.low.length)+' รายการ':''}<br><br>ถามเจาะได้เลยค่ะ เช่น "ควรทำอะไรเพิ่ม" / "ช่องทางไหนมาเยอะ" 💛`;
   }
@@ -1547,70 +1638,195 @@ async function sendChatReply(){
   toast(isWeb?'ส่งถึงลูกค้าเว็บแล้วค่ะ':'ส่งข้อความเข้า LINE แล้วค่ะ');
 }
 
-// ── พลัง AI (A10, demo) ──
-const AI_DEFAULT={ models:[
-  {key:'claude-haiku', name:'Claude Haiku', role:'ไพลิน · ตอบแชต / จับ intent', dot:'#8e44ad', used:182, budget:300},
-  {key:'claude-sonnet',name:'Claude Sonnet',role:'ไพลิน · สรุปออเดอร์ / ตอบละเอียด', dot:'#c0392b', used:96, budget:250},
-  {key:'gemini-image', name:'Gemini Image', role:'สร้างรูปสินค้า AI', dot:'#2980b9', used:388, budget:400},
-  {key:'slipok', name:'SlipOK', role:'ตรวจสลิปอัตโนมัติ', dot:'#27ae60', used:35, budget:200},
-], history:[
-  {time:'14:22', task:'ไพลินตอบลูกค้า (คุณเอก)', model:'Claude Haiku', cost:0.6},
-  {time:'13:52', task:'ไพลินตอบลูกค้า (คุณมาลี)', model:'Claude Haiku', cost:0.5},
-  {time:'11:10', task:'สรุปยอดประจำวัน', model:'Claude Sonnet', cost:1.2},
-  {time:'10:05', task:'สร้างรูป mockup ขนมเปี๊ยะ', model:'Gemini Image', cost:2.0},
-  {time:'09:30', task:'ตรวจสลิปโอนเงิน', model:'SlipOK', cost:1.0},
-]};
-function aiState(){ try{ const s=JSON.parse(localStorage.getItem('lt_ai_demo_v1')); if(s&&s.models) return s; }catch(e){} return JSON.parse(JSON.stringify(AI_DEFAULT)); }
-function aiSave(s){ localStorage.setItem('lt_ai_demo_v1', JSON.stringify(s)); }
+// ── พลัง AI (A10) — ข้อมูลจริงจาก Supabase (ai_credits + ai_usage, worker บันทึกอัตโนมัติ) ──
+const AI_META={
+  'claude-haiku':{name:'Claude Haiku',role:'ไพลิน · ตอบแชต / จับ intent',dot:'#8e44ad'},
+  'claude-sonnet':{name:'Claude Sonnet',role:'ไพลิน · ตอบละเอียด / สรุป',dot:'#c0392b'},
+  'gemini-image':{name:'Gemini Image',role:'สร้างรูปสินค้า AI',dot:'#2980b9'},
+  'slipok':{name:'SlipOK',role:'ตรวจสลิปอัตโนมัติ',dot:'#27ae60'},
+};
+const AI_ORDER=['claude-haiku','claude-sonnet','gemini-image','slipok'];
+let AI_CREDITS=null, AI_USAGE=null;
 function aiStatus(pct){ if(pct>50) return {cls:'pill-ok',txt:'ปกติ',bar:'var(--green)'}; if(pct>20) return {cls:'pill-mid',txt:'ครึ่งทาง',bar:'var(--yellow)'}; return {cls:'pill-low',txt:'ใกล้หมด',bar:'var(--danger)'}; }
-function renderAiPower(){
-  const s=aiState();
-  const lows=s.models.filter(m=>{ const pct=m.budget?(m.budget-m.used)/m.budget*100:0; return pct<=20; });
-  document.getElementById('aiAlert').innerHTML = lows.length
-    ? `<div class="ai-alert"><div class="aic">⚠️</div><div class="at"><b>พลอยแจ้งเตือน · พลัง AI</b><br>หมึก AI ของ <b>${lows.map(m=>esc(m.name)).join(', ')}</b> เหลือน้อยแล้วค่ะ เริ่มจางๆ 🖋 แนะนำเติมพลังเร็วๆ นี้ เดี๋ยวงานสะดุดนะคะ</div></div>`
+async function loadAiPower(){
+  try{
+    const [c,u]=await Promise.all([
+      sb.from('ai_credits').select('model,budget,used'),
+      sb.from('ai_usage').select('model,task,cost,created_at,customer_key').order('created_at',{ascending:false}).limit(500),
+    ]);
+    AI_CREDITS=c.data||[]; AI_USAGE=u.data||[];
+  }catch(e){ AI_CREDITS=AI_CREDITS||[]; AI_USAGE=AI_USAGE||[]; }
+}
+function aiAgg(){
+  const cm={}; (AI_CREDITS||[]).forEach(r=>cm[r.model]=r);
+  const today=new Date().toISOString().slice(0,10);
+  const wk=new Date(Date.now()-7*864e5).toISOString();
+  const agg={}; (AI_USAGE||[]).forEach(r=>{ const m=r.model; (agg[m]=agg[m]||{today:0,todayCost:0,wkCost:0,total:0,cost:0});
+    agg[m].total++; agg[m].cost+=Number(r.cost||0);
+    if((r.created_at||'')>=wk) agg[m].wkCost+=Number(r.cost||0);
+    if((r.created_at||'').slice(0,10)===today){ agg[m].today++; agg[m].todayCost+=Number(r.cost||0); } });
+  return {cm,agg};
+}
+async function renderAiPower(){
+  await loadAiPower();
+  const {cm,agg}=aiAgg();
+  const hasData=(AI_CREDITS&&AI_CREDITS.length)||(AI_USAGE&&AI_USAGE.length);
+  const lows=AI_ORDER.filter(k=>{ const c=cm[k]; if(!c||!c.budget) return false; return (c.budget-c.used)/c.budget*100<=20; }).map(k=>AI_META[k].name);
+  document.getElementById('aiAlert').innerHTML = !hasData
+    ? `<div class="ai-alert"><div class="aic">ℹ️</div><div class="at"><b>ยังไม่มีการใช้พลัง AI</b><br>เมื่อไพลินตอบลูกค้า หรือ SlipOK ตรวจสลิป ระบบจะบันทึกการใช้จริงให้อัตโนมัติ แล้วมาโชว์ตรงนี้ค่ะ 🔋</div></div>`
+    : lows.length
+    ? `<div class="ai-alert"><div class="aic">⚠️</div><div class="at"><b>พลอยแจ้งเตือน · พลัง AI</b><br>หมึก AI ของ <b>${lows.map(esc).join(', ')}</b> เหลือน้อยแล้วค่ะ 🖋 แนะนำเติมพลังก่อนงานสะดุดนะคะ</div></div>`
     : `<div class="ai-alert" style="background:linear-gradient(135deg,#eafaf1,#d6f5e3);border-color:#aee6c6"><div class="aic" style="background:var(--green)">✓</div><div class="at"><b style="color:var(--green)">พลัง AI เพียงพอ</b><br>ทุกโมเดลยังมีพลังเหลือใช้งานปกติค่ะ 🔋</div></div>`;
-  document.getElementById('aiGrid').innerHTML = s.models.map((m,i)=>{
-    const remain=Math.max(0,m.budget-m.used), pct=m.budget?Math.round(remain/m.budget*100):0, st=aiStatus(pct);
+  document.getElementById('aiGrid').innerHTML = AI_ORDER.map(k=>{
+    const meta=AI_META[k]; const c=cm[k]||{budget:0,used:0}; const a=agg[k]||{today:0,todayCost:0,wkCost:0,total:0};
+    const budget=Number(c.budget||0), used=Number(c.used||0);
+    const remain=Math.max(0,budget-used), pct=budget?Math.round(remain/budget*100):0, st=aiStatus(pct);
     return `<div class="ai-card">
-      <div class="ai-head"><span class="ai-dot" style="background:${m.dot}"></span>
-        <div><div class="ai-name">${esc(m.name)}</div><div class="ai-role">${esc(m.role)}</div></div>
-        <span class="ai-pill ${st.cls}">${st.txt}</span></div>
+      <div class="ai-head"><span class="ai-dot" style="background:${meta.dot}"></span>
+        <div><div class="ai-name">${esc(meta.name)}</div><div class="ai-role">${esc(meta.role)}</div></div>
+        <span class="ai-pill ${st.cls}">${budget?st.txt:'ยังไม่ตั้งงบ'}</span></div>
       <div class="ai-pct">${pct}<small>% เหลือ</small></div>
       <div class="ai-bar-wrap"><div class="ai-bar" style="width:${pct}%;background:${st.bar}"></div></div>
-      <div class="ai-used">ใช้ไป ฿${fmt(m.used)} / ฿${fmt(m.budget)}</div>
+      <div class="ai-used">ใช้ไป ฿${fmt(used)} / ฿${fmt(budget)}</div>
+      <div class="ai-stat-row"><span>📅 วันนี้ <b>${a.today}</b> ครั้ง (฿${(a.todayCost||0).toFixed(1)})</span><span>7 วัน ฿${(a.wkCost||0).toFixed(1)}</span><span>รวม <b>${a.total}</b> ครั้ง</span></div>
       <div class="ai-actions">
-        <button class="btn btn-ghost btn-sm needs-edit" onclick="aiSimUse(${i})">⚡ จำลองใช้ +฿5</button>
-        <button class="btn btn-gold btn-sm needs-edit" onclick="aiTopUp(${i})">🔋 เติมพลัง</button>
+        <button class="btn btn-gold btn-sm needs-edit" onclick="aiTopUp('${k}')">🔋 ตั้ง/เติมงบ</button>
       </div></div>`; }).join('');
-  document.getElementById('aiHistory').innerHTML = s.history.length
+  const usage=AI_USAGE||[];
+  document.getElementById('aiHistory').innerHTML = usage.length
     ? `<table><thead><tr><th>เวลา</th><th>งาน</th><th>โมเดล</th><th style="text-align:right">ใช้ไป</th></tr></thead><tbody>
-      ${s.history.map(h=>`<tr><td style="color:var(--muted)">${esc(h.time)}</td><td>${esc(h.task)}</td><td>${esc(h.model)}</td><td style="text-align:right"><b>฿${Number(h.cost).toFixed(1)}</b></td></tr>`).join('')}</tbody></table>`
-    : '<div class="empty-state"><span>🧾</span>ยังไม่มีประวัติ</div>';
+      ${usage.slice(0,20).map(h=>`<tr><td style="color:var(--muted)">${h.created_at?new Date(h.created_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):''}</td><td>${esc(h.task||'-')}</td><td>${esc((AI_META[h.model]||{}).name||h.model)}</td><td style="text-align:right"><b>฿${Number(h.cost||0).toFixed(2)}</b></td></tr>`).join('')}</tbody></table>`
+    : '<div class="empty-state"><span>🧾</span>ยังไม่มีประวัติการใช้พลัง AI</div>';
 }
-function aiSimUse(i){
+async function aiTopUp(model){
   if(!requireEdit()) return;
-  const s=aiState(); const m=s.models[i]; m.used=Math.min(m.budget,m.used+5);
-  const now=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  s.history.unshift({time:now, task:'จำลองการใช้งาน', model:m.name, cost:5}); s.history=s.history.slice(0,12);
-  aiSave(s); renderAiPower(); toast(`${m.name} ใช้พลังเพิ่ม ฿5 (เดโม)`);
+  const {cm}=aiAgg(); const c=cm[model]||{budget:0,used:0}; const meta=AI_META[model]||{name:model};
+  const amt=Number(prompt(`ตั้งงบใหม่ให้ ${meta.name} (บาท)\nงบปัจจุบัน ฿${c.budget||0} · ใช้ไปแล้ว ฿${c.used||0}`, String(c.budget||300)));
+  if(!amt||amt<0) return;
+  const { error } = await sb.from('ai_credits').upsert({ model, budget:amt, updated_at:new Date().toISOString() }, { onConflict:'model' });
+  if(error){ toast('ตั้งงบไม่สำเร็จ: '+esc(error.message),true); return; }
+  await renderAiPower(); toast(`ตั้งงบ ${meta.name} = ฿${fmt(amt)} แล้วค่ะ`);
 }
-function aiTopUp(i){
-  if(!requireEdit()) return;
-  const s=aiState(); const m=s.models[i];
-  const amt=Number(prompt(`เติมพลังให้ ${m.name} (บาท)\nงบปัจจุบัน ฿${m.budget} · ใช้ไป ฿${m.used}`, '100'));
-  if(!amt||amt<=0) return;
-  m.budget+=amt; aiSave(s); renderAiPower(); toast(`เติมพลัง ${m.name} +฿${amt} แล้วค่ะ (เดโม)`);
-}
-function aiRefresh(){ renderAiPower(); toast('รีเฟรชพลัง AI แล้วค่ะ'); }
+async function aiRefresh(){ await renderAiPower(); toast('รีเฟรชพลัง AI แล้วค่ะ'); }
 async function aiSendLine(){
-  const s=aiState();
+  const {cm,agg}=aiAgg();
   const text='🔋 สรุปพลัง AI · '+new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short'})+'\n'+
-    s.models.map(m=>{ const pct=m.budget?Math.round((m.budget-m.used)/m.budget*100):0; return `• ${m.name}: เหลือ ${pct}% (ใช้ ฿${fmt(m.used)}/฿${fmt(m.budget)})`; }).join('\n');
+    AI_ORDER.map(k=>{ const c=cm[k]||{budget:0,used:0}; const a=agg[k]||{today:0}; const pct=c.budget?Math.round((c.budget-c.used)/c.budget*100):0; return `• ${AI_META[k].name}: เหลือ ${pct}% (วันนี้ ${a.today} ครั้ง)`; }).join('\n');
   toast('กำลังส่งสรุปเข้า LINE…');
   const r=await workerPost('/admin/notify',{ text });
   if(r.ok){ toast('📤 ส่งสรุปพลัง AI เข้า LINE แล้วค่ะ'); return; }
   try{ await navigator.clipboard.writeText(text); }catch(e){}
   toast((r.error==='no_owner'?'ยังไม่ได้ตั้ง LINE เจ้าของร้าน — ':'ส่งไม่ได้ — ')+'คัดลอกให้แล้วค่ะ', r.error!=='no_owner');
+}
+
+// ── AI Finance (การเงิน) — รายรับ−ต้นทุน−รายจ่าย = กำไรสุทธิ ──
+let EXPENSES=null;
+const EXP_CATS=['วัตถุดิบ','ค่าจัดส่ง','การตลาด','ค่าเช่า','เงินเดือน','อื่นๆ'];
+function finInitForm(){
+  const cat=document.getElementById('exp-cat'); if(cat && !cat.dataset.init){ cat.dataset.init='1'; cat.innerHTML=EXP_CATS.map(c=>`<option>${c}</option>`).join(''); }
+  const d=document.getElementById('exp-date'); if(d && !d.value) d.value=new Date().toISOString().slice(0,10);
+}
+async function loadExpenses(){
+  try{ const { data } = await sb.from('expenses').select('id,date,category,note,amount').order('date',{ascending:false}).limit(800); EXPENSES=data||[]; }
+  catch(e){ EXPENSES=EXPENSES||[]; }
+}
+function finRange(){ const el=document.getElementById('finRange'); return el?el.value:'month'; }
+function finInRange(dateStr){
+  const r=finRange(); if(r==='all') return true;
+  const d=(dateStr||'').slice(0,10); if(!d) return false;
+  if(r==='month') return d.slice(0,7)===new Date().toISOString().slice(0,7);
+  return d>=new Date(Date.now()-30*864e5).toISOString().slice(0,10);
+}
+function finCostMap(){ const byName={},byId={}; (DATA.products||[]).forEach(p=>{ byName[String(p.name||'').trim()]=Number(p.cost_price)||0; byId[p.id]=Number(p.cost_price)||0; }); return {byName,byId}; }
+function costOfItems(items,maps){
+  let c=0; (items||[]).forEach(it=>{ const nm=String(it.name||'').trim(); if(/ค่าจัดส่ง|ค่าส่ง|จัดส่ง/.test(nm)) return;
+    let cost = (it.product_id!=null && maps.byId[it.product_id]!=null) ? maps.byId[it.product_id] : maps.byName[nm];
+    if(cost==null){ const k=Object.keys(maps.byName).find(x=>x&&(x.includes(nm)||nm.includes(x))); cost=k?maps.byName[k]:0; }
+    c+=(Number(cost)||0)*(Number(it.qty)||0); });
+  return c;
+}
+function finCalc(){
+  const maps=finCostMap();
+  const paid=(DATA.orders||[]).filter(o=>PAID.has(o.status)&&finInRange(o.created_at));
+  const revenue=paid.reduce((s,o)=>s+Number(o.total_amount||0),0);
+  const cogs=paid.reduce((s,o)=>s+costOfItems(o.items,maps),0);
+  const gross=revenue-cogs;
+  const exp=(EXPENSES||[]).filter(e=>finInRange(e.date));
+  const expSum=exp.reduce((s,e)=>s+Number(e.amount||0),0);
+  const net=gross-expSum;
+  const margin=revenue?Math.round(net/revenue*100):0;
+  return { paid, revenue, cogs, gross, exp, expSum, net, margin, maps };
+}
+async function renderFinance(){
+  finInitForm();
+  if(EXPENSES===null) await loadExpenses();
+  const f=finCalc();
+  const kpi=(label,val,color,sub)=>`<div class="fin-kpi" style="border-top:3px solid ${color}"><div class="fk-label">${label}</div><div class="fk-val" style="color:${color}">฿${fmt(Math.round(val))}</div>${sub?`<div class="fk-sub">${sub}</div>`:''}</div>`;
+  document.getElementById('finKpis').innerHTML=
+    kpi('รายรับ',f.revenue,'var(--green)',f.paid.length+' ออเดอร์')+
+    kpi('ต้นทุนสินค้า',f.cogs,'var(--orange)','COGS ประเมิน')+
+    kpi('กำไรขั้นต้น',f.gross,'var(--blue)',f.revenue?Math.round(f.gross/f.revenue*100)+'%':'')+
+    kpi('รายจ่ายอื่น',f.expSum,'var(--purple)',f.exp.length+' รายการ')+
+    kpi('กำไรสุทธิ',f.net,f.net>=0?'var(--green)':'var(--danger)','margin '+f.margin+'%');
+  document.getElementById('finExpenses').innerHTML = f.exp.length
+    ? `<table><thead><tr><th>วันที่</th><th>หมวด</th><th>รายละเอียด</th><th style="text-align:right">บาท</th><th></th></tr></thead><tbody>
+      ${f.exp.map(e=>`<tr><td style="color:var(--muted);white-space:nowrap">${e.date}</td><td>${esc(e.category)}</td><td>${esc(e.note||'-')}</td><td style="text-align:right"><b>฿${fmt(e.amount)}</b></td><td style="text-align:right"><button class="btn btn-del btn-sm needs-edit" onclick="delExpense(${e.id})">🗑</button></td></tr>`).join('')}</tbody></table>`
+    : '<div class="empty-state"><span>🧾</span>ยังไม่มีรายจ่ายในช่วงนี้</div>';
+  const rows=f.paid.slice().sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||'')).slice(0,60);
+  document.getElementById('finIncome').innerHTML = rows.length
+    ? `<table><thead><tr><th>ออเดอร์</th><th>วันที่</th><th style="text-align:right">รายรับ</th><th style="text-align:right">กำไร*</th></tr></thead><tbody>
+      ${rows.map(o=>{ const cost=costOfItems(o.items,f.maps); const pf=Number(o.total_amount||0)-cost; return `<tr><td>${esc(o.order_id)}</td><td style="color:var(--muted);white-space:nowrap">${(o.created_at||'').slice(0,10)}</td><td style="text-align:right">฿${fmt(o.total_amount)}</td><td style="text-align:right;color:${pf>=0?'var(--green)':'var(--danger)'}">฿${fmt(Math.round(pf))}</td></tr>`; }).join('')}</tbody></table>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:6px">*กำไรต่อออเดอร์ = รายรับ − ต้นทุนสินค้า (ยังไม่หักรายจ่ายส่วนกลาง)</div>`
+    : '<div class="empty-state"><span>📥</span>ยังไม่มีรายรับในช่วงนี้</div>';
+}
+async function addExpense(){
+  if(!requireEdit()) return;
+  const date=document.getElementById('exp-date').value||new Date().toISOString().slice(0,10);
+  const category=document.getElementById('exp-cat').value||'อื่นๆ';
+  const note=document.getElementById('exp-note').value.trim();
+  const amount=Number(document.getElementById('exp-amount').value||0);
+  if(!amount||amount<=0){ toast('ใส่จำนวนเงินก่อนนะคะ',true); return; }
+  const { error } = await sb.from('expenses').insert({ date, category, note, amount });
+  if(error){ toast('บันทึกไม่สำเร็จ: '+esc(error.message),true); return; }
+  document.getElementById('exp-note').value=''; document.getElementById('exp-amount').value='';
+  await loadExpenses(); renderFinance(); toast('บันทึกรายจ่ายแล้วค่ะ');
+}
+async function delExpense(id){
+  if(!requireEdit()) return;
+  if(!confirm('ลบรายจ่ายนี้?')) return;
+  const { error } = await sb.from('expenses').delete().eq('id',id);
+  if(error){ toast('ลบไม่สำเร็จ',true); return; }
+  await loadExpenses(); renderFinance(); toast('ลบแล้วค่ะ');
+}
+function finText(){
+  const f=finCalc(); const label={month:'เดือนนี้','30':'30 วันล่าสุด',all:'ทั้งหมด'}[finRange()];
+  return `💰 สรุปการเงิน · ${label}\nรายรับ ฿${fmt(f.revenue)} (${f.paid.length} ออเดอร์)\nต้นทุนสินค้า ฿${fmt(Math.round(f.cogs))}\nรายจ่ายอื่น ฿${fmt(Math.round(f.expSum))}\nกำไรสุทธิ ฿${fmt(Math.round(f.net))} (${f.margin}%)\n\n— พลอยรายงานให้เจ้านายค่ะ 💛`;
+}
+async function sendFinanceLine(){
+  toast('กำลังส่งสรุปเข้า LINE…');
+  const r=await workerPost('/admin/notify',{ text: finText() });
+  if(r.ok){ toast('📤 ส่งสรุปการเงินเข้า LINE แล้วค่ะ'); return; }
+  try{ await navigator.clipboard.writeText(finText()); }catch(e){}
+  toast((r.error==='no_owner'?'ยังไม่ได้ตั้ง LINE เจ้าของร้าน — ':'ส่งไม่ได้ — ')+'คัดลอกให้แล้วค่ะ', r.error!=='no_owner');
+}
+function printFinance(){
+  const f=finCalc(); const label={month:'เดือนนี้','30':'30 วันล่าสุด',all:'ทั้งหมด'}[finRange()];
+  const shop=(typeof CONFIG!=='undefined'&&CONFIG&&CONFIG.shop_name)||'ร้าน@ลานทอง';
+  const w=window.open('','_blank'); if(!w) return;
+  const catRows=EXP_CATS.map(c=>{ const s=f.exp.filter(e=>e.category===c).reduce((a,e)=>a+Number(e.amount||0),0); return s>0?`<tr><td>${c}</td><td class="r">฿${fmt(Math.round(s))}</td></tr>`:''; }).join('')||'<tr><td colspan="2" style="color:#888">ไม่มีรายจ่าย</td></tr>';
+  w.document.write(`<html><head><title>งบกำไรขาดทุน ${label}</title><meta charset="utf8">
+    <style>body{font-family:'Sarabun',sans-serif;padding:30px;color:#222}h2{margin:0 0 4px}table{width:100%;border-collapse:collapse;margin-top:14px}td,th{padding:7px 9px;border-bottom:1px solid #ddd;text-align:left}.r{text-align:right}.tot{font-weight:700;border-top:2px solid #333}</style></head><body>
+    <h2>${esc(shop)} — งบกำไรขาดทุน</h2><div style="color:#666">ช่วง: ${label} · พิมพ์ ${new Date().toLocaleString('th-TH')}</div>
+    <table>
+      <tr><td>รายรับ (ออเดอร์ชำระแล้ว ${f.paid.length})</td><td class="r">฿${fmt(f.revenue)}</td></tr>
+      <tr><td>หัก ต้นทุนสินค้า (COGS)</td><td class="r">−฿${fmt(Math.round(f.cogs))}</td></tr>
+      <tr class="tot"><td>กำไรขั้นต้น</td><td class="r">฿${fmt(Math.round(f.gross))}</td></tr>
+      <tr><td>หัก รายจ่ายอื่น (${f.exp.length} รายการ)</td><td class="r">−฿${fmt(Math.round(f.expSum))}</td></tr>
+      <tr class="tot"><td>กำไรสุทธิ (${f.margin}%)</td><td class="r">฿${fmt(Math.round(f.net))}</td></tr>
+    </table>
+    <h3 style="margin-top:24px">รายจ่ายแยกหมวด</h3><table>${catRows}</table>
+    </body></html>`);
+  w.document.close(); setTimeout(()=>{ try{ w.print(); }catch(e){} },350);
 }
 
 // ── Excel export ──
