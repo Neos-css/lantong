@@ -130,6 +130,10 @@ table { width:100%; border-collapse:collapse; font-size:.85rem; }
 th { text-align:left; padding:9px 10px; color:var(--muted); font-weight:700; font-size:.7rem; border-bottom:2px solid var(--border); text-transform:uppercase; white-space:nowrap; }
 td { padding:10px; border-bottom:1px solid var(--border); vertical-align:middle; }
 tr:hover td { background:color-mix(in srgb,var(--gold) 7%,transparent); }
+@media (max-width:760px){
+  #ordersTable,#productsTable,#customersTable,#usersTable,#aiHistory { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  #ordersTable table,#productsTable table,#customersTable table,#usersTable table,#aiHistory table { min-width:560px; }
+}
 
 .toolbar { display:flex; gap:9px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
 .toolbar input, .toolbar select { padding:8px 12px; border:1px solid var(--border); border-radius:10px; font-size:.85rem; font-family:inherit; background:var(--card); color:var(--text); }
@@ -270,6 +274,7 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
       <div class="nav-item" data-tab="customers" onclick="navTo('customers')"><span class="ic">👥</span> ลูกค้า <span class="nav-badge" id="cnt-customers">0</span></div>
       <div class="nav-item" data-tab="chat" onclick="navTo('chat')"><span class="ic">💬</span> ประวัติแชต</div>
       <div class="nav-item" data-tab="users" onclick="navTo('users')"><span class="ic">🛡️</span> ผู้ใช้งาน</div>
+      <div class="nav-item" data-tab="settings" onclick="navTo('settings')"><span class="ic">⚙️</span> ตั้งค่าร้าน</div>
       <div class="sb-divider"><span>ผู้ช่วย AI · พลอย</span></div>
       <div class="nav-item nav-ai" data-tab="advisor" onclick="navTo('advisor')"><span class="ic">🧠</span> ที่ปรึกษา AI</div>
       <div class="nav-item nav-ai" data-tab="marketing" onclick="navTo('marketing')"><span class="ic">📣</span> การตลาด AI</div>
@@ -503,6 +508,35 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
       </div>
     </div>
 
+    <!-- ═══ ตั้งค่าร้าน (Settings) ═══ -->
+    <div class="page" id="page-settings">
+      <div class="two-col">
+        <div class="card">
+          <div class="section-title">🏪 ข้อมูลร้าน</div>
+          <div class="field"><label>ชื่อร้าน</label><input id="cf-shop_name"></div>
+          <div class="field"><label>ข้อความแบนเนอร์โปร (บนเว็บ)</label><input id="cf-promo_banner"></div>
+          <div class="section-title" style="margin-top:16px">💳 บัญชีรับเงิน</div>
+          <div class="field"><label>PromptPay</label><input id="cf-promptpay"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="field" style="margin:0"><label>ธนาคาร</label><input id="cf-bank_name"></div>
+            <div class="field" style="margin:0"><label>เลขบัญชี</label><input id="cf-bank_no"></div>
+          </div>
+          <div class="field"><label>ชื่อบัญชี</label><input id="cf-bank_account"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">🚚 การจัดส่ง & สต็อก</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="field" style="margin:0"><label>ค่าส่ง (บาท)</label><input id="cf-shipping_fee" type="number" min="0"></div>
+            <div class="field" style="margin:0"><label>ส่งฟรีเมื่อครบ (บาท)</label><input id="cf-free_threshold" type="number" min="0"></div>
+          </div>
+          <div class="field"><label>แจ้งเตือนสต็อกต่ำกว่า (ค่าเริ่มต้น)</label><input id="cf-low_stock_default" type="number" min="0"></div>
+          <button class="btn btn-primary needs-edit" style="margin-top:8px" onclick="saveConfig()">💾 บันทึกการตั้งค่า</button>
+          <div id="cf-status" style="font-size:.78rem;color:var(--muted);margin-top:10px"></div>
+          <p style="font-size:.74rem;color:var(--muted);margin-top:14px">💡 ข้อมูลนี้เว็บร้านดึงไปใช้ทันที (ชื่อร้าน/บัญชี/ค่าส่ง/แบนเนอร์) · ⚠️ เลข PromptPay สำหรับ QR ใน LINE ตั้งที่ Worker secret แยก (แจ้งลิซ่า/พลอยให้เปลี่ยนได้)</p>
+        </div>
+      </div>
+    </div>
+
     </main>
   </div>
 </div>
@@ -536,7 +570,10 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
     </div>
     <div class="field"><label>รหัสสินค้า (เช่น LT-P16)</label><input id="pm-id" placeholder="LT-P16"></div>
     <div class="field"><label>ชื่อสินค้า</label><input id="pm-name"></div>
-    <div class="field"><label>ราคา (บาท)</label><input id="pm-price" type="number" min="0" step="1"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field" style="margin-bottom:12px"><label>ราคาขาย (บาท)</label><input id="pm-price" type="number" min="0" step="1"></div>
+      <div class="field" style="margin-bottom:12px"><label>ราคาทุน (บาท)</label><input id="pm-cost" type="number" min="0" step="1" placeholder="0"></div>
+    </div>
     <div class="field"><label>หมวดหมู่</label><input id="pm-category" placeholder="ขนมไทยโบราณ"></div>
     <div class="field"><label>หน่วย/น้ำหนัก</label><input id="pm-unit" placeholder="100g"></div>
     <div class="field"><label>สต็อกคงเหลือ</label><input id="pm-available" type="number" min="0" step="1" value="0"></div>
@@ -553,7 +590,7 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
   <div class="modal">
     <h3 id="ordModalTitle">รายละเอียดออเดอร์</h3>
     <div id="ordModalBody"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeOrdModal()">ปิด</button></div>
+    <div class="modal-actions"><button class="btn btn-gold" id="ord-print">🖨️ พิมพ์ใบเสร็จ</button><button class="btn btn-ghost" onclick="closeOrdModal()">ปิด</button></div>
   </div>
 </div>
 
@@ -593,7 +630,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const PAID = new Set(['PAID','SHIPPED','DONE']);
 const STATUSES = ['PENDING','SLIP_RECEIVED','PAID','SHIPPED','DONE','CANCELLED'];
-const PAGE_TITLES = { dash:'📊 ภาพรวม', orders:'📋 ออเดอร์', products:'📦 สินค้า/สต็อก', customers:'👥 ลูกค้า', chat:'💬 ประวัติแชต', marketing:'📣 การตลาด AI', advisor:'🧠 ที่ปรึกษาธุรกิจ AI', aipower:'🔋 พลัง AI', users:'🛡️ ผู้ใช้งาน' };
+const PAGE_TITLES = { dash:'📊 ภาพรวม', orders:'📋 ออเดอร์', products:'📦 สินค้า/สต็อก', customers:'👥 ลูกค้า', chat:'💬 ประวัติแชต', marketing:'📣 การตลาด AI', advisor:'🧠 ที่ปรึกษาธุรกิจ AI', aipower:'🔋 พลัง AI', users:'🛡️ ผู้ใช้งาน', settings:'⚙️ ตั้งค่าร้าน' };
+let CONFIG = {};
 let DATA = { products:[], orders:[], customers:[], payments:[], visits:[] };
 let SALES_RANGE = Number(localStorage.getItem('lt_sales_range')||7);  // days; 0 = ทั้งหมด
 let realtimeCh = null;
@@ -685,20 +723,34 @@ function navTo(id){
   if(id==='users') loadAdminUsers();
   if(id==='marketing') renderContentIdeas();
   if(id==='advisor') initAdvisor();
+  if(id==='settings') fillConfigForm();
+}
+const CFG_FIELDS=['shop_name','promo_banner','promptpay','bank_name','bank_no','bank_account','shipping_fee','free_threshold','low_stock_default'];
+function fillConfigForm(){ CFG_FIELDS.forEach(k=>{ const el=document.getElementById('cf-'+k); if(el) el.value = CONFIG[k]!=null ? CONFIG[k] : ''; }); }
+async function saveConfig(){
+  if(!requireEdit()) return;
+  const patch={ updated_at:new Date().toISOString() };
+  CFG_FIELDS.forEach(k=>{ let v=document.getElementById('cf-'+k).value.trim(); if(['shipping_fee','free_threshold','low_stock_default'].includes(k)) v=Number(v||0); patch[k]=v; });
+  const st=document.getElementById('cf-status'); st.textContent='กำลังบันทึก…';
+  const { error } = await sb.from('app_config').update(patch).eq('id',1);
+  if(error){ st.textContent='❌ '+error.message; toast('บันทึกไม่สำเร็จ',true); return; }
+  CONFIG={...CONFIG,...patch}; st.textContent='✅ บันทึกแล้ว — เว็บร้านจะใช้ค่าใหม่ทันที'; toast('บันทึกการตั้งค่าแล้วค่ะ');
 }
 
 // ── Load ──
 async function loadAll(manual){
-  const [pr,st,or,cu,pa,vi] = await Promise.all([
-    sb.from('products').select('id,name,price,orig_price,category,unit,min_stock_alert,image_url').order('id'),
+  const [pr,st,or,cu,pa,vi,cf] = await Promise.all([
+    sb.from('products').select('id,name,price,orig_price,cost_price,category,unit,min_stock_alert,image_url').order('id'),
     sb.from('stock').select('product_id,available,reserved'),
     sb.from('orders').select('order_id,customer_id,items,total_amount,status,shipping_address,note,tracking_number,carrier,created_at,updated_at').order('created_at',{ascending:false}),
     sb.from('customers').select('customer_id,name,phone,address,platform,source,note,created_at'),
     sb.from('payments').select('payment_id,order_id,amount,slip_url,trans_ref,status,created_at').order('created_at',{ascending:false}),
     sb.from('visits').select('source,created_at'),
+    sb.from('app_config').select('*').eq('id',1).maybeSingle(),
   ]);
   if(pr.error||or.error) toast('โหลดข้อมูลไม่สำเร็จ: '+(pr.error||or.error).message,true);
   const products=pr.data||[], stock=st.data||[], orders=or.data||[], customers=cu.data||[], payments=pa.data||[], visits=vi.data||[];
+  CONFIG = cf.data || {};
   const stockMap={}; stock.forEach(s=>stockMap[s.product_id]=s);
   products.forEach(p=>{ const s=stockMap[p.id]||{}; p.available=s.available??0; p.reserved=s.reserved??0; });
   const custMap={}; customers.forEach(c=>custMap[c.customer_id]=c);
@@ -951,7 +1003,7 @@ function renderProducts(){
         <td><code class="idc">${esc(p.id)}</code></td>
         <td style="font-weight:600">${esc(p.name)}</td>
         <td style="font-size:.76rem;color:var(--muted)">${esc(p.category)||'—'}</td>
-        <td>฿${fmt(p.price)}</td>
+        <td>฿${fmt(p.price)}${p.cost_price>0?`<br><span style="font-size:.66rem;color:var(--green)">กำไร ฿${fmt(p.price-p.cost_price)} (${Math.round((1-p.cost_price/p.price)*100)}%)</span>`:''}</td>
         <td><input class="stock-input needs-edit" type="number" min="0" value="${av}" ${dis} onchange="updateStock('${esc(p.id)}',this)"><span style="font-size:.74rem;color:var(--muted)">${esc(p.unit)||''}</span></td>
         <td style="color:var(--muted)">${p.reserved||0}</td>
         <td>${badge}</td>
@@ -993,6 +1045,7 @@ function openProductModal(id){
   document.getElementById('pm-id').value=p?p.id:''; document.getElementById('pm-id').disabled=!!p;
   document.getElementById('pm-name').value=p?p.name:'';
   document.getElementById('pm-price').value=p?p.price:'';
+  document.getElementById('pm-cost').value=p?(p.cost_price||''):'';
   document.getElementById('pm-category').value=p?(p.category||''):'';
   document.getElementById('pm-unit').value=p?(p.unit||''):'';
   document.getElementById('pm-available').value=p?(p.available||0):0;
@@ -1009,7 +1062,7 @@ async function saveProduct(){
   const id=document.getElementById('pm-id').value.trim();
   const name=document.getElementById('pm-name').value.trim();
   if(!id||!name){ toast('กรุณากรอกรหัสและชื่อสินค้า',true); return; }
-  const prod={ name, price:Number(document.getElementById('pm-price').value||0),
+  const prod={ name, price:Number(document.getElementById('pm-price').value||0), cost_price:Number(document.getElementById('pm-cost').value||0),
     category:document.getElementById('pm-category').value.trim(), unit:document.getElementById('pm-unit').value.trim(),
     min_stock_alert:Number(document.getElementById('pm-min').value||0), image_url:document.getElementById('pm-image').value.trim() };
   const available=Number(document.getElementById('pm-available').value||0);
@@ -1161,7 +1214,28 @@ function openOrderDetail(oid){
       <button class="btn btn-primary btn-sm needs-edit" onclick="saveTracking('${esc(oid)}')">💾 บันทึกเลขพัสดุ</button>
       <button class="btn btn-gold btn-sm needs-edit" onclick="saveTracking('${esc(oid)}',true)">📤 บันทึก + แจ้งลูกค้า</button>
     </div>`;
+  document.getElementById('ord-print').onclick=()=>printInvoice(oid);
   document.getElementById('ordModalBg').classList.add('open');
+}
+function printInvoice(oid){
+  const o=DATA.orders.find(x=>x.order_id===oid); if(!o) return;
+  const c=DATA.customers.find(x=>x.customer_id===o.customer_id)||{};
+  const items=(o.items||[]).map(it=>`<tr><td>${esc(it.name||it.product_id||'?')}</td><td style="text-align:center">${it.qty||1}</td><td style="text-align:right">฿${fmt((it.qty||1)*(it.price||0))}</td></tr>`).join('');
+  const w=window.open('','_lantongPrint','width=440,height=680'); if(!w){ toast('เบราว์เซอร์บล็อกป๊อปอัป กรุณาอนุญาต',true); return; }
+  w.document.write(`<html><head><title>ใบเสร็จ ${esc(oid)}</title><meta charset="utf8"><style>
+    body{font-family:'Segoe UI',Tahoma,sans-serif;padding:26px;color:#222}h1{color:#8B0000;font-size:20px;margin:0}
+    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}td,th{padding:7px 6px;border-bottom:1px solid #eee;text-align:left}
+    .tot{text-align:right;font-weight:800;font-size:18px;margin-top:12px}.muted{color:#777;font-size:13px}hr{border:none;border-top:1px solid #eee;margin:12px 0}</style></head><body>
+    <h1>🍯 ${esc(CONFIG.shop_name||'ร้าน@ลานทอง')}</h1>
+    <div class="muted">ใบเสร็จ/ใบส่งของ · ${esc(oid)} · ${o.created_at?new Date(o.created_at).toLocaleString('th-TH'):''}</div><hr>
+    <div><b>ลูกค้า:</b> ${esc(o.customer_name)} ${c.phone?'· '+esc(c.phone):''}</div>
+    <div><b>ที่อยู่:</b> ${esc(o.shipping_address||c.address||'-')}</div>
+    ${o.tracking_number?`<div><b>ขนส่ง:</b> ${esc(o.carrier||'')} · ${esc(o.tracking_number)}</div>`:''}
+    <table><thead><tr><th>รายการ</th><th style="text-align:center">จำนวน</th><th style="text-align:right">ราคา</th></tr></thead><tbody>${items}</tbody></table>
+    <div class="tot">รวม ฿${fmt(o.total_amount)}</div>
+    <div class="muted" style="margin-top:8px">ชำระ: PromptPay ${esc(CONFIG.promptpay||'')} · ${esc(CONFIG.bank_name||'')} ${esc(CONFIG.bank_no||'')} (${esc(CONFIG.bank_account||'')})</div>
+    <div class="muted" style="text-align:center;margin-top:22px">ขอบคุณที่อุดหนุนค่ะ 💛</div></body></html>`);
+  w.document.close(); w.focus(); setTimeout(()=>{ try{ w.print(); }catch(e){} },350);
 }
 async function saveTracking(oid, notify){
   if(!requireEdit()) return;
