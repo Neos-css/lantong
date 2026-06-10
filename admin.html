@@ -449,6 +449,15 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
         <button class="btn btn-ghost btn-sm" onclick="aiRefresh()">🔄 รีเฟรช</button>
         <button class="btn btn-primary btn-sm" onclick="aiSendLine()">📤 ส่งสรุป LINE</button>
       </div>
+      <details style="margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0 16px;box-shadow:var(--shadow)">
+        <summary style="cursor:pointer;padding:14px 2px;font-weight:800;list-style:none">ℹ️ พลัง AI ทำงานยังไง? · อ่านก่อนใช้ (สำคัญ)</summary>
+        <div style="font-size:.85rem;line-height:1.75;color:var(--text);padding:2px 2px 16px">
+          <p style="margin:0 0 10px">📉 <b>% ลดลงเมื่อไหร่:</b> ทุกครั้งที่ไพลินตอบลูกค้า (LINE/เว็บ) หรือ SlipOK ตรวจสลิป ระบบบันทึกค่าใช้จ่าย<u>โดยประมาณ</u>ลงตาราง <code class="idc">ai_usage</code> อัตโนมัติ → "ใช้ไป" เพิ่ม → "% เหลือ" ลด · ตอนนี้ 100% เพราะเพิ่งรีเซ็ตค่าเริ่ม ยังไม่มีทราฟฟิกใหม่</p>
+          <p style="margin:0 0 10px">💳 <b>"งบ" / กด "เติมเข้า" = จ่ายเงินจริงไหม?</b> <b style="color:var(--danger)">ไม่ใช่การจ่ายเงินจริงค่ะ</b> — "งบ" คือเพดานที่เจ้านายตั้งไว้เพื่อ<u>ติดตามและเตือน</u>ว่าใช้ AI ไปเท่าไหร่ (เครื่องวัด/วางแผน) · <b>เงินจริง</b>จ่ายที่ผู้ให้บริการโดยตรง: Claude → บัญชี <b>Anthropic</b> (ผ่าน API key ที่ตั้งใน Dify), Gemini → <b>Google</b>, SlipOK → แพ็กเกจ <b>SlipOK</b> · ถ้าเครดิตจริงที่ผู้ให้บริการหมด AI จะหยุดเองไม่ว่าหน้านี้จะเขียนกี่ % ก็ตาม</p>
+          <p style="margin:0 0 10px">🤖 <b>ทำไม Claude มี 2 ตัว (Haiku + Sonnet)?</b> ไพลินทั้งคู่ค่ะ — <b>Haiku</b> (ถูก/เร็ว) อ่านว่าลูกค้าต้องการอะไร, <b>Sonnet</b> (ฉลาดกว่า/แพงกว่า) เขียนคำตอบจริง → ใช้ตัวถูกคัดกรองก่อน เรียกตัวแพงเฉพาะตอนตอบ = ประหยัดต้นทุน</p>
+          <p style="margin:0">🖼️ <b>Gemini Image:</b> ไว้สร้างรูปสินค้า AI — ตอนนี้สร้างผ่าน <b>Google Gemini</b> (ฟรี ในเบราว์เซอร์) ยังไม่มีปุ่มสร้างในแอดมิน · ถ้าอยากได้ปุ่มสร้างในแอดมินต้องผูก Gemini API key (มีค่าใช้จ่ายต่อรูป) — บอกพลอยได้ค่ะ</p>
+        </div>
+      </details>
       <div id="aiAlert"></div>
       <div class="ai-grid" id="aiGrid"></div>
       <div class="card">
@@ -683,7 +692,7 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
     <h3>🔋 จัดการงบ · <span id="aib-model"></span></h3>
     <div id="aib-info" style="font-size:.86rem;color:var(--muted);margin-bottom:14px"></div>
     <div class="field"><label>จำนวนเงิน (บาท)</label><input id="aib-amount" type="number" min="0" placeholder="เช่น 100"></div>
-    <p style="font-size:.74rem;color:var(--muted);margin:-4px 0 6px">➕ <b>เติมเข้า</b> = เพิ่มงบจากของเดิม · ✏️ <b>ตั้งเป็นค่านี้</b> = กำหนดงบใหม่ทับของเดิม</p>
+    <p style="font-size:.74rem;color:var(--muted);margin:-4px 0 6px">➕ <b>เติมเข้า</b> = เพิ่มงบจากของเดิม · ✏️ <b>ตั้งเป็นค่านี้</b> = กำหนดงบใหม่ทับของเดิม<br>⚠️ งบนี้ไว้<b>ติดตาม/เตือน</b>เท่านั้น — ไม่ใช่การจ่ายเงินจริง (เงินจริงเติมที่ Anthropic/Google/SlipOK)</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeAiBudget()">ยกเลิก</button>
       <button class="btn btn-gold" onclick="aiBudgetApply('set')">✏️ ตั้งเป็นค่านี้</button>
@@ -1691,7 +1700,7 @@ async function sendChatReply(){
 const AI_META={
   'claude-haiku':{name:'Claude Haiku',role:'ไพลิน · ตอบแชต / จับ intent',dot:'#8e44ad'},
   'claude-sonnet':{name:'Claude Sonnet',role:'ไพลิน · ตอบละเอียด / สรุป',dot:'#c0392b'},
-  'gemini-image':{name:'Gemini Image',role:'สร้างรูปสินค้า AI',dot:'#2980b9'},
+  'gemini-image':{name:'Gemini Image',role:'สร้างรูปสินค้า AI (ผ่านเบราว์เซอร์ ฟรี)',dot:'#2980b9'},
   'slipok':{name:'SlipOK',role:'ตรวจสลิปอัตโนมัติ',dot:'#27ae60'},
 };
 const AI_ORDER=['claude-haiku','claude-sonnet','gemini-image','slipok'];
