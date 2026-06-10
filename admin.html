@@ -676,6 +676,21 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
   </div>
 </div>
 
+<!-- AI budget modal (พลัง AI) -->
+<div class="modal-bg" id="aiBudgetBg">
+  <div class="modal">
+    <h3>🔋 จัดการงบ · <span id="aib-model"></span></h3>
+    <div id="aib-info" style="font-size:.86rem;color:var(--muted);margin-bottom:14px"></div>
+    <div class="field"><label>จำนวนเงิน (บาท)</label><input id="aib-amount" type="number" min="0" placeholder="เช่น 100"></div>
+    <p style="font-size:.74rem;color:var(--muted);margin:-4px 0 6px">➕ <b>เติมเข้า</b> = เพิ่มงบจากของเดิม · ✏️ <b>ตั้งเป็นค่านี้</b> = กำหนดงบใหม่ทับของเดิม</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAiBudget()">ยกเลิก</button>
+      <button class="btn btn-gold" onclick="aiBudgetApply('set')">✏️ ตั้งเป็นค่านี้</button>
+      <button class="btn btn-primary" onclick="aiBudgetApply('add')">➕ เติมเข้า</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -1652,7 +1667,7 @@ async function loadAiPower(){
   try{
     const [c,u]=await Promise.all([
       sb.from('ai_credits').select('model,budget,used'),
-      sb.from('ai_usage').select('model,task,cost,created_at,customer_key').order('created_at',{ascending:false}).limit(500),
+      sb.from('ai_usage').select('model,task,cost,created_at,customer_key').order('created_at',{ascending:false}).limit(1000),
     ]);
     AI_CREDITS=c.data||[]; AI_USAGE=u.data||[];
   }catch(e){ AI_CREDITS=AI_CREDITS||[]; AI_USAGE=AI_USAGE||[]; }
@@ -1679,7 +1694,7 @@ async function renderAiPower(){
     : `<div class="ai-alert" style="background:linear-gradient(135deg,#eafaf1,#d6f5e3);border-color:#aee6c6"><div class="aic" style="background:var(--green)">✓</div><div class="at"><b style="color:var(--green)">พลัง AI เพียงพอ</b><br>ทุกโมเดลยังมีพลังเหลือใช้งานปกติค่ะ 🔋</div></div>`;
   document.getElementById('aiGrid').innerHTML = AI_ORDER.map(k=>{
     const meta=AI_META[k]; const c=cm[k]||{budget:0,used:0}; const a=agg[k]||{today:0,todayCost:0,wkCost:0,total:0};
-    const budget=Number(c.budget||0), used=Number(c.used||0);
+    const budget=Number(c.budget||0), used=Number(a.cost||0);   // used = ผลรวมจริงจาก ai_usage (ตรงกับประวัติด้านล่างเสมอ)
     const remain=Math.max(0,budget-used), pct=budget?Math.round(remain/budget*100):0, st=aiStatus(pct);
     return `<div class="ai-card">
       <div class="ai-head"><span class="ai-dot" style="background:${meta.dot}"></span>
@@ -1690,7 +1705,7 @@ async function renderAiPower(){
       <div class="ai-used">ใช้ไป ฿${fmt(used)} / ฿${fmt(budget)}</div>
       <div class="ai-stat-row"><span>📅 วันนี้ <b>${a.today}</b> ครั้ง (฿${(a.todayCost||0).toFixed(1)})</span><span>7 วัน ฿${(a.wkCost||0).toFixed(1)}</span><span>รวม <b>${a.total}</b> ครั้ง</span></div>
       <div class="ai-actions">
-        <button class="btn btn-gold btn-sm needs-edit" onclick="aiTopUp('${k}')">🔋 ตั้ง/เติมงบ</button>
+        <button class="btn btn-gold btn-sm needs-edit" onclick="openAiBudget('${k}')">🔋 จัดการงบ</button>
       </div></div>`; }).join('');
   const usage=AI_USAGE||[];
   document.getElementById('aiHistory').innerHTML = usage.length
@@ -1698,14 +1713,29 @@ async function renderAiPower(){
       ${usage.slice(0,20).map(h=>`<tr><td style="color:var(--muted)">${h.created_at?new Date(h.created_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):''}</td><td>${esc(h.task||'-')}</td><td>${esc((AI_META[h.model]||{}).name||h.model)}</td><td style="text-align:right"><b>฿${Number(h.cost||0).toFixed(2)}</b></td></tr>`).join('')}</tbody></table>`
     : '<div class="empty-state"><span>🧾</span>ยังไม่มีประวัติการใช้พลัง AI</div>';
 }
-async function aiTopUp(model){
+let AIB_MODEL=null;
+function openAiBudget(model){
   if(!requireEdit()) return;
-  const {cm}=aiAgg(); const c=cm[model]||{budget:0,used:0}; const meta=AI_META[model]||{name:model};
-  const amt=Number(prompt(`ตั้งงบใหม่ให้ ${meta.name} (บาท)\nงบปัจจุบัน ฿${c.budget||0} · ใช้ไปแล้ว ฿${c.used||0}`, String(c.budget||300)));
-  if(!amt||amt<0) return;
-  const { error } = await sb.from('ai_credits').upsert({ model, budget:amt, updated_at:new Date().toISOString() }, { onConflict:'model' });
-  if(error){ toast('ตั้งงบไม่สำเร็จ: '+esc(error.message),true); return; }
-  await renderAiPower(); toast(`ตั้งงบ ${meta.name} = ฿${fmt(amt)} แล้วค่ะ`);
+  const {cm,agg}=aiAgg(); const c=cm[model]||{budget:0}; const a=agg[model]||{cost:0}; const meta=AI_META[model]||{name:model};
+  AIB_MODEL=model;
+  document.getElementById('aib-model').textContent=meta.name;
+  const budget=Number(c.budget||0), used=Number(a.cost||0);
+  document.getElementById('aib-info').innerHTML=`งบปัจจุบัน <b>฿${fmt(budget)}</b> · ใช้ไปแล้ว ฿${fmt(used)} · เหลือ <b style="color:var(--green)">฿${fmt(Math.max(0,budget-used))}</b>`;
+  document.getElementById('aib-amount').value='';
+  document.getElementById('aiBudgetBg').classList.add('open');
+  setTimeout(()=>{ const el=document.getElementById('aib-amount'); if(el) el.focus(); },60);
+}
+function closeAiBudget(){ document.getElementById('aiBudgetBg').classList.remove('open'); }
+async function aiBudgetApply(mode){
+  if(!AIB_MODEL || !requireEdit()) return;
+  const amt=Number(document.getElementById('aib-amount').value||0);
+  if(!amt||amt<=0){ toast('ใส่จำนวนเงินก่อนนะคะ',true); return; }
+  const {cm}=aiAgg(); const c=cm[AIB_MODEL]||{budget:0}; const meta=AI_META[AIB_MODEL]||{name:AIB_MODEL};
+  const newBudget = mode==='add' ? Number(c.budget||0)+amt : amt;
+  const { error } = await sb.from('ai_credits').upsert({ model:AIB_MODEL, budget:newBudget, updated_at:new Date().toISOString() }, { onConflict:'model' });
+  if(error){ toast('บันทึกไม่สำเร็จ: '+esc(error.message),true); return; }
+  closeAiBudget(); await renderAiPower();
+  toast(mode==='add'?`เติมงบ ${meta.name} +฿${fmt(amt)} (รวม ฿${fmt(newBudget)}) ค่ะ`:`ตั้งงบ ${meta.name} = ฿${fmt(newBudget)} ค่ะ`);
 }
 async function aiRefresh(){ await renderAiPower(); toast('รีเฟรชพลัง AI แล้วค่ะ'); }
 async function aiSendLine(){
