@@ -283,15 +283,29 @@ input,textarea{font-family:inherit}
 #cart-sidebar.open{transform:translateX(0)}
 /* ── Hero pattern overlay must not block button clicks ── */
 #hero::before{pointer-events:none}
-.hero-badge,.hero-title,.hero-sub,.hero-cta,.hero-stats,.hero-emblem{position:relative;z-index:1}
+.hero-badge,.hero-title,.hero-sub,.hero-cta,.hero-stats,.hero-emblem,.hero-logo{position:relative;z-index:1}
 
-/* ── Brand logo (emblem) ── */
-.nav-logo{display:flex;align-items:center;gap:9px}
-.brand-emblem{width:30px;height:30px;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(139,0,0,.22))}
-.nav-logo-word{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--primary);letter-spacing:1px;line-height:1}
-body.dark .nav-logo-word{color:var(--gold)}
-.hero-emblem{width:82px;height:82px;margin:0 auto 4px;display:block;filter:drop-shadow(0 4px 14px rgba(212,160,23,.5))}
-@media(max-width:600px){ .hero-emblem{width:64px;height:64px} .brand-emblem{width:26px;height:26px} .nav-logo-word{font-size:1.3rem} }
+/* ── Brand wordmark — "ขนม@านทอง" typography (ล stylised as @), no plaque box ── */
+.lt-logo{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.lt-logo-th{font-family:'Charm','Sarabun',cursive;font-weight:700;font-size:1em;white-space:nowrap;letter-spacing:.01em;
+  background:linear-gradient(180deg,#fbe9a4 0%,#e6b22f 55%,#c8901a 100%);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;filter:drop-shadow(0 1px 1.5px rgba(110,60,0,.3))}
+.lt-logo-pre{font-size:.6em;letter-spacing:.02em}
+.lt-logo-at{font-size:1.42em;font-family:'Cormorant Garamond',serif;font-weight:600;vertical-align:-.13em;margin:0 -.04em}
+.lt-logo-en{font-family:'Cormorant Garamond',serif;font-size:.3em;letter-spacing:.26em;margin-top:.14em;
+  color:#c99a36;-webkit-text-fill-color:#c99a36;text-transform:uppercase;filter:none}
+/* nav sits on light cream → brand red wordmark with a gold @ for contrast */
+.nav-logo{display:flex;align-items:center;cursor:pointer}
+.nav-logo .lt-logo-th{background:none;-webkit-text-fill-color:var(--primary);color:var(--primary);filter:none}
+.nav-logo .lt-logo-at{-webkit-text-fill-color:var(--gold);color:var(--gold)}
+.nav-logo .lt-logo-en{color:var(--gold);-webkit-text-fill-color:var(--gold)}
+body.dark .nav-logo .lt-logo-th{-webkit-text-fill-color:var(--gold2);color:var(--gold2)}
+.nav-logo .lt-logo{font-size:1.32rem}
+/* hero + about sit on dark → full gold gradient */
+.hero-logo .lt-logo{font-size:3.6rem}
+.hero-logo{margin-bottom:14px}
+.about-hero .lt-logo{font-size:2.1rem;margin:0 auto}
+@media(max-width:600px){ .nav-logo .lt-logo{font-size:1.12rem} .hero-logo .lt-logo{font-size:2.4rem} }
 
 /* ── About panel redesign (Phase 2 polish) ── */
 #about-panel{padding:0!important}
@@ -469,7 +483,9 @@ body.dark #bottom-nav{background:#241c15}
 
 <!-- NAVBAR -->
 <nav id="navbar">
-  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer"><svg class="brand-emblem" viewBox="0 0 100 100" aria-label="ร้านลานทอง"><use href="#lt-emblem"/></svg><span class="nav-logo-word">ลานทอง</span></div>
+  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ร้านลานทอง">
+    <span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span>
+  </div>
   <div class="nav-links">
     <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
     <button class="nav-btn" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
@@ -488,9 +504,8 @@ body.dark #bottom-nav{background:#241c15}
 <!-- HERO -->
 <section id="hero">
   <div class="hero-badge" data-i18n="heroBadge">✦ ขนมไทยแท้คัดสรร ✦</div>
-  <svg class="hero-emblem" viewBox="0 0 100 100" aria-label="ตราร้านลานทอง"><use href="#lt-emblem"/></svg>
-  <h1 class="hero-title">ลานทอง</h1>
-  <p class="hero-sub" data-i18n="heroSub">Khanom Lanthong — รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
+  <div class="hero-logo"><span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span></div>
+  <p class="hero-sub" data-i18n="heroSub">รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
   <div class="hero-cta">
     <button class="hero-cta-primary" data-i18n="heroShop" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
     <button class="hero-cta-secondary" data-i18n="heroChat" onclick="document.getElementById('chat-panel').classList.add('open')">CHAT กับไพลิน</button>
@@ -609,9 +624,8 @@ body.dark #bottom-nav{background:#241c15}
 <div id="about-panel">
   <button class="panel-close" onclick="closeAbout()">✕</button>
   <div class="about-hero">
-    <svg class="about-emblem" viewBox="0 0 100 100" aria-hidden="true"><use href="#lt-emblem"/></svg>
-    <div class="about-logo">ลานทอง</div>
-    <p class="about-tagline" data-i18n="aboutTagline">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
+    <span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span>
+    <p class="about-tagline" data-i18n="aboutTagline" style="margin-top:14px">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
   </div>
   <div class="about-body">
     <p class="about-text" data-i18n="aboutText">ร้าน@ลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
@@ -1553,7 +1567,7 @@ const I18N={ en:{
   payMethod:'Payment method', payTransfer:'📲 Transfer/PromptPay', payCod:'🚚 Cash on delivery',
   /* nav */ navProducts:'Products', navAbout:'About us', navMyOrders:'📦 My orders', navLogin:'Sign in',
   /* hero */ heroBadge:'✦ Authentic Thai sweets ✦', heroSub:'Khanom Lanthong — original taste, delivered to your door',
-  heroShop:'Shop all sweets', heroChat:'CHAT with Pailin',
+  heroSub:'Original taste, delivered to your door', heroShop:'Shop all sweets', heroChat:'CHAT with Pailin',
   heroStat1:'Loyal customers', heroStat2:'Satisfaction', heroStat3:'Curated items',
   /* products section */ prodLabel:'✦ Our products', prodTitle:'All Thai sweets',
   fAll:'All', fAncient:'Traditional Thai', fFruit:'Dried fruit', fCookie:'Cookies/Crackers', fNuts:'Roasted nuts', fSteam:'Steamed', fBaked:'Baked', fWish:'❤️ Favourites',
