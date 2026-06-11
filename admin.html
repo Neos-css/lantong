@@ -574,8 +574,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         <div class="card">
           <div class="section-title">🏪 ข้อมูลร้าน</div>
           <div class="field"><label>ชื่อร้าน</label><input id="cf-shop_name"></div>
-          <div class="field"><label>ข้อความแบนเนอร์โปร (บนเว็บ · เว้นว่าง = ระบบใส่ข้อความต้อนรับ+ค่าส่งให้)</label><input id="cf-promo_banner"></div>
-          <div class="field"><label>โปรหมดเวลาเมื่อ (นับถอยหลังบนแบนเนอร์ · เว้นว่าง = รีเซ็ตรายวัน)</label><input id="cf-promo_countdown_end" type="datetime-local"></div>
+          <div class="section-title" style="margin-top:16px">📣 โปรโมชัน (แถบประกาศบนเว็บ)</div>
+          <div class="field"><label>ข้อความโปร</label><input id="cf-promo_banner" placeholder='เช่น "ลด 10% โค้ด LANTONG10" — เว้นว่าง = ไม่มีโปร'></div>
+          <div class="field"><label>โปรหมดเวลาเมื่อ (นับถอยหลัง)</label><input id="cf-promo_countdown_end" type="datetime-local"></div>
+          <p style="font-size:.72rem;color:var(--muted);margin-top:-4px">💡 <b>เว้นข้อความโปรว่าง = ไม่มีโปร</b> (แถบโชว์ข้อความต้อนรับ + ค่าส่งแทน) · นับถอยหลังจะขึ้น<b>เฉพาะเมื่อมีข้อความโปร + ตั้งเวลาหมด</b></p>
           <div class="section-title" style="margin-top:16px">📖 เกี่ยวกับเรา (หน้าเว็บ)</div>
           <div class="field"><label>คำโปรย (ใต้โลโก้)</label><input id="cf-about_tagline" placeholder="ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน"></div>
           <div class="field"><label>เนื้อหาเกี่ยวกับเรา</label><textarea id="cf-about_text" rows="3" style="width:100%;font-family:inherit;padding:8px;border:1px solid var(--border);border-radius:8px"></textarea></div>
