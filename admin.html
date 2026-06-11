@@ -290,8 +290,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sb-brand">
-      <div class="logo">🍮</div>
-      <div><div class="bt">ลานทอง</div><div class="bs">Admin · ขนมไทย</div></div>
+      <img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" style="height:40px;border-radius:8px">
+      <div class="bs">Admin · ขนมไทย</div>
     </div>
     <nav class="sb-nav" id="sbNav">
       <div class="nav-item active" data-tab="dash" onclick="navTo('dash')"><span class="ic">📊</span> ภาพรวม</div>
@@ -1172,7 +1172,7 @@ function renderCharts(){
   // #2 prettier doughnut: thin ring, total in center, clean legend below
   const cnt={}; STATUSES.forEach(s=>cnt[s]=0);
   orders.forEach(o=>{ if(o.status in cnt) cnt[o.status]++; else cnt[o.status]=(cnt[o.status]||0)+1; });
-  const labelTH={PENDING:'รอจ่าย',SLIP_RECEIVED:'ส่งสลิป',PAID:'จ่ายแล้ว',SHIPPED:'จัดส่ง',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
+  const labelTH={PENDING:'รอจ่าย',SLIP_RECEIVED:'ส่งสลิป',PAID:'จ่ายแล้ว',SHIPPED:'กำลังจัดส่ง',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
   const colors={PENDING:'#e6a817',SLIP_RECEIVED:'#e67e22',PAID:'#27ae60',SHIPPED:'#2980b9',DONE:'#8595a3',CANCELLED:'#e74c3c'};
   const keys=Object.keys(cnt).filter(k=>cnt[k]>0); const total=keys.reduce((s,k)=>s+cnt[k],0);
   const isDark=document.body.classList.contains('dark');
@@ -1219,8 +1219,13 @@ function renderOrders(){
 const ORDER_FWD={ PENDING:['SLIP_RECEIVED','PAID','SHIPPED','DONE','CANCELLED'], SLIP_RECEIVED:['PAID','SHIPPED','DONE','CANCELLED'], PAID:['SHIPPED','DONE','CANCELLED'], SHIPPED:['DONE','CANCELLED'], DONE:[], CANCELLED:[] };
 async function updateStatus(orderId,status,sel){
   if(!requireEdit()){ loadAll(); return; }
-  const from=(DATA.orders.find(o=>o.order_id===orderId)||{}).status || 'PENDING';
+  const _o=DATA.orders.find(o=>o.order_id===orderId)||{};
+  const from=_o.status || 'PENDING';
   if(from===status) return;
+  if(status==='SHIPPED' && !String(_o.tracking_number||'').trim()){   // F8: กำลังจัดส่ง ต้องมีเลขพัสดุ
+    toast('ตั้งเป็น "กำลังจัดส่ง" ต้องใส่เลขพัสดุก่อน — เปิดรายละเอียดออเดอร์ → ใส่เลข → กด "บันทึก + แจ้งลูกค้า" ค่ะ',true);
+    loadAll(); return;
+  }
   let reason='';
   if(!(ORDER_FWD[from]||[]).includes(status)){
     reason=(prompt(`เปลี่ยน ${from} → ${status} เป็นการย้อน/ข้ามสถานะ\nกรุณาระบุเหตุผล:`)||'').trim();
@@ -1563,21 +1568,30 @@ function printInvoice(oid){
     <div class="muted" style="text-align:center;margin-top:22px">ขอบคุณที่อุดหนุนค่ะ 💛</div></body></html>`);
   w.document.close(); w.focus(); setTimeout(()=>{ try{ w.print(); }catch(e){} },350);
 }
+// F8: บันทึกเลขพัสดุ → ตั้งสถานะ "กำลังจัดส่ง" (SHIPPED) → แจ้งลูกค้า → my-orders โชว์พร้อมกัน
 async function saveTracking(oid, notify){
   if(!requireEdit()) return;
   const tracking=document.getElementById('od-tracking').value.trim();
   const carrier=document.getElementById('od-carrier').value.trim();
+  if(!tracking){ toast('ใส่เลขพัสดุก่อนนะคะ',true); return; }              // บังคับเลขพัสดุ
+  const o=DATA.orders.find(x=>x.order_id===oid);
   const { error } = await sb.from('orders').update({ tracking_number:tracking, carrier, updated_at:new Date().toISOString() }).eq('order_id',oid);
   if(error){ toast('บันทึกไม่สำเร็จ: '+error.message,true); return; }
-  const o=DATA.orders.find(x=>x.order_id===oid); if(o){ o.tracking_number=tracking; o.carrier=carrier; }
-  toast('บันทึกเลขพัสดุแล้วค่ะ');
-  if(notify){
-    if(!tracking){ toast('ใส่เลขพัสดุก่อนแจ้งลูกค้านะคะ',true); return; }
-    if(!String(o.customer_id||'').startsWith('U')){ toast('ลูกค้าช่องทางนี้แจ้งผ่าน LINE ไม่ได้ค่ะ',true); return; }
-    const msg=`📦 ออเดอร์ ${oid} จัดส่งแล้วค่ะ\nขนส่ง: ${carrier||'-'}\nเลขพัสดุ: ${tracking}\nขอบคุณที่อุดหนุนร้านลานทองนะคะ 💛`;
-    const r=await workerPost('/admin/reply',{ customer_key:o.customer_id, message:msg });
-    toast(r.ok?'แจ้งเลขพัสดุให้ลูกค้าทาง LINE แล้วค่ะ':'แจ้งลูกค้าไม่สำเร็จ: '+(r.message||r.error),!r.ok);
+  if(o){ o.tracking_number=tracking; o.carrier=carrier; }
+  // ผูกกับสถานะ: ตั้งเป็น "กำลังจัดส่ง" ผ่าน worker (atomic + history + audit) ถ้ายังไม่ถึง
+  if(o && o.status!=='SHIPPED' && o.status!=='DONE'){
+    const sr=await workerPost('/admin/order-status',{ order_id:oid, status:'SHIPPED', reason:'แจ้งเลขพัสดุ/กำลังจัดส่ง' });
+    if(sr&&sr.ok) o.status='SHIPPED';
   }
+  if(notify){
+    const cid=String(o&&o.customer_id||'');
+    const isLine=/^U[0-9a-f]{32}$/i.test(cid);                            // LINE จริง (ไม่ใช่ USER-... ของเว็บ)
+    const msg=`📦 ออเดอร์ ${oid} กำลังจัดส่งแล้วค่ะ\nขนส่ง: ${carrier||'-'}\nเลขพัสดุ: ${tracking}\nขอบคุณที่อุดหนุนร้านลานทองนะคะ 💛`;
+    const r=await workerPost('/admin/reply',{ customer_key:cid, message:msg });
+    if(isLine) toast(r&&r.ok?'แจ้งลูกค้าทาง LINE แล้วค่ะ':'แจ้ง LINE ไม่สำเร็จ: '+((r&&(r.message||r.error))||''),!(r&&r.ok));
+    else toast('อัปเดตแล้วค่ะ — ลูกค้าเห็นสถานะ "กำลังจัดส่ง" + เลขพัสดุใน "ออเดอร์ของฉัน" ทันที');
+  } else toast('บันทึกเลขพัสดุ + ตั้งเป็นกำลังจัดส่งแล้วค่ะ');
+  await loadAll();
 }
 function closeOrdModal(){ document.getElementById('ordModalBg').classList.remove('open'); }
 
