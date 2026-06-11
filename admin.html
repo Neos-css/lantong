@@ -669,11 +669,32 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
     <h3>➕ เพิ่มผู้ใช้งาน</h3>
     <div class="field"><label>ชื่อผู้ใช้งาน (ชื่อจริง/ชื่อเล่น)</label><input id="um-name" placeholder="เช่น คุณนัท"></div>
     <div class="field"><label>อีเมล (หรือชื่อผู้ใช้ — จะเติม @lantong.local)</label><input id="um-email" placeholder="staff หรือ name@email.com"></div>
-    <div class="field"><label>รหัสผ่าน (≥ 6 ตัว)</label><input id="um-pass" type="text" placeholder="รหัสผ่าน"></div>
+    <div class="field"><label for="um-pass">รหัสผ่าน (≥ 10 ตัว)</label>
+      <div style="position:relative">
+        <input id="um-pass" type="password" autocomplete="new-password" placeholder="รหัสผ่าน" style="padding-right:44px">
+        <button type="button" id="um-pass-toggle" onclick="togglePass('um-pass','um-pass-toggle')" aria-label="แสดงหรือซ่อนรหัสผ่าน" title="แสดง/ซ่อนรหัสผ่าน" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:4px;line-height:1">👁</button>
+      </div></div>
     <div class="field"><label>บทบาท</label><select id="um-role"><option value="staff">✏️ Staff — แก้ข้อมูลได้</option><option value="viewer">👁️ Viewer — ดูอย่างเดียว</option><option value="admin">👑 Admin — จัดการได้ทุกอย่าง</option></select></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeUserModal()">ยกเลิก</button>
       <button class="btn btn-primary" id="um-save" onclick="saveUser()">สร้างผู้ใช้</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generic two-step danger-confirm modal (S1.6) -->
+<div class="modal-bg" id="confirmModalBg">
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+    <h3 id="confirm-title">⚠️ ยืนยันการทำรายการ</h3>
+    <div id="confirm-message" style="font-size:.9rem;margin-bottom:10px;line-height:1.6"></div>
+    <div id="confirm-detail" style="background:rgba(220,53,69,.08);border:1px solid rgba(220,53,69,.3);border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:12px;display:none"></div>
+    <label id="confirm-ack-wrap" style="display:flex;gap:8px;align-items:flex-start;font-size:.82rem;margin-bottom:14px;cursor:pointer">
+      <input type="checkbox" id="confirm-ack" style="margin-top:3px">
+      <span id="confirm-ack-text">ฉันเข้าใจผลกระทบและต้องการดำเนินการต่อ</span>
+    </label>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirm-cancel">ยกเลิก</button>
+      <button class="btn btn-del" id="confirm-ok" disabled>ยืนยัน</button>
     </div>
   </div>
 </div>
@@ -786,10 +807,36 @@ async function doGoogleLogin(){ const redirect=window.location.origin+window.loc
 async function doLogout(){ await sb.auth.signOut(); }
 document.getElementById('login-password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 
-// ── RBAC ──
-let USER_ROLE='admin';
+// ── RBAC (fail-closed / deny-by-default) ──
+let USER_ROLE='none';
 const canEdit = ()=> USER_ROLE==='admin'||USER_ROLE==='staff';
 function requireEdit(){ if(!canEdit()){ toast('👁️ โหมดดูอย่างเดียว — แก้ไขไม่ได้ค่ะ',true); return false; } return true; }
+// Custom two-step confirmation for high-risk actions (S1.6). Returns Promise<boolean>.
+// แสดงผลกระทบ + ต้องติ๊ก checkbox ก่อนจึงกดยืนยันได้ (กันกดพลาด) + focus trap + Esc
+function confirmAction(opts){
+  opts=opts||{};
+  return new Promise(resolve=>{
+    const bg=document.getElementById('confirmModalBg');
+    const ack=document.getElementById('confirm-ack'), okBtn=document.getElementById('confirm-ok'), cancelBtn=document.getElementById('confirm-cancel');
+    const detail=document.getElementById('confirm-detail');
+    document.getElementById('confirm-title').textContent=opts.title||'⚠️ ยืนยันการทำรายการ';
+    document.getElementById('confirm-message').innerHTML=opts.message||'ต้องการดำเนินการต่อหรือไม่?';
+    if(opts.detail){ detail.innerHTML=opts.detail; detail.style.display='block'; } else detail.style.display='none';
+    const needAck=opts.requireAck!==false;
+    document.getElementById('confirm-ack-wrap').style.display=needAck?'flex':'none';
+    if(opts.ackText) document.getElementById('confirm-ack-text').textContent=opts.ackText;
+    ack.checked=false; okBtn.textContent=opts.confirmText||'ยืนยัน'; okBtn.disabled=needAck;
+    const prevKey=document.onkeydown;
+    function cleanup(result){ bg.classList.remove('open'); ack.onchange=null; okBtn.onclick=null; cancelBtn.onclick=null; bg.onclick=null; document.onkeydown=prevKey; resolve(result); }
+    ack.onchange=()=>{ okBtn.disabled=needAck&&!ack.checked; };
+    okBtn.onclick=()=>{ if(needAck&&!ack.checked) return; cleanup(true); };
+    cancelBtn.onclick=()=>cleanup(false);
+    bg.onclick=(e)=>{ if(e.target===bg) cleanup(false); };
+    document.onkeydown=(e)=>{ if(e.key==='Escape') cleanup(false); };
+    bg.classList.add('open');
+    setTimeout(()=>{ (needAck?ack:okBtn).focus(); },50);
+  });
+}
 function applyRole(role){
   USER_ROLE=role; document.body.classList.remove('role-admin','role-staff','role-viewer'); document.body.classList.add('role-'+role);
   const b=document.getElementById('role-badge');
@@ -798,14 +845,20 @@ function applyRole(role){
 let _started=false;
 async function showApp(session){
   if(_started) return;
-  let role='admin';
+  // Fail-closed: ต้องอ่าน role สำเร็จและพบบัญชีในตาราง admin_users เท่านั้น
+  // ถ้า error / ไม่พบ row → ออกจากระบบ ไม่ให้สิทธิ์ใด ๆ (deny-by-default)
+  let role;
   try{
     const { data:me, error } = await sb.from('admin_users').select('role').eq('email',session.user.email).maybeSingle();
-    if(!error){
-      if(!me){ const e=document.getElementById('login-error'); e.textContent='บัญชีนี้ไม่มีสิทธิ์เข้าระบบหลังบ้านค่ะ'; e.style.display='block'; await sb.auth.signOut(); return; }
-      role=me.role;
-    } else console.warn('RBAC fail-open admin:',error.message);
-  }catch(e){ console.warn('RBAC exception fail-open:',e); }
+    if(error) throw error;
+    if(!me){ const e=document.getElementById('login-error'); e.textContent='บัญชีนี้ไม่มีสิทธิ์เข้าระบบหลังบ้านค่ะ'; e.style.display='block'; await sb.auth.signOut(); return; }
+    if(!me.role){ const e=document.getElementById('login-error'); e.textContent='บัญชีนี้ยังไม่ได้กำหนดสิทธิ์ค่ะ'; e.style.display='block'; await sb.auth.signOut(); return; }
+    role=me.role;
+  }catch(err){
+    console.error('RBAC fail-closed — ตรวจสอบสิทธิ์ไม่สำเร็จ:',err);
+    const e=document.getElementById('login-error'); e.textContent='ตรวจสอบสิทธิ์ไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ'; e.style.display='block';
+    await sb.auth.signOut(); return;
+  }
   _started=true; applyRole(role);
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
@@ -1300,7 +1353,7 @@ async function saveProduct(){
 }
 async function deleteProduct(id,name){
   if(!requireEdit()) return;
-  if(!confirm(`ลบสินค้า "${name}" (${id})?\nสต็อกจะถูกลบด้วย`)) return;
+  if(!(await confirmAction({ title:'🗑 ลบสินค้า', message:`ต้องการลบสินค้า <b>${esc(name)}</b> (${esc(id)}) ใช่ไหมคะ?`, detail:'⚠️ สต็อกของสินค้านี้จะถูกลบไปด้วย และกู้คืนไม่ได้', confirmText:'ลบสินค้า' }))) return;
   const { error } = await sb.from('products').delete().eq('id',id);
   if(error){ toast('ลบไม่สำเร็จ: '+error.message,true); return; }
   toast('ลบสินค้าแล้วค่ะ'); await loadAll();
@@ -1485,14 +1538,15 @@ async function loadAdminUsers(){
       <td style="text-align:right"><button class="btn btn-del btn-sm needs-edit" onclick='deleteAdminUser(${JSON.stringify(u.email)})'>🗑 ลบ</button></td></tr>`).join('')}
   </tbody></table>`;
 }
-function openUserModal(){ if(!requireEdit())return; document.getElementById('um-name').value=''; document.getElementById('um-email').value=''; document.getElementById('um-pass').value=''; document.getElementById('um-role').value='staff'; document.getElementById('userModalBg').classList.add('open'); }
+function togglePass(inputId,btnId){ const i=document.getElementById(inputId); const b=document.getElementById(btnId); if(!i)return; const show=i.type==='password'; i.type=show?'text':'password'; if(b) b.textContent=show?'🙈':'👁'; }
+function openUserModal(){ if(!requireEdit())return; document.getElementById('um-name').value=''; document.getElementById('um-email').value=''; const p=document.getElementById('um-pass'); p.value=''; p.type='password'; const t=document.getElementById('um-pass-toggle'); if(t)t.textContent='👁'; document.getElementById('um-role').value='staff'; document.getElementById('userModalBg').classList.add('open'); }
 function closeUserModal(){ document.getElementById('userModalBg').classList.remove('open'); }
 async function saveUser(){
   const name=document.getElementById('um-name').value.trim();
   const email=document.getElementById('um-email').value.trim();
   const password=document.getElementById('um-pass').value;
   const role=document.getElementById('um-role').value;
-  if(!email||password.length<6){ toast('กรอกอีเมล + รหัส ≥ 6 ตัว',true); return; }
+  if(!email||password.length<10){ toast('กรอกอีเมล + รหัสผ่าน ≥ 10 ตัว',true); return; }
   const btn=document.getElementById('um-save'); btn.disabled=true;
   const r=await workerPost('/admin/users',{ action:'create', name, email, password, role }); btn.disabled=false;
   if(!r.ok){ toast('สร้างไม่สำเร็จ: '+(r.message||r.error||r.status),true); return; }
@@ -1500,7 +1554,7 @@ async function saveUser(){
 }
 async function deleteAdminUser(email){
   if(!requireEdit())return;
-  if(!confirm('ลบสิทธิ์ผู้ใช้ '+email+' ?')) return;
+  if(!(await confirmAction({ title:'🗑 ลบสิทธิ์ผู้ใช้', message:`ต้องการลบสิทธิ์ผู้ใช้ <b>${esc(email)}</b> ใช่ไหมคะ?`, detail:'⚠️ ผู้ใช้นี้จะเข้าระบบหลังบ้านไม่ได้อีก', confirmText:'ลบผู้ใช้' }))) return;
   const r=await workerPost('/admin/users',{ action:'delete', email });
   if(!r.ok){ toast('ลบไม่สำเร็จ: '+(r.message||r.error||r.status),true); return; }
   toast('ลบผู้ใช้แล้วค่ะ'); loadAdminUsers();
@@ -1574,7 +1628,7 @@ async function sendBroadcast(){
   const msg=document.getElementById('bc-msg').value.trim();
   if(!msg){ toast('พิมพ์ข้อความก่อนค่ะ',true); return; }
   const n=DATA.customers.filter(c=>(c.platform||'line')==='line'&&String(c.customer_id).startsWith('U')).length;
-  if(!confirm(`ส่งข้อความนี้เข้า LINE ลูกค้า ~${n} คน?\n\n"${msg.slice(0,100)}"`)) return;
+  if(!(await confirmAction({ title:'📢 ยืนยันส่ง Broadcast', message:`กำลังจะส่งข้อความนี้เข้า LINE ลูกค้า <b>~${n} คน</b>`, detail:`"${esc(msg.slice(0,200))}"`, ackText:'ฉันตรวจข้อความและจำนวนผู้รับแล้ว ต้องการส่งจริง', confirmText:'ส่งเลย' }))) return;
   const out=document.getElementById('bc-out'); out.textContent='⏳ กำลังส่ง…';
   const r=await workerPost('/line-broadcast',{ message:msg });
   if(!r.ok){ out.textContent='❌ ส่งไม่สำเร็จ: '+(r.message||r.error||r.status); toast('ส่งไม่สำเร็จ',true); return; }
@@ -1950,7 +2004,7 @@ async function addExpense(){
 }
 async function delExpense(id){
   if(!requireEdit()) return;
-  if(!confirm('ลบรายจ่ายนี้?')) return;
+  if(!(await confirmAction({ title:'🗑 ลบรายจ่าย', message:'ต้องการลบรายการรายจ่ายนี้ใช่ไหมคะ?', detail:'⚠️ รายการนี้จะถูกลบออกจากบัญชีการเงิน', confirmText:'ลบรายจ่าย' }))) return;
   const { error } = await sb.from('expenses').delete().eq('id',id);
   if(error){ toast('ลบไม่สำเร็จ',true); return; }
   await loadExpenses(); renderFinance(); toast('ลบแล้วค่ะ');
