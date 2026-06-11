@@ -1574,6 +1574,9 @@ function notifyWhenAvailable(slug,ev){
   if(ev)ev.stopPropagation();
   const p=PRODUCTS.find(x=>x.slug===slug); if(!p) return;
   const en=localStorage.getItem('lt_lang')==='en';
+  // persist the demand so the admin can push a notification later (restock_alerts, anon insert)
+  const ckey = (window.MEMBER&&window.MEMBER.email) ? window.MEMBER.email : ('web-'+CHAT_SID);
+  if(typeof sbInsertAnon==='function') sbInsertAnon('restock_alerts',{ product_id:p.id, customer_key:ckey });
   document.getElementById('chat-panel').classList.add('open');
   sendQuickReply((en?'Please notify me when this is back in stock: ':'รบกวนแจ้งเตือนเมื่อสินค้านี้กลับมามีของค่ะ: ')+p.name_th);
   showToast(en?'Pailin will let you know 🔔':'ไพลินจะแจ้งเตือนเมื่อมีของค่ะ 🔔');
@@ -1826,8 +1829,12 @@ if(_openMyOrders){
         card.appendChild(b);
       });
       const ref=myReferralCode();
+      // register this member's code as an owner row (best-effort; code is unique so dupes 409 harmlessly)
+      if(window.MEMBER && typeof sbInsertAnon==='function') sbInsertAnon('referrals',{ code:ref, owner_id:'USER-'+window.MEMBER.id });
       // Phase 4 — loyalty points + tier (1 point / ฿100 spent)
-      const spent=mine.reduce((s,o)=>s+(Number(o.total)||0),0);
+      // sum the totals actually shown (live /web-orders for members, localStorage for guests)
+      let spent=0; cards.forEach(c=>{ const mm=c.textContent.match(/฿([\d,]+)/); if(mm) spent+=parseInt(mm[1].replace(/,/g,'')); });
+      if(!spent) spent=mine.reduce((s,o)=>s+(Number(o.total)||0),0);
       const pts=Math.floor(spent/100);
       const tier = spent>=5000?{n:en?'Platinum':'แพลทินัม',ic:'💎'}:spent>=2000?{n:en?'Gold':'ทอง',ic:'🥇'}:{n:en?'Silver':'เงิน',ic:'🥈'};
       const extra=document.createElement('div'); extra.className='lt-extra';
