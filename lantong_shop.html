@@ -341,6 +341,13 @@ body.dark .highlight-chip,body.dark .qr-btn{background:#2c2218}
 body.dark .payment-info{background:#fff8ee;border-color:#f0d890}
 body.dark .payment-info-row{color:#4a3520}
 body.dark .payment-info-title{color:#4a3520}
+/* F4.2: กล่อง QR ในหน้ายืนยัน — ตัวหนังสือต้องดำบนพื้นครีมในโหมดมืด */
+body.dark #confirm-qr-block > div{color:#4a3520 !important}
+body.dark #confirm-qr-block #pp-amount{color:#a01010 !important}
+/* F2/F5: โลโก้แบรนด์จริง "ขนม ลานทอง" */
+.brand-logo-img{height:40px;border-radius:7px;display:block;object-fit:contain}
+.hero-logo .brand-logo-img{height:104px;border-radius:14px;box-shadow:0 4px 22px rgba(0,0,0,.3);margin:0 auto}
+.footer-logo .brand-logo-img{height:48px;border-radius:8px;margin:0 auto}
 .theme-toggle{width:40px;height:40px;border-radius:50%;background:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
 .theme-toggle:hover{background:#f3e8d8}
 body.dark .theme-toggle:hover{background:#2c2218}
@@ -495,7 +502,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ร้านลานทอง">
-    <span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span>
+    <img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" class="brand-logo-img">
   </div>
   <div class="nav-links">
     <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
@@ -515,7 +522,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <!-- HERO -->
 <section id="hero">
   <div class="hero-badge" data-i18n="heroBadge">✦ ขนมไทยแท้คัดสรร ✦</div>
-  <div class="hero-logo"><span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span></div>
+  <div class="hero-logo"><img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" class="brand-logo-img"></div>
   <p class="hero-sub" data-i18n="heroSub">รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
   <div class="hero-cta">
     <button class="hero-cta-primary" data-i18n="heroShop" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
@@ -620,7 +627,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- FOOTER -->
 <footer id="footer">
-  <div class="footer-logo">@ลานทอง</div>
+  <div class="footer-logo"><img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" class="brand-logo-img"></div>
   <p data-i18n="fTagline">ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
   <p style="margin-top:10px">
     <a onclick="openPolicy('faq')" style="cursor:pointer;color:var(--gold)" data-i18n="fFaq">คำถามพบบ่อย</a> ·
@@ -637,7 +644,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <div id="about-panel">
   <button class="panel-close" onclick="closeAbout()">✕</button>
   <div class="about-hero">
-    <span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span>
+    <img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" class="brand-logo-img">
     <p class="about-tagline" data-i18n="aboutTagline" style="margin-top:14px">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
   </div>
   <div class="about-body">
@@ -1481,7 +1488,7 @@ sbAuth.auth.getSession().then(({data:{session}})=>{ window.MEMBER = session?sess
 
 // ===== My Orders (tracked on this device) =====
 const ORDER_STEPS=['PENDING','SLIP_RECEIVED','PAID','SHIPPED','DONE'];
-const ORDER_TH={PENDING:'รอชำระ',SLIP_RECEIVED:'ตรวจสลิป',PAID:'ชำระแล้ว',SHIPPED:'จัดส่งแล้ว',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
+const ORDER_TH={PENDING:'รอชำระ',SLIP_RECEIVED:'ตรวจสลิป',PAID:'ชำระแล้ว',SHIPPED:'กำลังจัดส่ง',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
 function orderTrack(status){ const i=ORDER_STEPS.indexOf(status); return `<div style="display:flex;gap:3px;margin-top:8px">${ORDER_STEPS.map((s,idx)=>`<div style="flex:1;height:5px;border-radius:3px;background:${i>=0&&idx<=i?'var(--primary)':'#e8d5b5'}"></div>`).join('')}</div><div style="font-size:.72rem;color:var(--primary);margin-top:4px;font-weight:600">${ORDER_TH[status]||status}</div>`; }
 async function openMyOrders(){
   let modal=document.getElementById('myorders-modal');
