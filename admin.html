@@ -647,6 +647,15 @@ body.dark .ai-alert{ background:linear-gradient(135deg,#2e2310,#3a2a12); border-
     <div class="field"><label>หน่วย/น้ำหนัก</label><input id="pm-unit" placeholder="100g"></div>
     <div class="field"><label>สต็อกคงเหลือ</label><input id="pm-available" type="number" min="0" step="1" value="0"></div>
     <div class="field"><label>แจ้งเตือนเมื่อต่ำกว่า</label><input id="pm-min" type="number" min="0" step="1" value="10"></div>
+    <div style="border-top:1px dashed var(--border,#ddd);margin:6px 0 12px;padding-top:10px;font-weight:700;font-size:.9rem">🍽️ ข้อมูลอาหาร (แสดงในหน้าสินค้าเว็บร้าน)</div>
+    <div class="field"><label>ส่วนประกอบ</label><input id="pm-ingredients" placeholder="เช่น แป้งข้าวเจ้า น้ำตาล มะพร้าว"></div>
+    <div class="field"><label>⚠️ สารก่อภูมิแพ้ (สำคัญต่อความปลอดภัย — กรอกตามจริงเท่านั้น)</label><input id="pm-allergens" placeholder="เช่น ถั่ว งา นม ไข่ แป้งสาลี (เว้นว่างถ้าไม่มี)"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field" style="margin-bottom:12px"><label>ขนาด/จำนวนต่อแพ็ก</label><input id="pm-pack" placeholder="เช่น 200 กรัม / 12 ชิ้น"></div>
+      <div class="field" style="margin-bottom:12px"><label>อายุการเก็บ</label><input id="pm-shelf" placeholder="เช่น เก็บได้ 30 วัน"></div>
+    </div>
+    <div class="field"><label>วิธีเก็บรักษา</label><input id="pm-storage" placeholder="เช่น เก็บในที่แห้ง ปิดถุงให้สนิท"></div>
+    <div class="field"><label>เหมาะสำหรับ</label><input id="pm-suitable" placeholder="เช่น ของฝาก / ทานเล่น / งานเลี้ยง"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeProductModal()">ยกเลิก</button>
       <button class="btn btn-primary" id="pm-save" onclick="saveProduct()">บันทึก</button>
@@ -907,7 +916,7 @@ async function saveConfig(){
 // ── Load ──
 async function loadAll(manual){
   const [pr,st,or,cu,pa,vi,cf] = await Promise.all([
-    sb.from('products').select('id,name,price,orig_price,cost_price,category,unit,min_stock_alert,image_url').order('id'),
+    sb.from('products').select('id,name,price,orig_price,cost_price,category,unit,min_stock_alert,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for').order('id'),
     sb.from('stock').select('product_id,available,reserved'),
     sb.from('orders').select('order_id,customer_id,items,total_amount,status,shipping_address,note,tracking_number,carrier,created_at,updated_at').order('created_at',{ascending:false}),
     sb.from('customers').select('customer_id,name,phone,address,platform,source,note,created_at'),
@@ -1320,6 +1329,12 @@ function openProductModal(id){
   document.getElementById('pm-unit').value=p?(p.unit||''):'';
   document.getElementById('pm-available').value=p?(p.available||0):0;
   document.getElementById('pm-min').value=p?(p.min_stock_alert||10):10;
+  document.getElementById('pm-ingredients').value=p?(p.ingredients||''):'';
+  document.getElementById('pm-allergens').value=p?(p.allergens||''):'';
+  document.getElementById('pm-pack').value=p?(p.pack_size||''):'';
+  document.getElementById('pm-shelf').value=p?(p.shelf_life||''):'';
+  document.getElementById('pm-storage').value=p?(p.storage||''):'';
+  document.getElementById('pm-suitable').value=p?(p.suitable_for||''):'';
   document.getElementById('pm-file').value='';
   document.getElementById('pm-image').value=p?(p.image_url||''):'';
   document.getElementById('pm-imgnote').textContent='อัปโหลด JPG/PNG → เก็บใน Supabase Storage → เว็บร้านเห็นทันที';
@@ -1334,7 +1349,11 @@ async function saveProduct(){
   if(!id||!name){ toast('กรุณากรอกรหัสและชื่อสินค้า',true); return; }
   const prod={ name, price:Number(document.getElementById('pm-price').value||0), cost_price:Number(document.getElementById('pm-cost').value||0),
     category:document.getElementById('pm-category').value.trim(), unit:document.getElementById('pm-unit').value.trim(),
-    min_stock_alert:Number(document.getElementById('pm-min').value||0), image_url:document.getElementById('pm-image').value.trim() };
+    min_stock_alert:Number(document.getElementById('pm-min').value||0), image_url:document.getElementById('pm-image').value.trim(),
+    ingredients:document.getElementById('pm-ingredients').value.trim(), allergens:document.getElementById('pm-allergens').value.trim(),
+    pack_size:document.getElementById('pm-pack').value.trim(), shelf_life:document.getElementById('pm-shelf').value.trim(),
+    storage:document.getElementById('pm-storage').value.trim(), suitable_for:document.getElementById('pm-suitable').value.trim(),
+    updated_at:new Date().toISOString() };
   const available=Number(document.getElementById('pm-available').value||0);
   const btn=document.getElementById('pm-save'); btn.disabled=true;
   try{
