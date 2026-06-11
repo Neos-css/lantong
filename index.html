@@ -502,7 +502,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
   <span id="announce-text">🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
-  <span id="cd-wrap">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
+  <span id="cd-wrap" style="display:none">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
 
@@ -1866,7 +1866,7 @@ const I18N={ en:{
   story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
   story2t:'Original recipes',story2p:'We keep traditional Thai recipes, freshly made, no synthetic colors or preservatives.',
   story3t:'Delivered with care',story3p:'Sturdy packaging keeps the crunch, shipped nationwide with Pailin AI helping every step.',
-  promoFlash:"Today's deal ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',
+  promoFlash:"ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',
   cookieMsg:'🍪 We use cookies to improve your experience and analytics, per our',
   cookieLink:'Privacy Policy',cookieAccept:'Accept',cookieDeny:'Decline',
   fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you',
@@ -2095,15 +2095,18 @@ window.stickyAdd=stickyAdd;
 (function(){
   const el=$('cd-time'); if(!el) return;
   const wrap=$('cd-wrap');
+  // countdown shows ONLY when there's an actual promo (promo_banner) AND an end time set.
+  // No promo / no end / expired → hidden (no "โปรวันนี้" filler).
   function tick(){
-    const now=new Date();
-    // admin can set a fixed promo end (app_config.promo_countdown_end); otherwise reset daily
-    let end=null; const cfgEnd=window.SHOP_CFG&&window.SHOP_CFG.promo_countdown_end;
-    if(cfgEnd){ const d=new Date(cfgEnd); if(!isNaN(d.getTime())) end=d; }
-    if(!end){ end=new Date(now); end.setHours(23,59,59,999); }
-    let s=Math.floor((end-now)/1000);
-    if(s<=0){ if(cfgEnd){ if(wrap) wrap.style.display='none'; return; } s=0; }   // fixed promo ended → hide
-    else if(wrap){ wrap.style.display=''; }
+    const cfg=window.SHOP_CFG||{};
+    const hasPromo = cfg.promo_banner && String(cfg.promo_banner).trim();
+    const cfgEnd = cfg.promo_countdown_end;
+    if(!hasPromo || !cfgEnd){ if(wrap) wrap.style.display='none'; return; }
+    const d=new Date(cfgEnd);
+    if(isNaN(d.getTime())){ if(wrap) wrap.style.display='none'; return; }
+    let s=Math.floor((d-new Date())/1000);
+    if(s<=0){ if(wrap) wrap.style.display='none'; return; }   // promo ended → hide
+    if(wrap) wrap.style.display='';
     const h=String(Math.floor(s/3600)).padStart(2,'0'), m=String(Math.floor(s%3600/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
     el.textContent=`${h}:${m}:${ss}`; }
   tick(); setInterval(tick,1000);
