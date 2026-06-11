@@ -200,8 +200,8 @@ input,textarea{font-family:inherit}
 .form-input:focus{outline:none;border-color:var(--primary)}
 .payment-info{background:#fff8ee;border:1px solid #f0d890;border-radius:12px;padding:16px;margin-bottom:18px}
 .payment-info-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:8px}
-.payment-info-row{display:flex;justify-content:space-between;font-size:.85rem;color:var(--text);margin-bottom:4px}
-.payment-info-row span:last-child{font-weight:700;color:var(--primary)}
+.payment-info-row{display:flex;justify-content:space-between;font-size:.9rem;color:#4a3520;margin-bottom:5px}
+.payment-info-row span:last-child{font-weight:800;color:#a01010;font-size:1.04rem;letter-spacing:.4px}
 .order-summary-mini{margin-bottom:16px}
 .order-summary-mini-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:8px}
 .order-summary-item{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:3px}
@@ -250,7 +250,7 @@ input,textarea{font-family:inherit}
 #chat-panel.open{display:flex}
 @keyframes chatIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 .chat-panel-header{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
-.chat-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f0c14b,#dca017);color:#5a2d0c;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .chat-agent-name{font-weight:700;font-size:.95rem}
 .chat-agent-status{font-size:.72rem;opacity:.85}
 .chat-panel-close{margin-left:auto;background:none;color:rgba(255,255,255,.8);font-size:1rem}
@@ -336,7 +336,11 @@ body.dark .qty-num,body.dark .cart-qty-num,body.dark .qty-label{color:#f0e6d8 !i
 body.dark .product-name,body.dark .product-modal-name,body.dark .cart-item-name,body.dark .product-modal-desc,body.dark .section-title{color:var(--text)}
 body.dark .chat-messages{background:#1a1410}
 body.dark .chat-msg.bot .chat-msg-bubble{background:#2c2218;color:var(--text)}
-body.dark .payment-info,body.dark .highlight-chip,body.dark .qr-btn{background:#2c2218}
+body.dark .highlight-chip,body.dark .qr-btn{background:#2c2218}
+/* F4: keep payment box light so PromptPay/bank numbers are always readable */
+body.dark .payment-info{background:#fff8ee;border-color:#f0d890}
+body.dark .payment-info-row{color:#4a3520}
+body.dark .payment-info-title{color:#4a3520}
 .theme-toggle{width:40px;height:40px;border-radius:50%;background:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
 .theme-toggle:hover{background:#f3e8d8}
 body.dark .theme-toggle:hover{background:#2c2218}
@@ -459,6 +463,9 @@ body.dark #bottom-nav{background:#241c15}
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible{
   outline:3px solid var(--primary,#c0392b); outline-offset:2px; border-radius:8px;
 }
+/* 4A (หมวด 7): ซ่อนปุ่มแชตลอยเมื่อมี overlay เปิด ไม่ให้ทับปุ่มซื้อ/ชำระเงิน */
+body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
+.wish-btn{opacity:.82}
 </style>
 </head>
 <body>
@@ -882,7 +889,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 <!-- CHAT PANEL -->
 <div id="chat-panel">
   <div class="chat-panel-header">
-    <div class="chat-avatar">🤖</div>
+    <div class="chat-avatar" aria-hidden="true">ไพ</div>
     <div>
       <div class="chat-agent-name">ไพลิน — AI Sale</div>
       <div class="chat-agent-status">● ออนไลน์อยู่ค่ะ</div>
@@ -1491,14 +1498,33 @@ async function openMyOrders(){
   const rows = live!=null ? live.map(o=>({order_id:o.order_id,total:o.total_amount,items:o.items,status:o.status,tracking:o.tracking_number,carrier:o.carrier,at:o.created_at}))
                           : JSON.parse(localStorage.getItem('lt_myorders')||'[]');
   const sub = live!=null ? 'อัปเดตสถานะแบบเรียลไทม์ (สมาชิก)' : 'รายการที่สั่งจากอุปกรณ์นี้ · ล็อกอินเพื่อดูสถานะสด';
+  window._myOrderMap={}; rows.forEach(o=>{ window._myOrderMap[o.order_id]={total:o.total,items:o.items||[]}; });
+  const _payable=(o)=> !o.status || o.status==='PENDING' || o.status==='SLIP_RECEIVED';   // ยังไม่จ่าย → ให้กลับมาชำระได้
   modal.innerHTML=shell(`<div class="order-modal-sub">${sub}</div>
     ${rows.length? rows.map(o=>`<div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--primary)"><span>${o.order_id}</span><span>฿${o.total}</span></div>
       <div style="font-size:.8rem;color:var(--muted);margin-top:4px">${(o.items||[]).map(i=>i.name+' ×'+i.qty).join(', ')}</div>
       ${o.status?orderTrack(o.status):''}
       ${o.tracking?`<div style="font-size:.74rem;margin-top:5px">🚚 ${o.carrier||''} <b>${o.tracking}</b></div>`:''}
+      ${_payable(o)?`<button style="margin-top:8px;padding:7px 16px;border-radius:8px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.8rem;border:none;cursor:pointer" onclick="payAgain('${o.order_id}')">💳 ชำระเงิน / ดู QR</button>`:''}
     </div>`).join('') : '<div style="text-align:center;color:var(--muted);padding:30px">ยังไม่มีออเดอร์ค่ะ</div>'}`);
 }
+// F3: เปิดหน้าชำระเงิน (QR + อัปโหลดสลิป) ของออเดอร์ที่ยังไม่จ่ายขึ้นมาใหม่
+function payAgain(orderId){
+  const o=(window._myOrderMap||{})[orderId]; if(!o) return;
+  const total=Number(o.total)||0;
+  const mm=document.getElementById('myorders-modal'); if(mm) mm.classList.remove('show');
+  window.LAST_ORDER={ orderNum:orderId, total, payMethod:'transfer' };
+  document.getElementById('confirm-order-num').textContent=`เลขออเดอร์: ${orderId}`;
+  document.getElementById('confirm-items-list').innerHTML=
+    (o.items||[]).map(i=>`<div class="confirm-item-row"><span>${(i.name||'')} ×${i.qty}</span><span>฿${(i.price||0)*(i.qty||1)}</span></div>`).join('')+
+    `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
+  const qb=document.getElementById('confirm-qr-block'), sb=document.getElementById('confirm-slip-block'), cb=document.getElementById('confirm-cod-block');
+  if(qb) qb.style.display='block'; if(sb) sb.style.display='block'; if(cb) cb.style.display='none';
+  showPromptPayQR(total); document.getElementById('slip-status').textContent='';
+  document.getElementById('confirm-modal').classList.add('show');
+}
+window.payAgain=payAgain;
 
 // ===== PromptPay QR (EMVCo standard) =====
 function ppCRC16(s){ let c=0xFFFF; for(let i=0;i<s.length;i++){ c^=s.charCodeAt(i)<<8; for(let j=0;j<8;j++){ c=(c&0x8000)?((c<<1)^0x1021):(c<<1); c&=0xFFFF; } } return c.toString(16).toUpperCase().padStart(4,'0'); }
@@ -1835,6 +1861,18 @@ function stickyAdd(){ if(!STICKY_P)return; const ex=cart.find(i=>i.slug===STICKY
 window.stickyAdd=stickyAdd;
 /* hide sticky when product modal closes */
 (function(){ const m=$('product-modal'); if(m){ new MutationObserver(()=>{ if(!m.classList.contains('show')) $('sticky-buy').classList.remove('show'); }).observe(m,{attributes:true,attributeFilter:['class']}); } })();
+
+/* 4A (หมวด 7): ซ่อนปุ่มแชตลอยเมื่อเปิด overlay (ตะกร้า/เช็คเอาท์/โมดัล) ไม่ให้ทับปุ่มซื้อ */
+(function(){
+  const ids=['cart-sidebar','cart-overlay','order-modal','confirm-modal','myorders-modal','product-modal','login-modal','about-panel','about-overlay','zoom-overlay'];
+  const anyOpen=()=>ids.some(id=>{const el=document.getElementById(id);return el&&(el.classList.contains('show')||el.classList.contains('open'));});
+  const sync=()=>document.body.classList.toggle('overlay-open',anyOpen());
+  const obs=new MutationObserver(sync);
+  const attach=()=>ids.forEach(id=>{const el=document.getElementById(id);if(el&&!el._coObs){el._coObs=1;obs.observe(el,{attributes:true,attributeFilter:['class']});}});
+  attach();
+  new MutationObserver(()=>{attach();sync();}).observe(document.body,{childList:true});  // myorders-modal สร้างทีหลัง
+  sync();
+})();
 
 /* ════════ PROMO COUNTDOWN (folded into the announce bar) — Phase 1 ════════ */
 (function(){
