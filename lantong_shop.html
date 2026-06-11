@@ -271,10 +271,140 @@ input,textarea{font-family:inherit}
 
 @media(max-width:600px){
   .nav-btn:not(.solid){display:none}
-  #cart-sidebar{width:100%}
+  #cart-sidebar{width:100%;right:-100%}
   #about-panel{width:100%;left:-100%}
   #chat-panel{right:12px;width:calc(100vw - 24px)}
   #chat-btn{bottom:16px;right:16px}
+}
+
+/* ════════ ROADMAP UPGRADE (Phase 1-7) ════════ */
+/* ── Cart sidebar: transform-based hide (fully off-screen at any width) ── */
+#cart-sidebar{right:0!important;transform:translateX(110%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
+#cart-sidebar.open{transform:translateX(0)}
+/* ── Dark mode ── */
+body.dark{--cream:#1a1410;--text:#f0e6d8;--muted:#b09c88;--border:#3a2f24;--shadow:rgba(0,0,0,.4)}
+body.dark .product-card,body.dark .modal-box,body.dark #cart-sidebar,body.dark #about-panel,body.dark .filter-btn{background:#241c15;color:var(--text)}
+body.dark .form-input,body.dark .chat-input,body.dark #prodSearch,body.dark #prodSort,body.dark #coupon-code{background:#1a1410;color:var(--text)}
+body.dark .product-name,body.dark .product-modal-name,body.dark .cart-item-name{color:var(--text)}
+body.dark .chat-messages{background:#1a1410}
+body.dark .chat-msg.bot .chat-msg-bubble{background:#2c2218;color:var(--text)}
+body.dark .payment-info,body.dark .highlight-chip,body.dark .qr-btn{background:#2c2218}
+.theme-toggle{width:40px;height:40px;border-radius:50%;background:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.theme-toggle:hover{background:#f3e8d8}
+body.dark .theme-toggle:hover{background:#2c2218}
+
+/* ── Free-shipping progress bar ── */
+.freeship-bar{margin-bottom:14px;padding:10px 12px;background:linear-gradient(135deg,#fff8ee,#fdf0d8);border:1px solid #f0d890;border-radius:12px}
+body.dark .freeship-bar{background:#2c2218;border-color:#5a4a30}
+.freeship-txt{font-size:.8rem;color:var(--text);margin-bottom:6px;font-weight:600}
+.freeship-txt b{color:var(--primary)}
+.freeship-track{height:7px;background:#eaddc5;border-radius:5px;overflow:hidden}
+.freeship-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:5px;transition:width .4s ease;width:0}
+.freeship-done{color:#1e8a4f!important}
+
+/* ── Quick-add (+) on card ── */
+.quick-add{position:absolute;bottom:10px;left:10px;width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;font-size:1.3rem;font-weight:700;box-shadow:0 2px 10px rgba(139,0,0,.35);display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s;z-index:2}
+.quick-add:hover{transform:scale(1.12);background:var(--primary2)}
+.product-card.soldout .quick-add{opacity:.4;pointer-events:none}
+
+/* ── Sticky add-to-cart (mobile) ── */
+#sticky-buy{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(0,0,0,.12);padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:850;display:none;align-items:center;gap:12px;transform:translateY(100%);transition:transform .3s}
+#sticky-buy.show{transform:translateY(0)}
+body.dark #sticky-buy{background:#241c15}
+#sticky-buy .sb-info{flex:1;min-width:0}
+#sticky-buy .sb-name{font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+#sticky-buy .sb-price{font-size:.9rem;color:var(--primary);font-weight:700}
+#sticky-buy button{padding:11px 22px;border-radius:12px;background:var(--primary);color:#fff;font-weight:700;font-size:.9rem;white-space:nowrap}
+
+/* ── Skeleton ── */
+.skel-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px var(--shadow)}
+.skel-box{background:linear-gradient(90deg,#eee 25%,#f5f5f5 50%,#eee 75%);background-size:200% 100%;animation:skel 1.3s infinite}
+body.dark .skel-box{background:linear-gradient(90deg,#2a2018 25%,#332820 50%,#2a2018 75%);background-size:200% 100%}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── Cross-sell ── */
+.xsell{margin-top:16px;border-top:1px solid var(--border);padding-top:14px}
+.xsell-title{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:10px}
+.xsell-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.xsell-item{flex:0 0 110px;cursor:pointer;text-align:center}
+.xsell-item img{width:110px;height:80px;object-fit:cover;border-radius:10px}
+.xsell-item .xn{font-size:.72rem;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.xsell-item .xp{font-size:.78rem;color:var(--primary);font-weight:700}
+
+/* ── Recently viewed ── */
+#recently{max-width:1280px;margin:0 auto;padding:0 24px 40px;display:none}
+.recent-row{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px}
+.recent-card{flex:0 0 150px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px var(--shadow);cursor:pointer;transition:transform .2s}
+.recent-card:hover{transform:translateY(-4px)}
+body.dark .recent-card{background:#241c15}
+.recent-card img{width:100%;height:100px;object-fit:cover}
+.recent-card .rc-b{padding:8px 10px}
+.recent-card .rc-n{font-size:.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.recent-card .rc-p{font-size:.85rem;color:var(--primary);font-weight:700}
+
+/* ── Countdown promo ── */
+#promo-countdown{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;text-align:center;padding:9px 16px;font-size:.85rem;font-weight:600;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+#promo-countdown .cd-time{background:rgba(255,255,255,.18);padding:2px 10px;border-radius:8px;font-variant-numeric:tabular-nums;letter-spacing:1px}
+
+/* ── Fly to cart ── */
+.fly-dot{position:fixed;width:46px;height:46px;border-radius:10px;object-fit:cover;z-index:9998;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.3);transition:all .8s cubic-bezier(.3,-0.2,.7,1)}
+.cart-btn.bump{animation:cartBump .4s ease}
+@keyframes cartBump{0%,100%{transform:scale(1)}40%{transform:scale(1.25)}}
+
+/* ── Image zoom ── */
+.product-modal-img{cursor:zoom-in}
+#zoom-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2000;align-items:center;justify-content:center;cursor:zoom-out}
+#zoom-overlay.show{display:flex}
+#zoom-overlay img{max-width:94vw;max-height:94vh;border-radius:12px}
+
+/* ── Trust badges ── */
+#trust{background:var(--cream);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.trust-row{max-width:1100px;margin:0 auto;padding:26px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px}
+.trust-item{text-align:center}
+.trust-item .ti-ic{font-size:1.7rem;margin-bottom:6px}
+.trust-item .ti-t{font-size:.85rem;font-weight:700;color:var(--text)}
+.trust-item .ti-s{font-size:.74rem;color:var(--muted)}
+
+/* ── Story section ── */
+#story{max-width:1000px;margin:0 auto;padding:56px 24px}
+.story-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;margin-top:24px}
+.story-card{background:#fff;border-radius:16px;padding:24px 20px;box-shadow:0 2px 12px var(--shadow)}
+body.dark .story-card{background:#241c15}
+.story-card .sc-ic{font-size:2rem;margin-bottom:10px}
+.story-card h3{font-size:1.05rem;color:var(--primary);margin-bottom:8px}
+.story-card p{font-size:.86rem;line-height:1.65;color:var(--muted)}
+
+/* ── Cookie consent ── */
+#cookie-bar{position:fixed;bottom:0;left:0;right:0;background:var(--dark);color:#fff;padding:14px 20px;z-index:1500;display:none;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;font-size:.82rem}
+#cookie-bar a{color:var(--gold);text-decoration:underline;cursor:pointer}
+#cookie-bar button{padding:8px 20px;border-radius:20px;font-weight:700;font-size:.82rem}
+#cookie-bar .ck-accept{background:var(--gold);color:var(--dark)}
+#cookie-bar .ck-deny{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff}
+
+/* ── Bottom nav (mobile) ── */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:none;z-index:840;padding-bottom:env(safe-area-inset-bottom)}
+body.dark #bottom-nav{background:#241c15}
+#bottom-nav .bn-row{display:flex;justify-content:space-around}
+#bottom-nav button{flex:1;padding:8px 0 7px;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.62rem;color:var(--muted)}
+#bottom-nav button .bn-ic{font-size:1.15rem;position:relative}
+#bottom-nav .bn-badge{position:absolute;top:-4px;right:-8px;background:var(--gold);color:var(--dark);font-size:.55rem;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px}
+
+/* ── For-you reco ── */
+#foryou{max-width:1280px;margin:0 auto;padding:0 24px 48px;display:none}
+
+/* ── Policy modal lists ── */
+.policy-body{padding:28px 26px 32px}
+.policy-body h2{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--primary);margin-bottom:14px}
+.policy-body h3{font-size:.95rem;color:var(--text);margin:16px 0 6px}
+.policy-body p,.policy-body li{font-size:.86rem;line-height:1.7;color:var(--muted)}
+.policy-body ul{padding-left:20px;margin:6px 0}
+
+@media(max-width:600px){
+  #bottom-nav{display:block}
+  #foryou,#recently{padding-bottom:80px}
+  #footer{padding-bottom:74px}
+  #chat-btn{bottom:72px}
+  #toast-container{bottom:140px}
 }
 </style>
 </head>
@@ -286,13 +416,21 @@ input,textarea{font-family:inherit}
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
 
+<!-- PROMO COUNTDOWN -->
+<div id="promo-countdown">
+  <span>🔥 <b data-i18n="promoFlash">โปรพิเศษวันนี้</b> — ลดเพิ่มทุกออเดอร์</span>
+  <span class="cd-time" id="cd-time">--:--:--</span>
+</div>
+
 <!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-logo">@ลานทอง<span>·</span></div>
   <div class="nav-links">
     <button class="nav-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
     <button class="nav-btn" onclick="openAbout()">เกี่ยวกับเรา</button>
-    <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')">CHAT ไพลิน</button>
+    <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')" data-i18n="navChat">CHAT ไพลิน</button>
+    <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🌐</button>
+    <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
     <button class="nav-btn" id="nav-myorders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
     <button class="nav-btn solid" id="nav-login-btn" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
@@ -347,6 +485,41 @@ input,textarea{font-family:inherit}
   <div id="noProducts" style="display:none;text-align:center;padding:40px;color:var(--muted)">😔 ไม่พบสินค้าที่ค้นหา</div>
 </section>
 
+<!-- FOR YOU (AI reco) -->
+<section id="foryou">
+  <div class="section-label">✦ ไพลินเลือกให้</div>
+  <h2 class="section-title" id="foryou-title">แนะนำสำหรับคุณ</h2>
+  <div class="products-grid" id="foryouGrid"></div>
+</section>
+
+<!-- RECENTLY VIEWED -->
+<section id="recently">
+  <div class="section-label">✦ ดูล่าสุด</div>
+  <h2 class="section-title">สินค้าที่คุณเพิ่งดู</h2>
+  <div class="recent-row" id="recentRow"></div>
+</section>
+
+<!-- TRUST BADGES -->
+<section id="trust">
+  <div class="trust-row">
+    <div class="trust-item"><div class="ti-ic">🔒</div><div class="ti-t" data-i18n="trust1t">ชำระเงินปลอดภัย</div><div class="ti-s" data-i18n="trust1s">PromptPay · ตรวจสลิปอัตโนมัติ</div></div>
+    <div class="trust-item"><div class="ti-ic">✅</div><div class="ti-t" data-i18n="trust2t">รีวิวจริงจากลูกค้า</div><div class="ti-s" data-i18n="trust2s">Verified Purchase ทุกรีวิว</div></div>
+    <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿600</div></div>
+    <div class="trust-item"><div class="ti-ic">🍯</div><div class="ti-t" data-i18n="trust4t">วัตถุดิบแท้ คัดสรร</div><div class="ti-s" data-i18n="trust4s">ไม่ใส่สี ไม่ใส่สารกันบูด</div></div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story">
+  <div class="section-label" style="text-align:center">✦ เรื่องราวของเรา</div>
+  <h2 class="section-title" style="text-align:center" data-i18n="storyTitle">กว่าจะเป็นขนมลานทอง</h2>
+  <div class="story-grid">
+    <div class="story-card"><div class="sc-ic">🌾</div><h3 data-i18n="story1t">คัดวัตถุดิบเอง</h3><p data-i18n="story1p">เราเลือกถั่ว งา กล้วย และผลไม้จากแหล่งปลูกท้องถิ่นที่ไว้ใจได้ คัดทีละล็อตเพื่อรสชาติที่สม่ำเสมอ</p></div>
+    <div class="story-card"><div class="sc-ic">👵</div><h3 data-i18n="story2t">สูตรต้นตำรับ</h3><p data-i18n="story2p">รักษาสูตรขนมไทยโบราณที่สืบทอดกันมา ทำสดใหม่ ไม่ใส่สีสังเคราะห์และสารกันบูด</p></div>
+    <div class="story-card"><div class="sc-ic">📦</div><h3 data-i18n="story3t">ส่งถึงมืออย่างใส่ใจ</h3><p data-i18n="story3p">บรรจุภัณฑ์แน่นหนากันกระแทก เก็บความกรอบ ส่งตรงถึงบ้านทั่วไทยพร้อมไพลิน AI ดูแลทุกขั้นตอน</p></div>
+  </div>
+</section>
+
 <!-- TESTIMONIALS -->
 <section id="testimonials">
   <div class="section-label">✦ เสียงจากลูกค้า</div>
@@ -377,6 +550,11 @@ input,textarea{font-family:inherit}
 <footer id="footer">
   <div class="footer-logo">@ลานทอง</div>
   <p>ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
+  <p style="margin-top:10px">
+    <a onclick="openPolicy('privacy')" style="cursor:pointer;color:var(--gold)" data-i18n="fPrivacy">นโยบายความเป็นส่วนตัว</a> ·
+    <a onclick="openPolicy('return')" style="cursor:pointer;color:var(--gold)" data-i18n="fReturn">การคืนสินค้า</a> ·
+    <a onclick="openPolicy('shipping')" style="cursor:pointer;color:var(--gold)" data-i18n="fShip">การจัดส่ง</a>
+  </p>
   <p style="margin-top:8px">🤖 Powered by NEO-S AI Agent System · v1.0 · 2026</p>
 </footer>
 
@@ -433,7 +611,11 @@ input,textarea{font-family:inherit}
           <button class="qty-btn" onclick="changeQty(1)">+</button>
         </div>
       </div>
-      <button class="add-to-cart-btn" onclick="addCurrentToCart()">เพิ่มในตะกร้า</button>
+      <button class="add-to-cart-btn" onclick="addCurrentToCart()" data-i18n="addCart">เพิ่มในตะกร้า</button>
+      <div class="xsell" id="pm-xsell" style="display:none">
+        <div class="xsell-title" data-i18n="buyTogether">🍯 ทานคู่กันอร่อย</div>
+        <div class="xsell-row" id="pm-xsell-row"></div>
+      </div>
       <div id="pm-reviews" style="margin-top:18px;border-top:1px solid var(--border);padding-top:14px"></div>
     </div>
   </div>
@@ -450,6 +632,10 @@ input,textarea{font-family:inherit}
     <div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>ยังไม่มีสินค้าในตะกร้า</p></div>
   </div>
   <div class="cart-footer">
+    <div class="freeship-bar" id="freeship-bar" style="display:none">
+      <div class="freeship-txt" id="freeship-txt"></div>
+      <div class="freeship-track"><div class="freeship-fill" id="freeship-fill"></div></div>
+    </div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
       <input id="coupon-code" placeholder="โค้ดส่วนลด (เช่น LANTONG10)" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:inherit;text-transform:uppercase">
       <button onclick="applyCoupon()" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
@@ -478,7 +664,16 @@ input,textarea{font-family:inherit}
       <input class="form-input" id="order-phone" type="tel" placeholder="0812345678">
       <label class="form-label">ที่อยู่จัดส่ง</label>
       <textarea class="form-input" id="order-address" rows="3" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
-      <div class="payment-info">
+      <label class="form-label" data-i18n="payMethod">วิธีชำระเงิน</label>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:11px;border:2px solid var(--primary);border-radius:10px;cursor:pointer;font-size:.85rem" id="pm-opt-transfer">
+          <input type="radio" name="paymethod" value="transfer" checked onchange="onPayMethodChange()"> <span data-i18n="payTransfer">📲 โอน/PromptPay</span>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:11px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-size:.85rem" id="pm-opt-cod">
+          <input type="radio" name="paymethod" value="cod" onchange="onPayMethodChange()"> <span data-i18n="payCod">🚚 เก็บเงินปลายทาง</span>
+        </label>
+      </div>
+      <div class="payment-info" id="payment-info-box">
         <div class="payment-info-title">💳 ข้อมูลชำระเงิน</div>
         <div class="payment-info-row"><span>PromptPay</span><span id="pi-promptpay">0982695608</span></div>
         <div class="payment-info-row"><span id="pi-bank-label">กสิกรไทย</span><span id="pi-bank-no">1443385696</span></div>
@@ -499,8 +694,13 @@ input,textarea{font-family:inherit}
       <div class="confirm-order-num" id="confirm-order-num"></div>
       <div class="confirm-items" id="confirm-items-list"></div>
 
+      <!-- COD notice -->
+      <div id="confirm-cod-block" style="display:none;background:#eaf7ee;border:1px solid #a8e0bb;border-radius:14px;padding:16px;margin-bottom:16px;font-size:.86rem;color:#1e7a44">
+        🚚 ออเดอร์นี้เลือก <b>เก็บเงินปลายทาง (COD)</b><br>ชำระกับพนักงานส่งเมื่อรับสินค้าค่ะ ไพลินจะยืนยันและจัดส่งให้เลยนะคะ
+      </div>
+
       <!-- PromptPay QR -->
-      <div style="background:#fff8ee;border:1px solid #f0d890;border-radius:14px;padding:18px 16px;margin-bottom:16px">
+      <div id="confirm-qr-block" style="background:#fff8ee;border:1px solid #f0d890;border-radius:14px;padding:18px 16px;margin-bottom:16px">
         <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:10px">📲 สแกนจ่ายด้วย PromptPay</div>
         <div id="pp-qr" style="width:200px;height:200px;margin:0 auto;display:flex;align-items:center;justify-content:center"></div>
         <div style="font-size:.8rem;color:var(--muted);margin-top:8px">ร้านลานทอง · PromptPay 0982695608</div>
@@ -508,7 +708,7 @@ input,textarea{font-family:inherit}
       </div>
 
       <!-- Slip upload + verify -->
-      <div style="text-align:left;margin-bottom:8px">
+      <div id="confirm-slip-block" style="text-align:left;margin-bottom:8px">
         <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px">📤 แจ้งชำระเงิน — อัปโหลดสลิป</div>
         <input type="file" id="slip-file" accept="image/*" style="display:none" onchange="uploadSlip(this)">
         <button class="login-btn" style="background:var(--gold);color:var(--dark)" onclick="document.getElementById('slip-file').click()">เลือกรูปสลิป แล้วตรวจอัตโนมัติ</button>
@@ -548,6 +748,45 @@ input,textarea{font-family:inherit}
 
 <!-- TOAST -->
 <div id="toast-container"></div>
+
+<!-- STICKY ADD-TO-CART (mobile) -->
+<div id="sticky-buy">
+  <div class="sb-info">
+    <div class="sb-name" id="sb-name"></div>
+    <div class="sb-price" id="sb-price"></div>
+  </div>
+  <button onclick="stickyAdd()" data-i18n="addCart">เพิ่มในตะกร้า</button>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav id="bottom-nav">
+  <div class="bn-row">
+    <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="bn-ic">🏠</span><span data-i18n="bnHome">หน้าแรก</span></button>
+    <button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})"><span class="bn-ic">🛍️</span><span data-i18n="bnShop">สินค้า</span></button>
+    <button onclick="toggleChat()"><span class="bn-ic">💬</span><span data-i18n="bnChat">ไพลิน</span></button>
+    <button onclick="openCart()"><span class="bn-ic">🛒<span class="bn-badge" id="bn-cart-badge">0</span></span><span data-i18n="bnCart">ตะกร้า</span></button>
+    <button onclick="bottomNavAccount()"><span class="bn-ic">👤</span><span data-i18n="bnMe">ฉัน</span></button>
+  </div>
+</nav>
+
+<!-- IMAGE ZOOM -->
+<div id="zoom-overlay" onclick="this.classList.remove('show')"><img id="zoom-img" src="" alt=""></div>
+
+<!-- COOKIE CONSENT (PDPA) -->
+<div id="cookie-bar">
+  <span data-i18n="cookieMsg">🍪 เราใช้คุกกี้เพื่อปรับปรุงประสบการณ์และวิเคราะห์การใช้งาน ตาม</span>
+  <a onclick="openPolicy('privacy')" data-i18n="cookieLink">นโยบายความเป็นส่วนตัว</a>
+  <button class="ck-accept" onclick="setConsent(true)" data-i18n="cookieAccept">ยอมรับ</button>
+  <button class="ck-deny" onclick="setConsent(false)" data-i18n="cookieDeny">ปฏิเสธ</button>
+</div>
+
+<!-- POLICY MODAL -->
+<div class="modal-overlay" id="policy-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box" style="max-width:560px">
+    <button class="modal-close-btn" onclick="document.getElementById('policy-modal').classList.remove('show')">✕</button>
+    <div class="policy-body" id="policy-content"></div>
+  </div>
+</div>
 
 <!-- CHAT BUTTON -->
 <button id="chat-btn" onclick="toggleChat()">
@@ -864,7 +1103,8 @@ async function submitOrder() {
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const total = Math.max(0, subtotal - (DISCOUNT||0));
   const items = cart.map(i => ({ product_id: i.id, name: i.name_th, qty: i.qty, price: i.price }));
-  const couponNote = (COUPON && DISCOUNT>0) ? ` · คูปอง ${COUPON.code} -฿${DISCOUNT}` : '';
+  const payMethod = (document.querySelector('input[name="paymethod"]:checked')||{}).value || 'transfer';
+  const couponNote = ((COUPON && DISCOUNT>0) ? ` · คูปอง ${COUPON.code} -฿${DISCOUNT}` : '') + (payMethod==='cod' ? ' · เก็บเงินปลายทาง (COD)' : '');
 
   // ── Save to Supabase (so web orders show up in the admin dashboard) ──
   const custId = (window.MEMBER ? 'USER-' + window.MEMBER.id : 'CUST-WEB-' + Date.now());
@@ -889,9 +1129,13 @@ async function submitOrder() {
   document.getElementById('confirm-items-list').innerHTML =
     items.map(i => `<div class="confirm-item-row"><span>${i.name} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('') +
     `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
-  window.LAST_ORDER = { orderNum, total };
-  showPromptPayQR(total);
-  document.getElementById('slip-status').textContent = '';
+  window.LAST_ORDER = { orderNum, total, payMethod };
+  const cod = payMethod==='cod';
+  const qb=document.getElementById('confirm-qr-block'), sb=document.getElementById('confirm-slip-block'), cb=document.getElementById('confirm-cod-block');
+  if(qb) qb.style.display = cod?'none':'block';
+  if(sb) sb.style.display = cod?'none':'block';
+  if(cb) cb.style.display = cod?'block':'none';
+  if(!cod){ showPromptPayQR(total); document.getElementById('slip-status').textContent = ''; }
   document.getElementById('confirm-modal').classList.add('show');
   cart = [];
   updateCartUI();
@@ -1215,6 +1459,451 @@ async function applyCoupon(){
     updateCartUI();
   }catch(e){ msg.style.color='var(--primary2)'; msg.textContent='ตรวจโค้ดไม่ได้ค่ะ'; }
 }
+</script>
+
+<script>
+/* ═══════════════ ROADMAP UPGRADE — Phase 1-7 (additive layer) ═══════════════ */
+(function(){
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const cartSubtotal=()=>cart.reduce((s,i)=>s+i.price*i.qty,0);
+const cartCount=()=>cart.reduce((s,i)=>s+i.qty,0);
+const FREE_TH=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.free_threshold))||600;
+function track(ev,params){ try{ if(window.gtag) gtag('event',ev,params||{}); }catch(e){} }
+
+/* ════════ THEME (dark mode) — Phase 2 ════════ */
+function toggleTheme(){
+  const dark=!document.body.classList.contains('dark');
+  document.body.classList.toggle('dark',dark);
+  $('theme-toggle').textContent=dark?'☀️':'🌙';
+  localStorage.setItem('lt_theme',dark?'dark':'light');
+  track('toggle_theme',{mode:dark?'dark':'light'});
+}
+window.toggleTheme=toggleTheme;
+if(localStorage.getItem('lt_theme')==='dark'){ document.body.classList.add('dark'); const t=$('theme-toggle'); if(t)t.textContent='☀️'; }
+
+/* ════════ i18n TH/EN — Phase 5 ════════ */
+const I18N={ en:{
+  navChat:'Chat Pailin', addCart:'Add to cart', buyTogether:'🍯 Great together',
+  trust1t:'Secure payment',trust1s:'PromptPay · auto slip check',
+  trust2t:'Real customer reviews',trust2s:'Verified purchase',
+  trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿600',
+  trust4t:'Real selected ingredients',trust4s:'No dye, no preservatives',
+  storyTitle:'The story of Lanthong sweets',
+  story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
+  story2t:'Original recipes',story2p:'We keep traditional Thai recipes, freshly made, no synthetic colors or preservatives.',
+  story3t:'Delivered with care',story3p:'Sturdy packaging keeps the crunch, shipped nationwide with Pailin AI helping every step.',
+  promoFlash:"Today's special", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',
+  cookieMsg:'🍪 We use cookies to improve your experience and analytics, per our',
+  cookieLink:'Privacy Policy',cookieAccept:'Accept',cookieDeny:'Decline',
+  fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you',
+  payMethod:'Payment method', payTransfer:'📲 Transfer/PromptPay', payCod:'🚚 Cash on delivery'
+}};
+function applyLang(lang){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(lang==='en'&&I18N.en[k]){ if(!el.dataset.th)el.dataset.th=el.textContent; el.textContent=I18N.en[k]; }
+    else if(el.dataset.th){ el.textContent=el.dataset.th; }
+  });
+  document.documentElement.lang=lang;
+  const lt=$('lang-toggle'); if(lt)lt.textContent=lang==='en'?'🇹🇭':'🌐';
+  localStorage.setItem('lt_lang',lang);
+}
+function toggleLang(){ applyLang((localStorage.getItem('lt_lang')==='en')?'th':'en'); track('toggle_lang'); }
+window.toggleLang=toggleLang;
+if(localStorage.getItem('lt_lang')==='en') applyLang('en');
+
+/* ════════ FREE-SHIPPING BAR + bottom-nav badge — Phase 1 ════════ */
+const _updateCartUI=updateCartUI;
+updateCartUI=function(){
+  _updateCartUI();
+  const sub=cartSubtotal(), th=FREE_TH(), bar=$('freeship-bar');
+  if(bar){
+    if(cart.length===0){ bar.style.display='none'; }
+    else{
+      bar.style.display='block';
+      const remain=Math.max(0,th-sub), pct=Math.min(100,Math.round(sub/th*100));
+      const en=localStorage.getItem('lt_lang')==='en';
+      $('freeship-txt').innerHTML = remain<=0
+        ? (en?'🎉 <b>You got FREE shipping!</b>':'🎉 <b>คุณได้ส่งฟรีแล้ว!</b>')
+        : (en?`Add <b>฿${remain}</b> more for FREE shipping 🚚`:`ซื้ออีก <b>฿${remain}</b> รับส่งฟรี! 🚚`);
+      $('freeship-txt').classList.toggle('freeship-done',remain<=0);
+      $('freeship-fill').style.width=pct+'%';
+    }
+  }
+  const bn=$('bn-cart-badge'); if(bn){ const c=cartCount(); bn.textContent=c; bn.style.display=c>0?'flex':'none'; }
+};
+
+/* ════════ FLY TO CART micro-interaction — Phase 2 ════════ */
+function flyToCart(imgSrc, fromEl){
+  try{
+    const cartBtn=document.querySelector('.cart-btn'); if(!cartBtn||!fromEl) return;
+    const r=fromEl.getBoundingClientRect(), cr=cartBtn.getBoundingClientRect();
+    const dot=document.createElement('img'); dot.src=imgSrc; dot.className='fly-dot';
+    dot.style.left=r.left+r.width/2-23+'px'; dot.style.top=r.top+r.height/2-23+'px';
+    document.body.appendChild(dot);
+    requestAnimationFrame(()=>{ dot.style.left=cr.left+cr.width/2-23+'px'; dot.style.top=cr.top+cr.height/2-23+'px'; dot.style.opacity='0.2'; dot.style.transform='scale(.3)'; });
+    setTimeout(()=>{ dot.remove(); cartBtn.classList.add('bump'); setTimeout(()=>cartBtn.classList.remove('bump'),400); },800);
+  }catch(e){}
+}
+
+/* ════════ QUICK-ADD on cards — Phase 1 ════════ */
+function addQuickAddButtons(arr){
+  const cards=document.querySelectorAll('#productsGrid .product-card');
+  cards.forEach((card,i)=>{
+    const p=arr[i]; if(!p) return;
+    const wrap=card.querySelector('.product-card-img-wrap'); if(!wrap||wrap.querySelector('.quick-add')||wrap.querySelector('.notify-btn')) return;
+    const av=p.available;
+    if(av!=null&&av<=0){
+      // Phase 3 — notify-when-available on sold-out cards
+      const n=document.createElement('button');
+      n.className='quick-add notify-btn'; n.title='แจ้งเตือนเมื่อมีของ'; n.textContent='🔔';
+      n.style.background='var(--gold)'; n.style.color='var(--dark)'; n.style.fontSize='1rem';
+      n.setAttribute('onclick',`notifyWhenAvailable("${p.slug}",event)`);
+      wrap.appendChild(n);
+      return;
+    }
+    const b=document.createElement('button');
+    b.className='quick-add'; b.title='ใส่ตะกร้าเร็ว'; b.textContent='+';
+    b.setAttribute('onclick',`quickAdd("${p.slug}",event)`);
+    wrap.appendChild(b);
+  });
+}
+function notifyWhenAvailable(slug,ev){
+  if(ev)ev.stopPropagation();
+  const p=PRODUCTS.find(x=>x.slug===slug); if(!p) return;
+  const en=localStorage.getItem('lt_lang')==='en';
+  document.getElementById('chat-panel').classList.add('open');
+  sendQuickReply((en?'Please notify me when this is back in stock: ':'รบกวนแจ้งเตือนเมื่อสินค้านี้กลับมามีของค่ะ: ')+p.name_th);
+  showToast(en?'Pailin will let you know 🔔':'ไพลินจะแจ้งเตือนเมื่อมีของค่ะ 🔔');
+  track('notify_restock',{item_id:p.id});
+}
+window.notifyWhenAvailable=notifyWhenAvailable;
+const _renderProducts=renderProducts;
+renderProducts=function(arr){ _renderProducts(arr); LAST_RENDER=arr; addQuickAddButtons(arr); };
+let LAST_RENDER=PRODUCTS;
+function quickAdd(slug,ev){
+  if(ev){ ev.stopPropagation(); }
+  const p=PRODUCTS.find(x=>x.slug===slug); if(!p) return;
+  const ex=cart.find(i=>i.slug===slug); if(ex)ex.qty++; else cart.push({...p,qty:1});
+  updateCartUI();
+  const img=ev&&ev.target.closest('.product-card')&&ev.target.closest('.product-card').querySelector('img');
+  flyToCart(`รูปสินค้า_web/${slug}.jpg`, img);
+  showToast(`เพิ่ม "${p.name_th}" แล้วค่ะ 🛒`);
+  pushRecent(slug); track('add_to_cart',{item_id:p.id,value:p.price});
+}
+window.quickAdd=quickAdd;
+
+/* ════════ RECENTLY VIEWED — Phase 1 ════════ */
+let RECENT=JSON.parse(localStorage.getItem('lt_recent')||'[]');
+function pushRecent(slug){ RECENT=[slug,...RECENT.filter(s=>s!==slug)].slice(0,10); localStorage.setItem('lt_recent',JSON.stringify(RECENT)); renderRecent(); renderForYou(); }
+function renderRecent(){
+  const sec=$('recently'), row=$('recentRow'); if(!sec) return;
+  const items=RECENT.map(s=>PRODUCTS.find(p=>p.slug===s)).filter(Boolean).slice(0,8);
+  if(items.length<2){ sec.style.display='none'; return; }
+  sec.style.display='block';
+  row.innerHTML=items.map(p=>`<div class="recent-card" onclick="openProductModal('${p.slug}')">
+    <img src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+    <div class="rc-b"><div class="rc-n">${p.name_th}</div><div class="rc-p">฿${p.price}</div></div></div>`).join('');
+}
+
+/* ════════ CROSS-SELL (buy together) — Phase 1 ════════ */
+function crossSellFor(p){
+  let same=PRODUCTS.filter(x=>x.slug!==p.slug&&x.cat===p.cat);
+  let others=PRODUCTS.filter(x=>x.slug!==p.slug&&x.cat!==p.cat);
+  return [...same,...others].filter(x=>x.available==null||x.available>0).slice(0,6);
+}
+function renderCrossSell(p){
+  const box=$('pm-xsell'), row=$('pm-xsell-row'); if(!box) return;
+  const recs=crossSellFor(p); if(!recs.length){ box.style.display='none'; return; }
+  box.style.display='block';
+  row.innerHTML=recs.map(x=>`<div class="xsell-item" onclick="openProductModal('${x.slug}')">
+    <img src="รูปสินค้า_web/${x.slug}.jpg" alt="${x.name_th}" loading="lazy">
+    <div class="xn">${x.name_th}</div><div class="xp">฿${x.price}</div></div>`).join('');
+}
+
+/* ════════ FOR YOU (AI reco) — Phase 6 ════════ */
+function renderForYou(){
+  const sec=$('foryou'), grid=$('foryouGrid'); if(!sec) return;
+  const seenCats={};
+  RECENT.forEach(s=>{ const p=PRODUCTS.find(x=>x.slug===s); if(p)seenCats[p.cat]=(seenCats[p.cat]||0)+2; });
+  (WISHLIST||[]).forEach(s=>{ const p=PRODUCTS.find(x=>x.slug===s); if(p)seenCats[p.cat]=(seenCats[p.cat]||0)+1; });
+  if(!Object.keys(seenCats).length){ sec.style.display='none'; return; }
+  const seenSlugs=new Set([...(RECENT||[]),...(WISHLIST||[])]);
+  const scored=PRODUCTS.filter(p=>!seenSlugs.has(p.slug)&&(p.available==null||p.available>0))
+    .map(p=>({p,s:(seenCats[p.cat]||0)+(p.orig?0.5:0)})).sort((a,b)=>b.s-a.s).slice(0,4).map(o=>o.p);
+  if(scored.length<2){ sec.style.display='none'; return; }
+  sec.style.display='block';
+  grid.innerHTML=scored.map(p=>{
+    const disc=p.orig?Math.round((1-p.price/p.orig)*100):0;
+    return `<div class="product-card" onclick="openProductModal('${p.slug}')" style="cursor:pointer">
+      <div class="product-card-img-wrap"><img class="product-card-img" src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+      ${disc?`<span class="discount-badge">-${disc}%</span>`:''}</div>
+      <div class="product-card-body"><div class="product-cat">${p.cat}</div><div class="product-name">${p.name_th}</div>
+      <div class="product-price-row"><span class="product-price">฿${p.price}</span>${p.orig?`<span class="product-price-orig">฿${p.orig}</span>`:''}</div></div></div>`;
+  }).join('');
+}
+
+/* ════════ PRODUCT MODAL hooks (recent, cross-sell, sticky, zoom, review summary) ════════ */
+const _openProductModal=openProductModal;
+openProductModal=function(slug){
+  _openProductModal(slug);
+  const p=PRODUCTS.find(x=>x.slug===slug); if(!p) return;
+  pushRecent(slug); renderCrossSell(p); renderReviewSummary(p.id);
+  showStickyBuy(p); track('view_item',{item_id:p.id,value:p.price});
+};
+/* image zoom */
+(function(){ const img=$('pm-img'); if(img) img.addEventListener('click',()=>{ const z=$('zoom-overlay'),zi=$('zoom-img'); zi.src=img.src; z.classList.add('show'); }); })();
+
+/* ════════ AI REVIEW SUMMARY — Phase 6 ════════ */
+const REVIEW_KW=['หอม','กรอบ','อร่อย','หวาน','สด','คุ้ม','นุ่ม','เค็ม','มัน','ไม่หวานมาก','บรรจุภัณฑ์','ส่งไว','ราคาดี'];
+function renderReviewSummary(pid){
+  const r=(window.REVIEWS&&REVIEWS[pid])||[]; const host=$('pm-reviews'); if(!host||r.length<2) return;
+  const text=r.map(x=>x.text||'').join(' ');
+  const hits=REVIEW_KW.filter(k=>text.includes(k)).slice(0,4);
+  if(!hits.length) return;
+  const en=localStorage.getItem('lt_lang')==='en';
+  const tag=document.createElement('div');
+  tag.style.cssText='background:#fff8ee;border:1px solid #f0d890;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:.82rem';
+  tag.innerHTML=`🤖 <b>${en?'Pailin sums up':'ไพลินสรุปรีวิว'}:</b> ${en?'customers love':'ลูกค้าชอบ'} ${hits.join(' · ')}`;
+  host.prepend(tag);
+}
+
+/* ════════ STICKY ADD-TO-CART (mobile) — Phase 1 ════════ */
+let STICKY_P=null;
+function showStickyBuy(p){ STICKY_P=p; const en=localStorage.getItem('lt_lang')==='en';
+  $('sb-name').textContent=p.name_th; $('sb-price').textContent='฿'+p.price;
+  if(window.innerWidth<=600) $('sticky-buy').classList.add('show'); }
+function stickyAdd(){ if(!STICKY_P)return; const ex=cart.find(i=>i.slug===STICKY_P.slug); if(ex)ex.qty++; else cart.push({...STICKY_P,qty:1});
+  updateCartUI(); flyToCart(`รูปสินค้า_web/${STICKY_P.slug}.jpg`,$('pm-img')); showToast(`เพิ่ม "${STICKY_P.name_th}" แล้วค่ะ 🛒`); track('add_to_cart',{item_id:STICKY_P.id}); }
+window.stickyAdd=stickyAdd;
+/* hide sticky when product modal closes */
+(function(){ const m=$('product-modal'); if(m){ new MutationObserver(()=>{ if(!m.classList.contains('show')) $('sticky-buy').classList.remove('show'); }).observe(m,{attributes:true,attributeFilter:['class']}); } })();
+
+/* ════════ PROMO COUNTDOWN — Phase 1 ════════ */
+(function(){
+  const bar=$('promo-countdown'), el=$('cd-time'); if(!bar) return;
+  bar.style.display='flex';
+  function tick(){ const now=new Date(); const end=new Date(now); end.setHours(23,59,59,999);
+    let s=Math.floor((end-now)/1000); if(s<0)s=0;
+    const h=String(Math.floor(s/3600)).padStart(2,'0'), m=String(Math.floor(s%3600/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
+    el.textContent=`${h}:${m}:${ss}`; }
+  tick(); setInterval(tick,1000);
+})();
+
+/* ════════ BOTTOM NAV — Phase 2 ════════ */
+function bottomNavAccount(){ if(window.MEMBER) openMyOrders(); else openLogin(); }
+window.bottomNavAccount=bottomNavAccount;
+
+/* ════════ COD payment method toggle — Phase 7 ════════ */
+function onPayMethodChange(){
+  const cod=(document.querySelector('input[name="paymethod"]:checked')||{}).value==='cod';
+  const box=$('payment-info-box'); if(box) box.style.display=cod?'none':'block';
+  const ot=$('pm-opt-transfer'), oc=$('pm-opt-cod');
+  if(ot) ot.style.borderColor=cod?'var(--border)':'var(--primary)';
+  if(oc) oc.style.borderColor=cod?'var(--primary)':'var(--border)';
+}
+window.onPayMethodChange=onPayMethodChange;
+
+/* ════════ POLICY MODAL (PDPA/return/shipping) — Phase 7 ════════ */
+const POLICIES={
+  privacy:{th:`<h2>นโยบายความเป็นส่วนตัว</h2>
+    <p>ร้าน@ลานทอง เก็บข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร ที่อยู่ อีเมล) เพื่อจัดส่งสินค้าและให้บริการเท่านั้น ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
+    <h3>ข้อมูลที่เก็บ</h3><ul><li>ข้อมูลคำสั่งซื้อและการจัดส่ง</li><li>ประวัติการแชตกับไพลิน AI เพื่อปรับปรุงบริการ</li><li>คุกกี้/สถิติการใช้งานเว็บ (เมื่อคุณยอมรับ)</li></ul>
+    <h3>สิทธิของคุณ</h3><p>คุณขอดู แก้ไข หรือลบข้อมูลได้ทุกเมื่อ ผ่านแชตไพลินหรือ LINE OA ของร้าน เราไม่ขายข้อมูลให้บุคคลที่สาม</p>`,
+    en:`<h2>Privacy Policy</h2><p>Lanthong collects personal data (name, phone, address, email) only to fulfill orders and provide service, in line with Thailand's PDPA.</p>
+    <h3>What we collect</h3><ul><li>Order and delivery details</li><li>Chat history with Pailin AI to improve service</li><li>Cookies/usage analytics (with your consent)</li></ul>
+    <h3>Your rights</h3><p>You may view, edit or delete your data anytime via Pailin chat or our LINE OA. We never sell your data.</p>`},
+  return:{th:`<h2>นโยบายการคืนสินค้า</h2><p>เนื่องจากเป็นสินค้าอาหาร เราดูแลคุณภาพทุกชิ้นก่อนจัดส่ง</p>
+    <h3>เปลี่ยน/คืนได้เมื่อ</h3><ul><li>สินค้าชำรุด เสียหาย หรือหมดอายุเมื่อได้รับ</li><li>ส่งผิดรายการ</li></ul>
+    <h3>วิธีแจ้ง</h3><p>ถ่ายรูปสินค้าและกล่องพัสดุ แจ้งไพลินภายใน 3 วันหลังรับของ เราจะส่งใหม่หรือคืนเงินเต็มจำนวนค่ะ</p>`,
+    en:`<h2>Return Policy</h2><p>As food items, every piece is quality-checked before shipping.</p>
+    <h3>Eligible for return</h3><ul><li>Damaged, spoiled or expired on arrival</li><li>Wrong item shipped</li></ul>
+    <h3>How to report</h3><p>Photograph the item and parcel, notify Pailin within 3 days of receipt — we'll reship or fully refund.</p>`},
+  shipping:{th:`<h2>นโยบายการจัดส่ง</h2><ul><li>จัดส่งทั่วไทยผ่านขนส่งมาตรฐาน 3-5 วันทำการหลังยืนยันชำระเงิน</li>
+    <li>ส่งฟรีเมื่อซื้อครบ ฿600</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
+    en:`<h2>Shipping Policy</h2><ul><li>Nationwide standard delivery, 3-5 business days after payment confirmation</li>
+    <li>Free shipping over ฿600</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`}
+};
+function openPolicy(key){ const en=localStorage.getItem('lt_lang')==='en'; const p=POLICIES[key]; if(!p)return;
+  $('policy-content').innerHTML=en?p.en:p.th; $('policy-modal').classList.add('show'); track('view_policy',{policy:key}); }
+window.openPolicy=openPolicy;
+
+/* ════════ COOKIE CONSENT + GA4 — Phase 7 ════════ */
+const GA_MEASUREMENT_ID=''; // ⬅️ เจ้านายใส่รหัส GA4 (เช่น G-XXXXXXXXXX) แล้ว analytics จะเริ่มเก็บ
+function loadGA(){
+  if(!GA_MEASUREMENT_ID||window.gtag) return;
+  const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+GA_MEASUREMENT_ID; document.head.appendChild(s);
+  window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments)};
+  gtag('js',new Date()); gtag('config',GA_MEASUREMENT_ID,{anonymize_ip:true});
+}
+function setConsent(ok){ localStorage.setItem('lt_consent',ok?'1':'0'); $('cookie-bar').style.display='none'; if(ok)loadGA(); }
+window.setConsent=setConsent;
+(function(){ const c=localStorage.getItem('lt_consent');
+  if(c==null){ setTimeout(()=>{ $('cookie-bar').style.display='flex'; },1200); }
+  else if(c==='1'){ loadGA(); } })();
+
+/* ════════ A/B TESTING framework — Phase 7 ════════ */
+function abTest(name,variants){
+  let k='lt_ab_'+name, v=localStorage.getItem(k);
+  if(!v){ v=variants[Math.floor(Math.random()*variants.length)]; localStorage.setItem(k,v); }
+  track('ab_exposure',{test:name,variant:v}); return v;
+}
+/* demo: hero primary CTA copy */
+(function(){ const btn=document.querySelector('.hero-cta-primary'); if(!btn)return;
+  const v=abTest('hero_cta',['ดูสินค้าทั้งหมด','เลือกซื้อขนมไทย']);
+  if(localStorage.getItem('lt_lang')!=='en') btn.textContent=v; })();
+
+/* ════════ PROACTIVE PAILIN — Phase 6 ════════ */
+(function(){
+  if(sessionStorage.getItem('lt_proactive')) return;
+  let fired=false;
+  const fire=()=>{ if(fired)return; fired=true; sessionStorage.setItem('lt_proactive','1');
+    const badge=document.querySelector('#chat-btn .chat-badge'); if(badge)badge.textContent='1';
+    setTimeout(()=>{ if(typeof addChatMsg==='function'){
+      addChatMsg('สวัสดีค่ะ 👋 หาขนมเป็นของฝากอยู่ใช่ไหมคะ? บอกงบหรือโอกาส เช่น "ของขวัญผู้ใหญ่ งบ 500" ไพลินช่วยจัดเซ็ตให้ได้เลยค่ะ 🎁','bot'); } },400);
+  };
+  setTimeout(fire,25000);
+  window.addEventListener('scroll',()=>{ if(window.scrollY>1200) fire(); },{passive:true});
+})();
+/* gift-helper quick reply chip */
+(function(){ const qr=document.querySelector('.chat-quick-replies'); if(qr){ const b=document.createElement('button'); b.className='qr-btn'; b.textContent='🎁 ของขวัญ'; b.setAttribute('onclick',"sendQuickReply('ช่วยเลือกของขวัญ ขนมไทย งบประมาณ 500 บาท')"); qr.appendChild(b); } })();
+
+/* ════════ AI NL SEARCH fallback — Phase 6 ════════ */
+(function(){
+  const none=$('noProducts'); if(!none) return;
+  new MutationObserver(()=>{
+    if(none.style.display==='block'&&!none.querySelector('.ask-pailin')){
+      const q=($('prodSearch')&&$('prodSearch').value||'').trim();
+      if(q.length>1){ const en=localStorage.getItem('lt_lang')==='en';
+        const b=document.createElement('button'); b.className='ask-pailin';
+        b.style.cssText='margin-top:14px;padding:10px 22px;border-radius:22px;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem';
+        b.textContent=en?`Ask Pailin about "${q}"`:`ถามไพลินเรื่อง "${q}" 💬`;
+        b.onclick=()=>{ document.getElementById('chat-panel').classList.add('open'); sendQuickReply(q); track('ai_search',{q}); };
+        none.appendChild(b);
+      }
+    }
+  }).observe(none,{attributes:true,attributeFilter:['style']});
+})();
+
+/* ════════ RE-ORDER + REFERRAL + LINE share — Phase 4 ════════ */
+function reorder(items){
+  try{ items=typeof items==='string'?JSON.parse(decodeURIComponent(items)):items; }catch(e){ return; }
+  let added=0;
+  (items||[]).forEach(it=>{ const p=PRODUCTS.find(x=>x.id===it.product_id||x.name_th===it.name); if(p){ const ex=cart.find(i=>i.slug===p.slug); if(ex)ex.qty+=(it.qty||1); else cart.push({...p,qty:it.qty||1}); added++; } });
+  updateCartUI();
+  if(added){ document.getElementById('myorders-modal')&&document.getElementById('myorders-modal').classList.remove('show'); openCart(); showToast('เพิ่มรายการเดิมลงตะกร้าแล้วค่ะ 🛒'); track('reorder',{items:added}); }
+  else showToast('ไม่พบสินค้าเดิมในแคตตาล็อกค่ะ');
+}
+window.reorder=reorder;
+function myReferralCode(){
+  let c=localStorage.getItem('lt_ref'); if(c) return c;
+  const base=window.MEMBER?window.MEMBER.email.split('@')[0]:'LT';
+  c=(base.slice(0,4).toUpperCase().replace(/[^A-Z0-9]/g,'')||'LT')+String(Math.floor(1000+Math.random()*9000));
+  localStorage.setItem('lt_ref',c); return c;
+}
+function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ร้าน@ลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
+  window.open('https://line.me/R/msg/text/?'+t,'_blank'); track('share',{method:'line'}); }
+window.shareLine=shareLine; window.myReferralCode=myReferralCode;
+/* capture inbound ?ref= */
+(function(){ const ref=new URLSearchParams(location.search).get('ref'); if(ref){ localStorage.setItem('lt_ref_from',ref.slice(0,20)); } })();
+
+/* enrich My Orders modal with re-order + referral + share (hook openMyOrders) */
+const _openMyOrders=typeof openMyOrders==='function'?openMyOrders:null;
+if(_openMyOrders){
+  openMyOrders=async function(){
+    await _openMyOrders();
+    setTimeout(()=>{
+      const modal=document.getElementById('myorders-modal'); if(!modal)return;
+      const box=modal.querySelector('.modal-box>div'); if(!box||box.querySelector('.lt-extra'))return;
+      const en=localStorage.getItem('lt_lang')==='en';
+      const cards=modal.querySelectorAll('[style*="border:1px solid var(--border)"]');
+      const mine=JSON.parse(localStorage.getItem('lt_myorders')||'[]');
+      cards.forEach((card,i)=>{ const o=mine[i]; if(!o||!o.items)return;
+        const b=document.createElement('button'); b.style.cssText='margin-top:8px;padding:6px 16px;border-radius:8px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.78rem;border:none;cursor:pointer';
+        b.textContent=en?'🔁 Order again':'🔁 สั่งซ้ำ'; b.setAttribute('onclick',`reorder(${"'"}${encodeURIComponent(JSON.stringify(o.items))}${"'"})`);
+        card.appendChild(b);
+      });
+      const ref=myReferralCode();
+      // Phase 4 — loyalty points + tier (1 point / ฿100 spent)
+      const spent=mine.reduce((s,o)=>s+(Number(o.total)||0),0);
+      const pts=Math.floor(spent/100);
+      const tier = spent>=5000?{n:en?'Platinum':'แพลทินัม',ic:'💎'}:spent>=2000?{n:en?'Gold':'ทอง',ic:'🥇'}:{n:en?'Silver':'เงิน',ic:'🥈'};
+      const extra=document.createElement('div'); extra.className='lt-extra';
+      extra.style.cssText='margin-top:16px;border-top:1px solid var(--border);padding-top:14px';
+      extra.innerHTML=`<div style="background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:.74rem;opacity:.85">${en?'My points':'แต้มสะสม'}</div><div style="font-family:'Charm','Sarabun',cursive;font-size:1.8rem;font-weight:700">${pts} <span style="font-size:.9rem">${en?'pts':'แต้ม'}</span></div></div>
+            <div style="text-align:right"><div style="font-size:.74rem;opacity:.85">${en?'Tier':'ระดับ'}</div><div style="font-size:1.05rem;font-weight:700">${tier.ic} ${tier.n}</div></div>
+          </div>
+          <div style="font-size:.72rem;opacity:.8;margin-top:6px">${en?'Earn 1 point per ฿100 spent':'ทุกการใช้จ่าย ฿100 = 1 แต้ม'}</div>
+        </div>
+        <div style="font-size:.84rem;font-weight:700;margin-bottom:6px">🎁 ${en?'Invite friends':'ชวนเพื่อน รับส่วนลด'}</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${en?'Share your code — you both get a discount.':'แชร์โค้ดของคุณ ทั้งคุณและเพื่อนรับส่วนลด'}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
+          <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้าน@ลานทอง ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">LINE</button>
+        </div>`;
+      box.appendChild(extra);
+    },120);
+  };
+  window.openMyOrders=openMyOrders;
+}
+
+/* ════════ SCHEMA.ORG JSON-LD — Phase 5 (SEO) ════════ */
+function injectSchema(){
+  try{
+    const items=PRODUCTS.slice(0,15).map((p,idx)=>({
+      "@type":"Product",position:idx+1,name:p.name_th,category:p.cat,
+      image:`https://neos-css.github.io/lantong/รูปสินค้า_web/${p.slug}.jpg`,
+      offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}
+    }));
+    const ld={"@context":"https://schema.org","@type":"Store",name:"ร้าน@ลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
+      url:"https://neos-css.github.io/lantong/",image:"https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg",
+      aggregateRating:{"@type":"AggregateRating",ratingValue:"4.9",reviewCount:"1200"},
+      hasOfferCatalog:{"@type":"OfferCatalog",name:"ขนมไทย",itemListElement:items}};
+    const s=document.createElement('script'); s.type='application/ld+json'; s.textContent=JSON.stringify(ld); document.head.appendChild(s);
+  }catch(e){}
+}
+
+/* ════════ COUNT-UP hero stats — Phase 1 ════════ */
+function countUp(el){
+  const raw=el.textContent.trim(); const m=raw.match(/^([\d,]+)(.*)$/); if(!m) return;
+  const target=parseInt(m[1].replace(/,/g,'')), suffix=m[2]; if(!target) return;
+  let cur=0; const step=Math.max(1,Math.round(target/40));
+  const iv=setInterval(()=>{ cur+=step; if(cur>=target){cur=target;clearInterval(iv);} el.textContent=cur.toLocaleString()+suffix; },28);
+}
+(function(){
+  const stats=document.querySelectorAll('.hero-stats span b'); if(!stats.length) return;
+  const io=new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting){ countUp(e.target); io.unobserve(e.target); } }); });
+  stats.forEach(s=>io.observe(s));
+})();
+
+/* ════════ AGGREGATE RATING line on homepage — Phase 1 ════════ */
+(function(){
+  const t=document.querySelector('#testimonials .section-title'); if(!t||document.getElementById('agg-rating')) return;
+  const d=document.createElement('div'); d.id='agg-rating';
+  d.style.cssText='text-align:center;color:var(--gold);font-size:1.1rem;font-weight:700;margin-bottom:6px';
+  d.innerHTML='★★★★★ <span style="color:rgba(255,255,255,.85);font-size:.9rem;font-weight:500">4.9 '+(localStorage.getItem('lt_lang')==='en'?'from 1,200+ reviews':'จาก 1,200+ รีวิว')+'</span>';
+  t.parentNode.insertBefore(d,t.nextSibling);
+})();
+
+/* ════════ ACCESSIBILITY aria labels — Phase 2 ════════ */
+(function(){
+  const set=(sel,label)=>{ const el=document.querySelector(sel); if(el)el.setAttribute('aria-label',label); };
+  set('.cart-btn','ตะกร้าสินค้า'); set('#chat-btn','แชตกับไพลิน AI');
+  set('#theme-toggle','สลับโหมดมืดสว่าง'); set('#lang-toggle','เปลี่ยนภาษา');
+  document.querySelectorAll('.wish-btn').forEach(b=>b.setAttribute('aria-label','เพิ่มในรายการที่ถูกใจ'));
+})();
+
+/* ════════ INIT (after Supabase sync) ════════ */
+updateCartUI();               // refresh freeship bar + bottom-nav badge from persisted cart
+applyProductView();           // re-render so quick-add buttons appear
+renderRecent(); renderForYou();
+setTimeout(()=>{ applyProductView(); renderRecent(); renderForYou(); injectSchema(); if(localStorage.getItem('lt_lang')==='en')applyLang('en'); },1500);
+
+})();
 </script>
 </body>
 </html>
