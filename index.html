@@ -735,6 +735,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
     </div>
     <div id="coupon-msg" style="font-size:.76rem;margin-bottom:8px;display:none"></div>
     <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span>ส่วนลด</span><span id="cart-discount">-฿0</span></div>
+    <div id="cart-shipping-row" class="cart-total-row" style="display:none;font-size:.86rem"><span data-i18n="shippingLabel">ค่าจัดส่ง</span><span id="cart-shipping">฿0</span></div>
     <div class="cart-total-row">
       <span>ยอดรวม</span>
       <span class="cart-total-price" id="cart-total">฿0</span>
@@ -897,7 +898,8 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- CHAT BUTTON -->
 <button id="chat-btn" onclick="toggleChat()" aria-label="เปิดแชตกับไพลิน AI">
-  💬<span class="chat-badge">AI</span>
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.9-5.4A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>
+  <span class="chat-badge">AI</span>
 </button>
 
 <!-- CHAT PANEL -->
@@ -1178,6 +1180,11 @@ function addCurrentToCart() {
   showToast(`เพิ่ม "${currentProduct.name_th}${v ? ' ('+v.label+')' : ''}" ในตะกร้าแล้วค่ะ 🛒`);
 }
 
+// shipping fee for display (server is authoritative) — config from app_config via SHOP_CFG.
+function shopShipping(prodAfterDiscount){
+  const cfg=window.SHOP_CFG||{}; const fee=Math.max(0,Number(cfg.shipping_fee)||0); const th=Number(cfg.free_threshold)||0;
+  return (fee>0 && !(th>0 && prodAfterDiscount>=th)) ? fee : 0;
+}
 function updateCartUI() {
   localStorage.setItem('lt_cart', JSON.stringify(cart));
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -1186,13 +1193,18 @@ function updateCartUI() {
   if (COUPON && subtotal >= (COUPON.min_total||0)) {
     DISCOUNT = COUPON.discount_type==='percent' ? Math.round(subtotal*COUPON.value/100) : Math.min(COUPON.value, subtotal);
   }
-  const total = Math.max(0, subtotal - DISCOUNT);
+  const prodTotal = Math.max(0, subtotal - DISCOUNT);
+  const shipping = shopShipping(prodTotal);                 // added on top, never discounted
+  const total = prodTotal + shipping;
   const count = cart.reduce((s, i) => s + i.qty, 0);
   const badge = document.getElementById('cart-badge');
   badge.textContent = count;
   badge.style.display = count > 0 ? 'flex' : 'none';
   const dr=document.getElementById('cart-discount-row');
   if(dr){ if(DISCOUNT>0){ dr.style.display='flex'; document.getElementById('cart-discount').textContent='-฿'+DISCOUNT; } else dr.style.display='none'; }
+  const sr=document.getElementById('cart-shipping-row');
+  const en0=localStorage.getItem('lt_lang')==='en';
+  if(sr){ if(cart.length){ sr.style.display='flex'; document.getElementById('cart-shipping').textContent = shipping>0 ? '฿'+shipping : (en0?'FREE':'ฟรี'); } else sr.style.display='none'; }
   document.getElementById('cart-total').textContent = `฿${total}`;
   const listEl = document.getElementById('cart-items-list');
   if (cart.length === 0) {
@@ -1257,11 +1269,13 @@ async function openOrderForm() {
   window.REDEEM_PTS = 0;                                  // reset redeem each checkout
   closeCart();
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const enOF = localStorage.getItem('lt_lang') === 'en';
   document.getElementById('order-summary-mini').innerHTML = `
     <div class="order-summary-mini-title">รายการสั่งซื้อ</div>
     ${cart.map(i => `<div class="order-summary-item"><span>${i.name_th} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('')}
     <div id="order-redeem-slot"></div>
-    <div class="order-summary-total"><span>รวมทั้งหมด</span><span id="order-mini-total">฿${total}</span></div>`;
+    <div class="order-summary-item" id="order-ship-line"><span>${enOF?'Shipping':'ค่าจัดส่ง'}</span><span id="order-ship-amt"></span></div>
+    <div class="order-summary-total"><span>${enOF?'Total':'รวมทั้งหมด'}</span><span id="order-mini-total">฿${total}</span></div>`;
   document.getElementById('order-modal').classList.add('show');
   // Loyalty redeem (Sprint 4C): members can spend points (1 แต้ม = ฿1) — server is authoritative
   if (window.MEMBER) {
@@ -1288,6 +1302,7 @@ async function openOrderForm() {
       </div>`;
     }
   }
+  onRedeemInput();   // set shipping line + grand total (works with or without the redeem slider)
 }
 
 // Cache + fetch the member's authoritative loyalty balance (from /web-orders).
@@ -1309,17 +1324,25 @@ function toggleRedeem(maxUse) {
   window.REDEEM_PTS = on ? maxUse : 0;
   onRedeemInput();
 }
+// Recompute the checkout mini-summary: redeem labels + shipping line + grand total.
+// Shipping is added on top of the product total (after redeem) and is never discounted.
 function onRedeemInput() {
   const on = document.getElementById('redeem-toggle') && document.getElementById('redeem-toggle').checked;
   const r = document.getElementById('redeem-range');
   const pts = on && r ? (parseInt(r.value, 10) || 0) : 0;
   window.REDEEM_PTS = pts;
   const en = localStorage.getItem('lt_lang') === 'en';
-  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const ptsLbl = document.getElementById('redeem-pts-label'), amtLbl = document.getElementById('redeem-amt-label'), miniTot = document.getElementById('order-mini-total');
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const prodAfter = Math.max(0, subtotal - pts);
+  const shipping = shopShipping(prodAfter);
+  const grand = prodAfter + shipping;
+  const ptsLbl = document.getElementById('redeem-pts-label'), amtLbl = document.getElementById('redeem-amt-label');
   if (ptsLbl) ptsLbl.textContent = pts + ' ' + (en ? 'pts' : 'แต้ม');
   if (amtLbl) amtLbl.textContent = '-฿' + pts;
-  if (miniTot) miniTot.textContent = '฿' + Math.max(0, total - pts);
+  const shipAmt = document.getElementById('order-ship-amt');
+  if (shipAmt) shipAmt.textContent = shipping > 0 ? '฿' + shipping : (en ? 'FREE' : 'ฟรี');
+  const miniTot = document.getElementById('order-mini-total');
+  if (miniTot) miniTot.textContent = '฿' + grand;
 }
 
 // Subscription (Sprint 4C): a member subscribes to the current cart; the worker cron
@@ -1828,7 +1851,7 @@ const I18N={ en:{
   aboutF3t:'Fast delivery', aboutF3s:'Sturdy packaging, fresh on arrival',
   aboutStat1:'Customers', aboutStat2:'Products', aboutStat3:'Satisfied',
   noProducts:'😔 No products found', emptyCart:'Your cart is empty', cartTitle:'🛒 Cart', cartTotal:'Total', checkout:'Checkout →',
-  subscribeBtn:'🔁 Subscribe monthly'
+  subscribeBtn:'🔁 Subscribe monthly', shippingLabel:'Shipping'
 }};
 function applyLang(lang){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
