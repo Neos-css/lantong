@@ -549,7 +549,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <section id="products">
   <div class="section-label" data-i18n="prodLabel">✦ สินค้าของเรา</div>
   <h2 class="section-title" data-i18n="prodTitle">ขนมไทยทุกชนิด</h2>
-  <div class="filter-bar">
+  <div class="filter-bar" id="filterBar">
     <button class="filter-btn active" data-i18n="fAll" onclick="filterProducts('all',this)">ทั้งหมด</button>
     <button class="filter-btn" data-i18n="fAncient" onclick="filterProducts('ขนมไทยโบราณ',this)">ขนมไทยโบราณ</button>
     <button class="filter-btn" data-i18n="fFruit" onclick="filterProducts('ผลไม้แปรรูป',this)">ผลไม้แปรรูป</button>
@@ -1042,6 +1042,18 @@ function filterProducts(cat, btn) {
   applyProductView();
 }
 
+// Build category chips dynamically from the live catalog (admin adds a category → chip appears).
+function renderCategoryChips(){
+  const host=document.getElementById('filterBar'); if(!host) return;
+  const en=localStorage.getItem('lt_lang')==='en';
+  const esc=s=>String(s).replace(/[<>"']/g,'');
+  const cats=[...new Set(PRODUCTS.map(p=>p.cat).filter(Boolean))];
+  host.innerHTML = `<button class="filter-btn${CURRENT_CAT==='all'?' active':''}" onclick="filterProducts('all',this)">${en?'All':'ทั้งหมด'}</button>`
+    + cats.map(c=>`<button class="filter-btn${CURRENT_CAT===c?' active':''}" data-cat="${esc(c)}" onclick="filterProducts(this.dataset.cat,this)">${esc(c)}</button>`).join('')
+    + `<button class="filter-btn${CURRENT_CAT==='__wish__'?' active':''}" onclick="filterProducts('__wish__',this)">❤️ ${en?'Favourites':'ที่ถูกใจ'}</button>`;
+}
+window.renderCategoryChips=renderCategoryChips;
+
 renderProducts(PRODUCTS);
 
 // ── Sync live commerce data (price/promo/name/category) from Supabase ──────────
@@ -1087,6 +1099,7 @@ async function syncProductsFromSupabase() {
       pack_size:    byId[p.id].pack_size    || '',
       suitable_for: byId[p.id].suitable_for || '',
     }));
+    renderCategoryChips();   // rebuild chips from the live categories
     applyProductView();
   } catch (e) {
     /* keep static fallback */
@@ -1306,6 +1319,10 @@ async function openOrderForm() {
         </div>
       </div>`;
     }
+  } else {
+    const slot0=document.getElementById('order-redeem-slot');
+    const en0=localStorage.getItem('lt_lang')==='en';
+    if(slot0) slot0.innerHTML=`<div style="background:#f9f0e8;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.78rem;text-align:center;color:var(--text)">🔒 <a onclick="document.getElementById('order-modal').classList.remove('show');openLogin()" style="color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline">${en0?'Sign in':'เข้าสู่ระบบ'}</a> ${en0?'to collect & use points':'เพื่อสะสม & ใช้แต้ม'}</div>`;
   }
   onRedeemInput();   // set shipping line + grand total (works with or without the redeem slider)
 }
@@ -1601,6 +1618,9 @@ try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ c
     ? ('🍯 ' + data.promo_banner + ' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.')
     : ('🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; ' + shipMsg + ' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.');
   set('pi-promptpay', data.promptpay); set('pi-bank-label', data.bank_name); set('pi-bank-no', data.bank_no); set('pi-account', data.bank_account);
+  // editable "เกี่ยวกับเรา" content (overrides static text; drop data-i18n so it isn't reverted on lang toggle)
+  if (data.about_tagline) document.querySelectorAll('.about-tagline').forEach(e=>{ e.removeAttribute('data-i18n'); e.textContent=data.about_tagline; });
+  if (data.about_text)    document.querySelectorAll('.about-text').forEach(e=>{ e.removeAttribute('data-i18n'); e.textContent=data.about_text; });
   if (typeof updateCartUI==='function') updateCartUI();   // refresh cart/free-shipping with real config now
 } catch (e) {} })();
 
@@ -1689,7 +1709,7 @@ async function openMyOrders(){
   let live=null;
   if(window.MEMBER){ try{ const { data:{ session } }=await sbAuth.auth.getSession();
     const res=await fetch(WEB_API+'/web-orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:session.access_token})});
-    const j=await res.json(); if(j.ok){ live=j.orders; window._loyalty=j.loyalty||null; } }catch(e){} }
+    const j=await res.json(); if(j.ok){ live=j.orders; window._loyalty=j.loyalty||null; window._referral=j.referral||null; } }catch(e){} }
   const rows = live!=null ? live.map(o=>({order_id:o.order_id,total:o.total_amount,items:o.items,status:o.status,tracking:o.tracking_number,carrier:o.carrier,at:o.created_at}))
                           : JSON.parse(localStorage.getItem('lt_myorders')||'[]');
   const sub = live!=null ? 'อัปเดตสถานะแบบเรียลไทม์ (สมาชิก)' : 'รายการที่สั่งจากอุปกรณ์นี้ · ล็อกอินเพื่อดูสถานะสด';
@@ -1883,6 +1903,7 @@ function applyLang(lang){
   document.documentElement.lang=lang;
   const lt=$('lang-toggle'); if(lt)lt.textContent=lang==='en'?'🇹🇭':'🌐';
   localStorage.setItem('lt_lang',lang);
+  if(window.renderCategoryChips) window.renderCategoryChips();   // re-translate All/Favourites on dynamic chips
 }
 function toggleLang(){ applyLang((localStorage.getItem('lt_lang')==='en')?'th':'en'); track('toggle_lang'); }
 window.toggleLang=toggleLang;
@@ -2073,8 +2094,16 @@ window.stickyAdd=stickyAdd;
 /* ════════ PROMO COUNTDOWN (folded into the announce bar) — Phase 1 ════════ */
 (function(){
   const el=$('cd-time'); if(!el) return;
-  function tick(){ const now=new Date(); const end=new Date(now); end.setHours(23,59,59,999);
-    let s=Math.floor((end-now)/1000); if(s<0)s=0;
+  const wrap=$('cd-wrap');
+  function tick(){
+    const now=new Date();
+    // admin can set a fixed promo end (app_config.promo_countdown_end); otherwise reset daily
+    let end=null; const cfgEnd=window.SHOP_CFG&&window.SHOP_CFG.promo_countdown_end;
+    if(cfgEnd){ const d=new Date(cfgEnd); if(!isNaN(d.getTime())) end=d; }
+    if(!end){ end=new Date(now); end.setHours(23,59,59,999); }
+    let s=Math.floor((end-now)/1000);
+    if(s<=0){ if(cfgEnd){ if(wrap) wrap.style.display='none'; return; } s=0; }   // fixed promo ended → hide
+    else if(wrap){ wrap.style.display=''; }
     const h=String(Math.floor(s/3600)).padStart(2,'0'), m=String(Math.floor(s%3600/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
     el.textContent=`${h}:${m}:${ss}`; }
   tick(); setInterval(tick,1000);
@@ -2240,38 +2269,44 @@ if(_openMyOrders){
         b.textContent=en?'🔁 Order again':'🔁 สั่งซ้ำ'; b.setAttribute('onclick',`reorder(${"'"}${encodeURIComponent(JSON.stringify(o.items))}${"'"})`);
         card.appendChild(b);
       });
-      const ref=myReferralCode();
-      // register this member's code as an owner row (best-effort; code is unique so dupes 409 harmlessly)
-      if(window.MEMBER && typeof sbInsertAnon==='function') sbInsertAnon('referrals',{ code:ref, owner_id:'USER-'+window.MEMBER.id });
-      // Phase 4 — loyalty points + tier. Members use the authoritative DB balance
-      // (from /web-orders → loyalty_balance view); guests fall back to a local estimate.
-      let pts, tier;
+      // Loyalty + referral (Phase 1). Members only — rates/tiers come from admin config (/web-orders).
+      const lo = window._loyalty || {};
+      const earnBaht=Number(lo.earnBaht)||100, redeemValue=Number(lo.redeemValue)||1, tg=Number(lo.tierGold)||20, tp=Number(lo.tierPlat)||50;
       const tierMap={ platinum:{n:en?'Platinum':'แพลทินัม',ic:'💎'}, gold:{n:en?'Gold':'ทอง',ic:'🥇'}, silver:{n:en?'Silver':'เงิน',ic:'🥈'} };
-      if(window.MEMBER && window._loyalty && typeof window._loyalty.balance==='number'){
-        pts=window._loyalty.balance;
-        tier=tierMap[window._loyalty.tier]||tierMap.silver;
-      } else {
-        let spent=0; cards.forEach(c=>{ const mm=c.textContent.match(/฿([\d,]+)/); if(mm) spent+=parseInt(mm[1].replace(/,/g,'')); });
-        if(!spent) spent=mine.reduce((s,o)=>s+(Number(o.total)||0),0);
-        pts=Math.floor(spent/100);
-        tier = spent>=5000?tierMap.platinum:spent>=2000?tierMap.gold:tierMap.silver;
-      }
       const extra=document.createElement('div'); extra.className='lt-extra';
       extra.style.cssText='margin-top:16px;border-top:1px solid var(--border);padding-top:14px';
-      extra.innerHTML=`<div style="background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><div style="font-size:.74rem;opacity:.85">${en?'My points':'แต้มสะสม'}</div><div style="font-family:'Charm','Sarabun',cursive;font-size:1.8rem;font-weight:700">${pts} <span style="font-size:.9rem">${en?'pts':'แต้ม'}</span></div></div>
-            <div style="text-align:right"><div style="font-size:.74rem;opacity:.85">${en?'Tier':'ระดับ'}</div><div style="font-size:1.05rem;font-weight:700">${tier.ic} ${tier.n}</div></div>
-          </div>
-          <div style="font-size:.72rem;opacity:.8;margin-top:6px">${en?'Earn 1 point per ฿100 spent':'ทุกการใช้จ่าย ฿100 = 1 แต้ม'}</div>
-        </div>
-        <div style="font-size:.84rem;font-weight:700;margin-bottom:6px">🎁 ${en?'Invite friends':'ชวนเพื่อน รับส่วนลด'}</div>
-        <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${en?'Share your code — you both get a discount.':'แชร์โค้ดของคุณ ทั้งคุณและเพื่อนรับส่วนลด'}</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
-          <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้าน@ลานทอง ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">LINE</button>
+      const isMem = window.MEMBER && window._loyalty && typeof window._loyalty.balance==='number';
+      if(!isMem){
+        // points are member-only → encourage sign-in instead of showing fake points
+        extra.innerHTML=`<div style="background:#f9f0e8;border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.4rem">🔒⭐</div>
+          <div style="font-weight:700;margin:6px 0;color:var(--text)">${en?'Sign in to collect & use points':'เข้าสู่ระบบเพื่อสะสม & ใช้แต้ม'}</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px">${en?`Earn 1 point per ฿${earnBaht} · 1 point = ฿${redeemValue} off · invite friends for discounts`:`ทุก ฿${earnBaht} = 1 แต้ม · 1 แต้ม = ส่วนลด ฿${redeemValue} · ชวนเพื่อนรับส่วนลด`}</div>
+          <button onclick="document.getElementById('myorders-modal').classList.remove('show');openLogin()" style="padding:9px 22px;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;border:none;cursor:pointer">${en?'Sign in':'เข้าสู่ระบบ'}</button>
         </div>`;
-      box.appendChild(extra);
+        box.appendChild(extra);
+      } else {
+        const pts=window._loyalty.balance;
+        const tier=tierMap[window._loyalty.tier]||tierMap.silver;
+        const ref=myReferralCode();
+        if(typeof sbInsertAnon==='function') sbInsertAnon('referrals',{ code:ref, owner_id:'USER-'+window.MEMBER.id });
+        const rf=window._referral||{invited:0,earned:0};
+        const nextTier = pts<tg ? (en?`${tg-pts} pts to Gold 🥇`:`อีก ${tg-pts} แต้มเป็นทอง 🥇`) : pts<tp ? (en?`${tp-pts} pts to Platinum 💎`:`อีก ${tp-pts} แต้มเป็นแพลทินัม 💎`) : (en?'Top tier 💎':'ระดับสูงสุดแล้ว 💎');
+        extra.innerHTML=`<div style="background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div style="font-size:.74rem;opacity:.85">${en?'My points':'แต้มสะสม'}</div><div style="font-family:'Charm','Sarabun',cursive;font-size:1.8rem;font-weight:700">${pts} <span style="font-size:.9rem">${en?'pts':'แต้ม'}</span></div></div>
+              <div style="text-align:right"><div style="font-size:.74rem;opacity:.85">${en?'Tier':'ระดับ'}</div><div style="font-size:1.05rem;font-weight:700">${tier.ic} ${tier.n}</div></div>
+            </div>
+            <div style="font-size:.72rem;opacity:.85;margin-top:6px">${en?`฿${earnBaht} = 1 pt · 1 pt = ฿${redeemValue} off · ${nextTier}`:`ทุก ฿${earnBaht} = 1 แต้ม · 1 แต้ม = ฿${redeemValue} · ${nextTier}`}</div>
+          </div>
+          <div style="font-size:.84rem;font-weight:700;margin-bottom:4px">🎁 ${en?'Invite friends':'ชวนเพื่อน รับส่วนลด'}</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-bottom:8px">${en?`Share your link — friends get ฿ off their first order, you get points when they pay. <b>Invited ${rf.invited} · earned ${rf.earned} pts</b>`:`แชร์ลิงก์ของคุณ · เพื่อนได้ส่วนลดออเดอร์แรก คุณได้แต้มเมื่อเพื่อนจ่ายเงิน · <b>ชวนแล้ว ${rf.invited} คน · ได้ ${rf.earned} แต้ม</b>`}</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
+            <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้าน@ลานทอง รับส่วนลด ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">${en?'Share':'แชร์'} LINE</button>
+          </div>`;
+        box.appendChild(extra);
+      }
     },120);
   };
   window.openMyOrders=openMyOrders;
