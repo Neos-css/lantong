@@ -1734,7 +1734,7 @@ function openPolicy(key){ const en=localStorage.getItem('lt_lang')==='en'; const
 window.openPolicy=openPolicy;
 
 /* ════════ COOKIE CONSENT + GA4 — Phase 7 ════════ */
-const GA_MEASUREMENT_ID=''; // ⬅️ เจ้านายใส่รหัส GA4 (เช่น G-XXXXXXXXXX) แล้ว analytics จะเริ่มเก็บ
+const GA_MEASUREMENT_ID='G-LF3TNLTF62'; // GA4 property "ร้านลานทอง เว็บ" (Session 9) — เก็บหลังลูกค้ายอมรับคุกกี้
 function loadGA(){
   if(!GA_MEASUREMENT_ID||window.gtag) return;
   const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+GA_MEASUREMENT_ID; document.head.appendChild(s);
