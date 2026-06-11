@@ -612,6 +612,8 @@ body.dark #bottom-nav{background:#241c15}
   <div class="footer-logo">@ลานทอง</div>
   <p data-i18n="fTagline">ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
   <p style="margin-top:10px">
+    <a onclick="openPolicy('faq')" style="cursor:pointer;color:var(--gold)" data-i18n="fFaq">คำถามพบบ่อย</a> ·
+    <a onclick="openPolicy('contact')" style="cursor:pointer;color:var(--gold)" data-i18n="fContact">ติดต่อเรา</a> ·
     <a onclick="openPolicy('privacy')" style="cursor:pointer;color:var(--gold)" data-i18n="fPrivacy">นโยบายความเป็นส่วนตัว</a> ·
     <a onclick="openPolicy('return')" style="cursor:pointer;color:var(--gold)" data-i18n="fReturn">การคืนสินค้า</a> ·
     <a onclick="openPolicy('shipping')" style="cursor:pointer;color:var(--gold)" data-i18n="fShip">การจัดส่ง</a>
@@ -669,6 +671,7 @@ body.dark #bottom-nav{background:#241c15}
       </div>
       <div class="product-modal-desc" id="pm-desc"></div>
       <div class="product-modal-highlights" id="pm-highlights"></div>
+      <div id="pm-foodinfo" style="margin-bottom:16px"></div>
       <div class="qty-row">
         <span class="qty-label">จำนวน</span>
         <div class="qty-ctrl">
@@ -721,8 +724,13 @@ body.dark #bottom-nav{background:#241c15}
   <div class="modal-box" style="max-width:540px">
     <button class="modal-close-btn" onclick="document.getElementById('order-modal').classList.remove('show')">✕</button>
     <div class="order-modal-body">
-      <div class="order-modal-title">กรอกข้อมูลสั่งซื้อ</div>
-      <div class="order-modal-sub">กรอกข้อมูลด้านล่าง จากนั้นโอนเงินและแจ้งสลิปให้ไพลินค่ะ</div>
+      <div class="checkout-steps" style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;font-size:.72rem;font-weight:700">
+        <span style="color:var(--primary)">① กรอกข้อมูล</span>
+        <span style="color:var(--muted)">→ ② ชำระเงิน</span>
+        <span style="color:var(--muted)">→ ③ เสร็จสิ้น</span>
+      </div>
+      <div class="order-modal-title">ขั้นที่ 1 · กรอกข้อมูลผู้รับ</div>
+      <div class="order-modal-sub">กรอกข้อมูลด้านล่าง จากนั้นกด "ไปชำระเงิน" เพื่อรับ QR และแจ้งสลิปค่ะ</div>
       <div class="order-summary-mini" id="order-summary-mini"></div>
       <label class="form-label">ชื่อ-นามสกุล</label>
       <input class="form-input" id="order-name" type="text" placeholder="เช่น นายสมชาย ใจดี">
@@ -744,8 +752,11 @@ body.dark #bottom-nav{background:#241c15}
         <div class="payment-info-row"><span>PromptPay</span><span id="pi-promptpay">0982695608</span></div>
         <div class="payment-info-row"><span id="pi-bank-label">กสิกรไทย</span><span id="pi-bank-no">1443385696</span></div>
         <div class="payment-info-row"><span>ชื่อบัญชี</span><span id="pi-account">ร้านลานทอง</span></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:.74rem;color:var(--muted);line-height:1.6">
+          🔒 <b>เพื่อความปลอดภัย:</b> โอนเข้าบัญชี/PromptPay ด้านบนของ <b>ร้านลานทอง</b> เท่านั้น · ร้านจะตรวจสลิปก่อนจัดส่ง · หลังโอนเสร็จจะได้รับเลขคำสั่งซื้อทันที
+        </div>
       </div>
-      <button class="confirm-order-btn" onclick="submitOrder()">ยืนยันออเดอร์</button>
+      <button class="confirm-order-btn" onclick="submitOrder()">ไปชำระเงิน →</button>
     </div>
   </div>
 </div>
@@ -754,8 +765,13 @@ body.dark #bottom-nav{background:#241c15}
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal-box" style="max-width:480px">
     <div class="confirm-modal-body">
+      <div class="checkout-steps" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px;font-size:.72rem;font-weight:700">
+        <span style="color:#1e8e4e">✓ กรอกข้อมูล</span>
+        <span style="color:var(--primary)">→ ② ชำระเงิน</span>
+        <span style="color:var(--muted)">→ ③ เสร็จสิ้น</span>
+      </div>
       <div class="confirm-icon">✓</div>
-      <div class="confirm-title">สั่งซื้อสำเร็จ!</div>
+      <div class="confirm-title">บันทึกออเดอร์แล้ว!</div>
       <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับร้าน@ลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ไพลินค่ะ</div>
       <div class="confirm-order-num" id="confirm-order-num"></div>
       <div class="confirm-items" id="confirm-items-list"></div>
@@ -1004,7 +1020,7 @@ const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
 async function syncProductsFromSupabase() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,price,orig_price,category&order=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,price,orig_price,category,ingredients,allergens,shelf_life,storage,pack_size,suitable_for&order=id`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
     if (!res.ok) return;
@@ -1025,6 +1041,12 @@ async function syncProductsFromSupabase() {
       orig:    byId[p.id].orig_price != null ? Number(byId[p.id].orig_price) : null,
       cat:     byId[p.id].category || p.cat,
       available: stockById[p.id] != null ? Number(stockById[p.id]) : null,
+      ingredients:  byId[p.id].ingredients  || '',
+      allergens:    byId[p.id].allergens    || '',
+      shelf_life:   byId[p.id].shelf_life   || '',
+      storage:      byId[p.id].storage      || '',
+      pack_size:    byId[p.id].pack_size    || '',
+      suitable_for: byId[p.id].suitable_for || '',
     }));
     applyProductView();
   } catch (e) {
@@ -1054,10 +1076,26 @@ function openProductModal(slug) {
   }
   document.getElementById('pm-desc').textContent = p.desc;
   document.getElementById('pm-highlights').innerHTML = p.hl.map(h => `<span class="highlight-chip">✓ ${h}</span>`).join('');
+  renderFoodInfo(p);
   renderProductReviews(p.id);
   document.getElementById('product-modal').classList.add('show');
 }
 
+function renderFoodInfo(p){
+  const host=document.getElementById('pm-foodinfo'); if(!host) return;
+  const esc=s=>String(s||'').replace(/[<>]/g,'');
+  const rows=[
+    ['🧾','ส่วนประกอบ',p.ingredients],
+    ['⚠️','สารก่อภูมิแพ้',p.allergens],
+    ['📦','ขนาด/จำนวน',p.pack_size],
+    ['⏳','อายุการเก็บ',p.shelf_life],
+    ['🧊','วิธีเก็บรักษา',p.storage],
+    ['🎁','เหมาะสำหรับ',p.suitable_for],
+  ].filter(r=>r[2]&&String(r[2]).trim());
+  if(!rows.length){ host.innerHTML=''; return; }
+  host.innerHTML='<div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--text)">📋 ข้อมูลสินค้า</div>'+
+    '<div style="display:grid;gap:6px">'+rows.map(r=>`<div style="display:flex;gap:8px;font-size:.82rem;line-height:1.5"><span style="flex-shrink:0">${r[0]} <b style="color:var(--text)">${r[1]}:</b></span><span style="color:var(--muted)">${esc(r[2])}</span></div>`).join('')+'</div>';
+}
 function changeQty(d) {
   const el = document.getElementById('pm-qty');
   const v = parseInt(el.value) + d;
@@ -1128,6 +1166,8 @@ function closeCart() {
 
 function openOrderForm() {
   if (cart.length === 0) { showToast('ยังไม่มีสินค้าในตะกร้าค่ะ'); return; }
+  // fresh idempotency key per checkout attempt (guards double-submit on the worker)
+  window.CHECKOUT_REF = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   closeCart();
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
   document.getElementById('order-summary-mini').innerHTML = `
@@ -1164,47 +1204,65 @@ async function submitOrder() {
   const phone = document.getElementById('order-phone').value.trim();
   const address = document.getElementById('order-address').value.trim();
   if (!name || !phone || !address) { showToast('กรุณากรอกข้อมูลให้ครบถ้วนค่ะ'); return; }
-  try { localStorage.setItem('lt_profile', JSON.stringify({ name, phone, address })); } catch (e) {}
-  const orderNum = 'LT-' + String(Date.now()).slice(-6);
-  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const total = Math.max(0, subtotal - (DISCOUNT||0));
-  const items = cart.map(i => ({ product_id: i.id, name: i.name_th, qty: i.qty, price: i.price }));
-  const payMethod = (document.querySelector('input[name="paymethod"]:checked')||{}).value || 'transfer';
-  const couponNote = ((COUPON && DISCOUNT>0) ? ` · คูปอง ${COUPON.code} -฿${DISCOUNT}` : '') + (payMethod==='cod' ? ' · เก็บเงินปลายทาง (COD)' : '');
-
-  // ── Save to Supabase (so web orders show up in the admin dashboard) ──
-  const custId = (window.MEMBER ? 'USER-' + window.MEMBER.id : 'CUST-WEB-' + Date.now());
-  await sbInsertAnon('customers', { customer_id: custId, name, phone, address, platform: 'web', source: (localStorage.getItem('lt_source') || LT_SOURCE), note: window.MEMBER ? window.MEMBER.email : '' });
-  const saved = await sbInsertAnon('orders', {
-    order_id: orderNum, customer_id: custId, items: items, total_amount: total,
-    delivery_type: 'delivery', shipping_address: `${name} | ${phone} | ${address}`,
-    status: 'PENDING', note: (window.MEMBER ? ('เว็บ · สมาชิก ' + window.MEMBER.email) : 'สั่งผ่านเว็บไซต์') + couponNote,
-  });
-  if (!saved) showToast('บันทึกออนไลน์มีปัญหา แต่ทีมงานจะติดต่อกลับนะคะ');
-
-  // remember this order on the device for "ออเดอร์ของฉัน"
+  if (window._submitting) return;                       // guard against double-submit
+  window._submitting = true;
+  const btn = document.querySelector('#order-modal .confirm-order-btn');
+  const btnLabel = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'กำลังบันทึก...'; }
   try {
-    const mine = JSON.parse(localStorage.getItem('lt_myorders') || '[]');
-    mine.unshift({ order_id: orderNum, total, items, at: new Date().toISOString() });
-    localStorage.setItem('lt_myorders', JSON.stringify(mine.slice(0, 50)));
-  } catch (e) {}
+    try { localStorage.setItem('lt_profile', JSON.stringify({ name, phone, address })); } catch (e) {}
+    const payMethod = (document.querySelector('input[name="paymethod"]:checked')||{}).value || 'transfer';
+    let memberToken = '';
+    try { const s = await sbAuth.auth.getSession(); memberToken = (s.data && s.data.session && s.data.session.access_token) || ''; } catch (e) {}
 
-  // ── Confirmation UX ──
-  document.getElementById('order-modal').classList.remove('show');
-  document.getElementById('confirm-order-num').textContent = `เลขออเดอร์: ${orderNum}`;
-  document.getElementById('confirm-items-list').innerHTML =
-    items.map(i => `<div class="confirm-item-row"><span>${i.name} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('') +
-    `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
-  window.LAST_ORDER = { orderNum, total, payMethod };
-  const cod = payMethod==='cod';
-  const qb=document.getElementById('confirm-qr-block'), sb=document.getElementById('confirm-slip-block'), cb=document.getElementById('confirm-cod-block');
-  if(qb) qb.style.display = cod?'none':'block';
-  if(sb) sb.style.display = cod?'none':'block';
-  if(cb) cb.style.display = cod?'block':'none';
-  if(!cod){ showPromptPayQR(total); document.getElementById('slip-status').textContent = ''; }
-  document.getElementById('confirm-modal').classList.add('show');
-  cart = [];
-  updateCartUI();
+    // Create the order on the WORKER so prices/stock/coupon are validated server-side
+    // (client amounts are never trusted). order_id is idempotent via CHECKOUT_REF.
+    const res = await fetch(WEB_API + '/web-order-create', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: cart.map(i => ({ product_id: i.id, qty: i.qty })),
+        name, phone, address, payMethod,
+        coupon: (COUPON && COUPON.code) || '',
+        client_ref: window.CHECKOUT_REF || '',
+        member_token: memberToken,
+        source: localStorage.getItem('lt_source') || LT_SOURCE,
+      }),
+    });
+    const j = await res.json();
+    if (!j.ok) { showToast(j.message || 'สั่งซื้อไม่สำเร็จค่ะ 🙏 ลองใหม่นะคะ'); return; }
+
+    const orderNum = j.order_id, total = j.total, items = j.items || [];
+
+    // remember this order on the device for "ออเดอร์ของฉัน"
+    try {
+      const mine = JSON.parse(localStorage.getItem('lt_myorders') || '[]');
+      mine.unshift({ order_id: orderNum, total, items, at: new Date().toISOString() });
+      localStorage.setItem('lt_myorders', JSON.stringify(mine.slice(0, 50)));
+    } catch (e) {}
+
+    // ── Confirmation UX (step 2) ──
+    document.getElementById('order-modal').classList.remove('show');
+    document.getElementById('confirm-order-num').textContent = `เลขออเดอร์: ${orderNum}`;
+    document.getElementById('confirm-items-list').innerHTML =
+      items.map(i => `<div class="confirm-item-row"><span>${i.name} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('') +
+      `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
+    window.LAST_ORDER = { orderNum, total, payMethod };
+    const cod = payMethod === 'cod';
+    const qb=document.getElementById('confirm-qr-block'), sb=document.getElementById('confirm-slip-block'), cb=document.getElementById('confirm-cod-block');
+    if(qb) qb.style.display = cod?'none':'block';
+    if(sb) sb.style.display = cod?'none':'block';
+    if(cb) cb.style.display = cod?'block':'none';
+    if(!cod){ showPromptPayQR(total); document.getElementById('slip-status').textContent = ''; }
+    document.getElementById('confirm-modal').classList.add('show');
+    cart = [];
+    updateCartUI();
+    window.CHECKOUT_REF = '';                            // consumed; next checkout makes a fresh ref
+  } catch (e) {
+    showToast('เชื่อมต่อไม่ได้ค่ะ 🙏 ลองใหม่อีกครั้งนะคะ');
+  } finally {
+    window._submitting = false;
+    if (btn) { btn.disabled = false; btn.textContent = btnLabel || 'ไปชำระเงิน →'; }
+  }
 }
 
 function openAbout() {
@@ -1462,6 +1520,9 @@ function showPromptPayQR(amount){
 async function uploadSlip(input){
   const file=input.files&&input.files[0]; if(!file) return;
   const status=document.getElementById('slip-status');
+  // validate file before upload (S2.5)
+  if(!/^image\//.test(file.type||'')){ status.style.color='var(--primary2)'; status.textContent='⚠️ ต้องเป็นไฟล์รูปภาพเท่านั้นค่ะ (เช่น .jpg .png)'; input.value=''; return; }
+  if(file.size>6*1024*1024){ status.style.color='var(--primary2)'; status.textContent='⚠️ ไฟล์ใหญ่เกินไปค่ะ (เกิน 6MB) รบกวนย่อรูปก่อนนะคะ'; input.value=''; return; }
   status.style.color='var(--muted)'; status.textContent='⏳ กำลังตรวจสลิป...';
   const order=window.LAST_ORDER||{};
   const reader=new FileReader();
@@ -1813,11 +1874,40 @@ const POLICIES={
   shipping:{th:`<h2>นโยบายการจัดส่ง</h2><ul><li>จัดส่งทั่วไทยผ่านขนส่งมาตรฐาน 3-5 วันทำการหลังยืนยันชำระเงิน</li>
     <li>ส่งฟรีเมื่อซื้อครบ ฿600</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
     en:`<h2>Shipping Policy</h2><ul><li>Nationwide standard delivery, 3-5 business days after payment confirmation</li>
-    <li>Free shipping over ฿600</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`}
+    <li>Free shipping over ฿600</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`},
+  faq:{th:`<h2>คำถามที่พบบ่อย (FAQ)</h2>
+    <h3>🚚 จัดส่งกี่วัน?</h3><p>3-5 วันทำการหลังยืนยันการชำระเงิน · ส่งทั่วไทยผ่านขนส่งมาตรฐาน</p>
+    <h3>💰 ค่าส่งเท่าไร?</h3><p>ส่งฟรีเมื่อซื้อครบ ฿600 · ต่ำกว่านั้นคิดค่าส่งตามจริง (ระบบแจ้งยอดก่อนยืนยัน)</p>
+    <h3>🗓️ ขนมเก็บได้นานไหม?</h3><p>ดูช่อง "อายุการเก็บ" และ "วิธีเก็บรักษา" ในหน้าสินค้าแต่ละชิ้น · ขนมแห้งส่วนใหญ่เก็บได้หลายสัปดาห์เมื่อปิดถุงสนิทในที่แห้ง</p>
+    <h3>💳 ชำระเงินอย่างไร?</h3><p>โอน/PromptPay (เลขร้านในหน้าชำระเงิน) แล้วแจ้งสลิป ระบบตรวจอัตโนมัติ · หรือเลือกเก็บเงินปลายทาง (COD)</p>
+    <h3>📦 ของเสียหาย/ส่งผิดทำอย่างไร?</h3><p>ถ่ายรูปสินค้า+กล่องพัสดุ แจ้งไพลินภายใน 3 วันหลังรับของ เราส่งใหม่หรือคืนเงินเต็มจำนวนค่ะ</p>
+    <h3>🥜 มีข้อมูลสารก่อภูมิแพ้ไหม?</h3><p>ดูได้ในหน้าสินค้าแต่ละชิ้น (ส่วนประกอบ/สารก่อภูมิแพ้) · หากแพ้อาหารบางชนิด สอบถามไพลินก่อนสั่งได้เลยค่ะ</p>`,
+    en:`<h2>FAQ</h2>
+    <h3>🚚 How long is delivery?</h3><p>3-5 business days after payment confirmation, nationwide.</p>
+    <h3>💰 Shipping cost?</h3><p>Free over ฿600; otherwise actual rate (shown before you confirm).</p>
+    <h3>🗓️ Shelf life?</h3><p>See "shelf life" and "storage" on each product page. Most dry snacks keep for weeks when sealed and kept dry.</p>
+    <h3>💳 How to pay?</h3><p>Bank transfer / PromptPay (details on checkout) then upload the slip for auto-verification, or Cash on Delivery (COD).</p>
+    <h3>📦 Damaged / wrong item?</h3><p>Photograph the item and parcel, tell Pailin within 3 days — we reship or fully refund.</p>
+    <h3>🥜 Allergen info?</h3><p>Shown on each product page (ingredients/allergens). If you have allergies, ask Pailin before ordering.</p>`},
+  contact:{th:`<h2>ติดต่อร้าน@ลานทอง</h2>
+    <p>เรายินดีตอบทุกคำถามค่ะ 💛</p>
+    <ul><li>💬 <b>แชตไพลิน AI</b> บนเว็บนี้ — ตอบอัตโนมัติ 24 ชม. (ปุ่มแชตมุมขวาล่าง)</li>
+    <li>📱 <b>LINE OA:</b> @ลานทอง (แอดมินตอบกลับในเวลาทำการ)</li>
+    <li>🏪 <b>ร้านลานทอง</b> — ขนมไทยคัดสรร ส่งตรงถึงบ้าน</li></ul>
+    <p style="margin-top:10px">ชำระเงิน: PromptPay 0982695608 / กสิกรไทย 1443385696 (ชื่อบัญชี ร้านลานทอง) — โปรดโอนเข้าบัญชีนี้เท่านั้น</p>`,
+    en:`<h2>Contact Lanthong</h2>
+    <p>We're happy to help 💛</p>
+    <ul><li>💬 <b>Pailin AI chat</b> on this site — 24/7 auto-reply (bottom-right button)</li>
+    <li>📱 <b>LINE OA:</b> @lanthong (admin replies during business hours)</li>
+    <li>🏪 <b>Lanthong</b> — curated Thai sweets, delivered to your door</li></ul>
+    <p style="margin-top:10px">Payment: PromptPay 0982695608 / Kasikornbank 1443385696 (acct: Lanthong) — transfer to this account only.</p>`}
 };
 function openPolicy(key){ const en=localStorage.getItem('lt_lang')==='en'; const p=POLICIES[key]; if(!p)return;
-  $('policy-content').innerHTML=en?p.en:p.th; $('policy-modal').classList.add('show'); track('view_policy',{policy:key}); }
+  $('policy-content').innerHTML=en?p.en:p.th; $('policy-modal').classList.add('show'); track('view_policy',{policy:key});
+  try{ history.replaceState(null,'','#'+key); }catch(e){} }
 window.openPolicy=openPolicy;
+// shareable deep links: #privacy #shipping #return(s) #faq #contact
+(function(){ try{ let h=(location.hash||'').replace('#',''); if(h==='returns') h='return'; if(h && POLICIES[h]) setTimeout(()=>openPolicy(h),350); }catch(e){} })();
 
 /* ════════ COOKIE CONSENT + GA4 — Phase 7 ════════ */
 const GA_MEASUREMENT_ID='G-LF3TNLTF62'; // GA4 property "ร้านลานทอง เว็บ" (Session 9) — เก็บหลังลูกค้ายอมรับคุกกี้
