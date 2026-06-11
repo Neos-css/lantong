@@ -455,6 +455,10 @@ body.dark #bottom-nav{background:#241c15}
   #chat-btn{bottom:72px}
   #toast-container{bottom:140px}
 }
+/* A11y (S3.3): visible keyboard focus */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible{
+  outline:3px solid var(--primary,#c0392b); outline-offset:2px; border-radius:8px;
+}
 </style>
 </head>
 <body>
@@ -495,7 +499,7 @@ body.dark #bottom-nav{background:#241c15}
     <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
     <button class="nav-btn solid" id="nav-login-btn" data-i18n="navLogin" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
-    <button class="cart-btn" onclick="openCart()">
+    <button class="cart-btn" onclick="openCart()" aria-label="เปิดตะกร้าสินค้า">
       🛒<span class="cart-badge" id="cart-badge">0</span>
     </button>
   </div>
@@ -532,7 +536,7 @@ body.dark #bottom-nav{background:#241c15}
     <button class="filter-btn" data-i18n="fWish" onclick="filterProducts('__wish__',this)">❤️ ที่ถูกใจ</button>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px">
-    <input id="prodSearch" type="search" placeholder="🔍 ค้นหาขนม..." data-i18n-ph="searchPh" oninput="applyProductView()"
+    <input id="prodSearch" type="search" placeholder="🔍 ค้นหาขนม..." data-i18n-ph="searchPh" oninput="applyProductView()" aria-label="ค้นหาสินค้า"
       style="flex:1;min-width:180px;padding:9px 14px;border:2px solid var(--border);border-radius:20px;font-size:.88rem;font-family:inherit;color:var(--text);background:#fff;outline:none">
     <select id="prodSort" onchange="applyProductView()"
       style="padding:9px 14px;border:2px solid var(--border);border-radius:20px;font-size:.85rem;font-family:inherit;color:var(--text);background:#fff;cursor:pointer">
@@ -675,9 +679,9 @@ body.dark #bottom-nav{background:#241c15}
       <div class="qty-row">
         <span class="qty-label">จำนวน</span>
         <div class="qty-ctrl">
-          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <button class="qty-btn" onclick="changeQty(-1)" aria-label="ลดจำนวน">−</button>
           <input class="qty-num" id="pm-qty" type="number" value="1" min="1" max="99" readonly>
-          <button class="qty-btn" onclick="changeQty(1)">+</button>
+          <button class="qty-btn" onclick="changeQty(1)" aria-label="เพิ่มจำนวน">+</button>
         </div>
       </div>
       <button class="add-to-cart-btn" onclick="addCurrentToCart()" data-i18n="addCart">เพิ่มในตะกร้า</button>
@@ -871,7 +875,7 @@ body.dark #bottom-nav{background:#241c15}
 </div>
 
 <!-- CHAT BUTTON -->
-<button id="chat-btn" onclick="toggleChat()">
+<button id="chat-btn" onclick="toggleChat()" aria-label="เปิดแชตกับไพลิน AI">
   💬<span class="chat-badge">AI</span>
 </button>
 
@@ -974,7 +978,7 @@ function renderProducts(arr) {
         <img class="product-card-img" src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
         ${disc ? `<span class="discount-badge">-${disc}%</span>` : ''}
         ${stockBadge}
-        <button class="wish-btn${isWished(p.slug)?' on':''}" title="ถูกใจ" onclick="toggleWish(event,'${p.slug}')">${isWished(p.slug)?'❤️':'🤍'}</button>
+        <button class="wish-btn${isWished(p.slug)?' on':''}" title="ถูกใจ" aria-label="เพิ่ม/เอาออกจากรายการที่ถูกใจ" onclick="toggleWish(event,'${p.slug}')">${isWished(p.slug)?'❤️':'🤍'}</button>
       </div>
       <div class="product-card-body">
         <div class="product-cat">${p.cat}</div>
@@ -1139,9 +1143,9 @@ function updateCartUI() {
           <div class="cart-item-name">${item.name_th}</div>
           <div class="cart-item-price">฿${item.price} / ชิ้น · รวม ฿${item.price * item.qty}</div>
           <div class="cart-item-qty">
-            <button class="cart-qty-btn" onclick="changeCartQty(${idx},-1)">−</button>
+            <button class="cart-qty-btn" onclick="changeCartQty(${idx},-1)" aria-label="ลดจำนวน">−</button>
             <span class="cart-qty-num">${item.qty}</span>
-            <button class="cart-qty-btn" onclick="changeCartQty(${idx},1)">+</button>
+            <button class="cart-qty-btn" onclick="changeCartQty(${idx},1)" aria-label="เพิ่มจำนวน">+</button>
           </div>
         </div>
         <button class="cart-item-remove" onclick="removeFromCart(${idx})">✕</button>
