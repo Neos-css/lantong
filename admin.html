@@ -517,6 +517,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
             <select id="cp-type" aria-label="ประเภทส่วนลด"><option value="percent">% เปอร์เซ็นต์</option><option value="baht">฿ บาท</option></select>
             <input id="cp-value" type="number" min="0" placeholder="ส่วนลด" style="width:84px" aria-label="ค่าส่วนลด">
             <input id="cp-min" type="number" min="0" placeholder="ซื้อขั้นต่ำ ฿" style="width:104px" aria-label="ยอดซื้อขั้นต่ำ">
+            <input id="cp-peruser" type="number" min="0" placeholder="ต่อคน (0=ไม่จำกัด)" style="width:130px" aria-label="จำกัดต่อคน" title="ลูกค้า 1 คนใช้ได้กี่ครั้ง (0 = ไม่จำกัด)">
+            <input id="cp-maxuses" type="number" min="0" placeholder="รวมทั้งหมด (0=ไม่จำกัด)" style="width:150px" aria-label="จำกัดรวม" title="ใช้ได้รวมกี่ครั้ง (0 = ไม่จำกัด)">
             <button class="btn btn-primary btn-sm" onclick="addCoupon()">➕ เพิ่ม</button>
           </div>
           <div id="couponsTable"><div class="loading">กด 🔄 เพื่อโหลด…</div></div>
@@ -572,7 +574,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         <div class="card">
           <div class="section-title">🏪 ข้อมูลร้าน</div>
           <div class="field"><label>ชื่อร้าน</label><input id="cf-shop_name"></div>
-          <div class="field"><label>ข้อความแบนเนอร์โปร (บนเว็บ)</label><input id="cf-promo_banner"></div>
+          <div class="field"><label>ข้อความแบนเนอร์โปร (บนเว็บ · เว้นว่าง = ระบบใส่ข้อความต้อนรับ+ค่าส่งให้)</label><input id="cf-promo_banner"></div>
+          <div class="field"><label>โปรหมดเวลาเมื่อ (นับถอยหลังบนแบนเนอร์ · เว้นว่าง = รีเซ็ตรายวัน)</label><input id="cf-promo_countdown_end" type="datetime-local"></div>
+          <div class="section-title" style="margin-top:16px">📖 เกี่ยวกับเรา (หน้าเว็บ)</div>
+          <div class="field"><label>คำโปรย (ใต้โลโก้)</label><input id="cf-about_tagline" placeholder="ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน"></div>
+          <div class="field"><label>เนื้อหาเกี่ยวกับเรา</label><textarea id="cf-about_text" rows="3" style="width:100%;font-family:inherit;padding:8px;border:1px solid var(--border);border-radius:8px"></textarea></div>
           <div class="section-title" style="margin-top:16px">💳 บัญชีรับเงิน</div>
           <div class="field"><label>PromptPay</label><input id="cf-promptpay"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -592,6 +598,23 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
           <div id="cf-status" style="font-size:.78rem;color:var(--muted);margin-top:10px"></div>
           <p style="font-size:.74rem;color:var(--muted);margin-top:14px">💡 ข้อมูลนี้เว็บร้านดึงไปใช้ทันที (ชื่อร้าน/บัญชี/ค่าส่ง/แบนเนอร์) · ⚠️ เลข PromptPay สำหรับ QR ใน LINE ตั้งที่ Worker secret แยก (แจ้งลิซ่า/พลอยให้เปลี่ยนได้)</p>
         </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="section-title">⭐ ระบบสะสมแต้ม & ชวนเพื่อน (เฉพาะสมาชิก)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field" style="margin:0"><label>ใช้จ่ายกี่บาท = 1 แต้ม</label><input id="cf-loyalty_earn_baht" type="number" min="1"></div>
+          <div class="field" style="margin:0"><label>1 แต้ม = ส่วนลดกี่บาท</label><input id="cf-loyalty_redeem_value" type="number" min="1"></div>
+          <div class="field" style="margin:0"><label>ระดับทอง 🥇 (แต้มขั้นต่ำ)</label><input id="cf-tier_gold" type="number" min="0"></div>
+          <div class="field" style="margin:0"><label>ระดับแพลทินัม 💎 (แต้มขั้นต่ำ)</label><input id="cf-tier_platinum" type="number" min="0"></div>
+        </div>
+        <div class="section-title" style="margin-top:12px">🎁 ชวนเพื่อนรับส่วนลด</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="field" style="margin:0"><label>เพื่อนได้ส่วนลด (บาท)</label><input id="cf-referral_discount" type="number" min="0"></div>
+          <div class="field" style="margin:0"><label>ยอดขั้นต่ำที่ใช้ได้ (บาท)</label><input id="cf-referral_min" type="number" min="0"></div>
+          <div class="field" style="margin:0"><label>เจ้าของโค้ดได้ (แต้ม)</label><input id="cf-referral_owner_points" type="number" min="0"></div>
+        </div>
+        <button class="btn btn-primary needs-edit" style="margin-top:8px" onclick="saveConfig()">💾 บันทึกการตั้งค่า</button>
+        <p style="font-size:.74rem;color:var(--muted);margin-top:10px">💡 ระดับ: เงิน 🥈 (เริ่มต้น) → ทอง 🥇 → แพลทินัม 💎 ตามแต้มสะสม · ลูกค้าที่ไม่ล็อกอินจะไม่สะสม/ใช้แต้ม (กันสับสน)</p>
       </div>
     </div>
 
@@ -670,6 +693,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
       <div class="field" style="margin-bottom:12px"><label>ราคาขาย (บาท)</label><input id="pm-price" type="number" min="0" step="1"></div>
       <div class="field" style="margin-bottom:12px"><label>ราคาทุน (บาท)</label><input id="pm-cost" type="number" min="0" step="1" placeholder="0"></div>
     </div>
+    <div class="field"><label>ราคาก่อนลด (โชว์ขีดฆ่า + ป้าย %ลด บนเว็บ · เว้นว่าง = ไม่ลดราคา)</label><input id="pm-orig" type="number" min="0" step="1" placeholder="เช่น 150 (ต้องมากกว่าราคาขาย)"></div>
     <div class="field"><label>หมวดหมู่</label><input id="pm-category" placeholder="ขนมไทยโบราณ"></div>
     <div class="field"><label>หน่วย/น้ำหนัก</label><input id="pm-unit" placeholder="100g"></div>
     <div class="field"><label>สต็อกคงเหลือ</label><input id="pm-available" type="number" min="0" step="1" value="0"></div>
@@ -933,12 +957,19 @@ function navTo(id){
   if(id==='finance') renderFinance();
   if(id==='settings') fillConfigForm();
 }
-const CFG_FIELDS=['shop_name','promo_banner','promptpay','bank_name','bank_no','bank_account','shipping_fee','free_threshold','low_stock_default'];
-function fillConfigForm(){ CFG_FIELDS.forEach(k=>{ const el=document.getElementById('cf-'+k); if(el) el.value = CONFIG[k]!=null ? CONFIG[k] : ''; }); }
+const CFG_FIELDS=['shop_name','promo_banner','promo_countdown_end','about_tagline','about_text','promptpay','bank_name','bank_no','bank_account','shipping_fee','free_threshold','low_stock_default','loyalty_earn_baht','loyalty_redeem_value','tier_gold','tier_platinum','referral_discount','referral_min','referral_owner_points'];
+const CFG_NUM=['shipping_fee','free_threshold','low_stock_default','loyalty_earn_baht','loyalty_redeem_value','tier_gold','tier_platinum','referral_discount','referral_min','referral_owner_points'];
+function fillConfigForm(){ CFG_FIELDS.forEach(k=>{ const el=document.getElementById('cf-'+k); if(!el) return;
+  let v = CONFIG[k]!=null ? CONFIG[k] : '';
+  if(k==='promo_countdown_end' && v){ try{ v=new Date(v).toISOString().slice(0,16); }catch(e){ v=''; } }  // → datetime-local format
+  el.value = v; }); }
 async function saveConfig(){
   if(!requireEdit()) return;
   const patch={ updated_at:new Date().toISOString() };
-  CFG_FIELDS.forEach(k=>{ let v=document.getElementById('cf-'+k).value.trim(); if(['shipping_fee','free_threshold','low_stock_default'].includes(k)) v=Number(v||0); patch[k]=v; });
+  CFG_FIELDS.forEach(k=>{ const el=document.getElementById('cf-'+k); if(!el) return; let v=el.value.trim();
+    if(CFG_NUM.includes(k)) v=Number(v||0);
+    else if(k==='promo_countdown_end') v = v ? v : null;   // empty datetime → null (not '')
+    patch[k]=v; });
   const st=document.getElementById('cf-status'); st.textContent='กำลังบันทึก…';
   const { error } = await sb.from('app_config').update(patch).eq('id',1);
   if(error){ st.textContent='❌ '+error.message; toast('บันทึกไม่สำเร็จ',true); return; }
@@ -1380,6 +1411,7 @@ function openProductModal(id){
   document.getElementById('pm-id').value=p?p.id:''; document.getElementById('pm-id').disabled=!!p;
   document.getElementById('pm-name').value=p?p.name:'';
   document.getElementById('pm-price').value=p?p.price:'';
+  document.getElementById('pm-orig').value=p?(p.orig_price||''):'';
   document.getElementById('pm-cost').value=p?(p.cost_price||''):'';
   document.getElementById('pm-category').value=p?(p.category||''):'';
   document.getElementById('pm-unit').value=p?(p.unit||''):'';
@@ -1405,7 +1437,7 @@ async function saveProduct(){
   const id=document.getElementById('pm-id').value.trim();
   const name=document.getElementById('pm-name').value.trim();
   if(!id||!name){ toast('กรุณากรอกรหัสและชื่อสินค้า',true); return; }
-  const prod={ name, price:Number(document.getElementById('pm-price').value||0), cost_price:Number(document.getElementById('pm-cost').value||0),
+  const prod={ name, price:Number(document.getElementById('pm-price').value||0), orig_price:Number(document.getElementById('pm-orig').value||0)||null, cost_price:Number(document.getElementById('pm-cost').value||0),
     category:document.getElementById('pm-category').value.trim(), unit:document.getElementById('pm-unit').value.trim(),
     min_stock_alert:Number(document.getElementById('pm-min').value||0), image_url:document.getElementById('pm-image').value.trim(),
     ingredients:document.getElementById('pm-ingredients').value.trim(), allergens:document.getElementById('pm-allergens').value.trim(),
@@ -2128,10 +2160,11 @@ async function loadCoupons(){
 function renderCoupons(){
   const el=document.getElementById('couponsTable'); if(!el)return;
   if(!COUPONS||!COUPONS.length){ el.innerHTML='<div class="empty-state"><span>🎟️</span>ยังไม่มีคูปอง — เพิ่มด้านบนได้เลยค่ะ</div>'; return; }
-  el.innerHTML='<table><thead><tr><th>โค้ด</th><th>ส่วนลด</th><th>ขั้นต่ำ</th><th>สถานะ</th><th></th></tr></thead><tbody>'+
-    COUPONS.map(c=>`<tr><td><b>${esc(c.code)}</b></td><td>${c.discount_type==='percent'?c.value+'%':'฿'+fmt(c.value)}</td><td>${c.min_total?'฿'+fmt(c.min_total):'-'}</td>
+  el.innerHTML='<table><thead><tr><th>โค้ด</th><th>ส่วนลด</th><th>ขั้นต่ำ</th><th>จำกัด</th><th>สถานะ</th><th></th></tr></thead><tbody>'+
+    COUPONS.map(c=>{ const lim=[(c.max_per_user>0?('คนละ '+c.max_per_user):''),(c.max_uses>0?('รวม '+c.max_uses):'')].filter(Boolean).join(' · ')||'ไม่จำกัด';
+      return `<tr><td><b>${esc(c.code)}</b></td><td>${c.discount_type==='percent'?c.value+'%':'฿'+fmt(c.value)}</td><td>${c.min_total?'฿'+fmt(c.min_total):'-'}</td><td style="font-size:.74rem;color:var(--muted)">${lim}</td>
       <td><button class="btn btn-sm needs-edit" style="background:${c.active?'var(--green)':'#bbb'};color:#fff" onclick="toggleCoupon('${esc(c.code)}',${!c.active})">${c.active?'✓ เปิด':'ปิด'}</button></td>
-      <td style="text-align:right"><button class="btn btn-del btn-sm needs-edit" onclick="deleteCoupon('${esc(c.code)}')" aria-label="ลบคูปอง">🗑</button></td></tr>`).join('')+'</tbody></table>';
+      <td style="text-align:right"><button class="btn btn-del btn-sm needs-edit" onclick="deleteCoupon('${esc(c.code)}')" aria-label="ลบคูปอง">🗑</button></td></tr>`;}).join('')+'</tbody></table>';
 }
 async function addCoupon(){
   if(!requireEdit())return;
@@ -2139,10 +2172,12 @@ async function addCoupon(){
   const discount_type=document.getElementById('cp-type').value;
   const value=Number(document.getElementById('cp-value').value||0);
   const min_total=Number(document.getElementById('cp-min').value||0);
+  const max_per_user=Number(document.getElementById('cp-peruser').value||0);
+  const max_uses=Number(document.getElementById('cp-maxuses').value||0);
   if(!code||value<=0){ toast('กรอกโค้ด + ค่าส่วนลดก่อนนะคะ',true); return; }
-  const { error } = await sb.from('coupons').upsert({ code, discount_type, value, min_total, active:true },{ onConflict:'code' });
+  const { error } = await sb.from('coupons').upsert({ code, discount_type, value, min_total, max_per_user, max_uses, active:true },{ onConflict:'code' });
   if(error){ toast('เพิ่มไม่สำเร็จ: '+esc(error.message),true); return; }
-  document.getElementById('cp-code').value=''; document.getElementById('cp-value').value=''; document.getElementById('cp-min').value='';
+  ['cp-code','cp-value','cp-min','cp-peruser','cp-maxuses'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
   toast('บันทึกคูปอง '+code+' แล้วค่ะ'); loadCoupons();
 }
 async function toggleCoupon(code,active){
