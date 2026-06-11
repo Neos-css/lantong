@@ -1556,6 +1556,7 @@ function openOrderDetail(oid){
     <div class="section-title" style="font-size:.85rem">รายการสินค้า</div>${items}
     <div style="text-align:right;font-weight:800;margin-top:8px;font-size:1.05rem">รวม ฿${fmt(o.total_amount)}</div>
     <div class="section-title" style="font-size:.85rem;margin-top:14px">การชำระเงิน</div>${payHtml}
+    <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="viewSlip('${esc(oid)}')">🧾 ดูสลิปการโอน</button>
     <div class="section-title" style="font-size:.85rem;margin-top:14px">🚚 การจัดส่ง</div>
     <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:8px;margin-bottom:8px">
       <select id="od-carrier" ${dis} style="padding:8px;border:1px solid var(--border);border-radius:8px;font-family:inherit;background:var(--card);color:var(--text)">
@@ -1589,6 +1590,12 @@ function printInvoice(oid){
     <div class="muted" style="margin-top:8px">ชำระ: PromptPay ${esc(CONFIG.promptpay||'')} · ${esc(CONFIG.bank_name||'')} ${esc(CONFIG.bank_no||'')} (${esc(CONFIG.bank_account||'')})</div>
     <div class="muted" style="text-align:center;margin-top:22px">ขอบคุณที่อุดหนุนค่ะ 💛</div></body></html>`);
   w.document.close(); w.focus(); setTimeout(()=>{ try{ w.print(); }catch(e){} },350);
+}
+// ดูสลิปการโอนของออเดอร์ (signed URL จาก worker · บัคเก็ต slips เป็น private)
+async function viewSlip(oid){
+  const r=await workerPost('/admin/slip-url',{ order_id:oid });
+  if(r&&r.ok&&r.url){ window.open(r.url,'_blank','noopener'); }
+  else toast((r&&r.message)?r.message:'ไม่พบสลิปของออเดอร์นี้ค่ะ',true);
 }
 // F8: บันทึกเลขพัสดุ → ตั้งสถานะ "กำลังจัดส่ง" (SHIPPED) → แจ้งลูกค้า → my-orders โชว์พร้อมกัน
 async function saveTracking(oid, notify){
