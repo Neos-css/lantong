@@ -281,11 +281,45 @@ input,textarea{font-family:inherit}
 /* ── Cart sidebar: transform-based hide (fully off-screen at any width) ── */
 #cart-sidebar{right:0!important;transform:translateX(110%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
 #cart-sidebar.open{transform:translateX(0)}
+/* ── Hero pattern overlay must not block button clicks ── */
+#hero::before{pointer-events:none}
+.hero-badge,.hero-title,.hero-sub,.hero-cta,.hero-stats,.hero-emblem{position:relative;z-index:1}
+
+/* ── Brand logo (emblem) ── */
+.nav-logo{display:flex;align-items:center;gap:9px}
+.brand-emblem{width:30px;height:30px;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(139,0,0,.22))}
+.nav-logo-word{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--primary);letter-spacing:1px;line-height:1}
+body.dark .nav-logo-word{color:var(--gold)}
+.hero-emblem{width:82px;height:82px;margin:0 auto 4px;display:block;filter:drop-shadow(0 4px 14px rgba(212,160,23,.5))}
+@media(max-width:600px){ .hero-emblem{width:64px;height:64px} .brand-emblem{width:26px;height:26px} .nav-logo-word{font-size:1.3rem} }
+
+/* ── About panel redesign (Phase 2 polish) ── */
+#about-panel{padding:0!important}
+.about-hero{background:linear-gradient(155deg,var(--dark) 0%,#4d1100 60%,#7a2400 100%);padding:46px 28px 28px;text-align:center;position:relative;overflow:hidden}
+.about-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(212,160,23,.18),transparent 60%)}
+.about-emblem{width:72px;height:72px;margin:0 auto 10px;display:block;position:relative;filter:drop-shadow(0 3px 12px rgba(212,160,23,.55))}
+#about-panel .about-logo{font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--gold);margin:0 0 4px;letter-spacing:1.5px;position:relative}
+#about-panel .about-tagline{color:rgba(255,255,255,.82);font-size:.86rem;margin:0;position:relative}
+.about-body{padding:24px 26px 34px}
+#about-panel .about-text{font-size:.9rem;line-height:1.8}
+.about-feature-icon{background:linear-gradient(135deg,var(--gold),var(--gold2))!important;color:var(--dark)!important;box-shadow:0 3px 10px rgba(212,160,23,.3)}
+.about-stat{background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 4px 14px rgba(139,0,0,.25)}
+.about-quote{background:#fff8ee;border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:14px 18px;font-family:'Cormorant Garamond','Charm',serif;font-size:1.15rem;font-style:italic;color:var(--primary);margin:22px 0 18px;line-height:1.5}
+body.dark .about-quote{background:#2c2218;color:var(--gold)}
+.about-cta{width:100%;padding:13px;border-radius:12px;background:var(--primary);color:#fff;font-weight:700;font-size:.95rem;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,transform .1s}
+.about-cta:hover{background:var(--primary2);transform:translateY(-1px)}
+.panel-close{z-index:3}
+
 /* ── Dark mode ── */
 body.dark{--cream:#1a1410;--text:#f0e6d8;--muted:#b09c88;--border:#3a2f24;--shadow:rgba(0,0,0,.4)}
 body.dark .product-card,body.dark .modal-box,body.dark #cart-sidebar,body.dark #about-panel,body.dark .filter-btn{background:#241c15;color:var(--text)}
-body.dark .form-input,body.dark .chat-input,body.dark #prodSearch,body.dark #prodSort,body.dark #coupon-code{background:#1a1410;color:var(--text)}
-body.dark .product-name,body.dark .product-modal-name,body.dark .cart-item-name{color:var(--text)}
+/* inputs carry inline background:#fff — override with !important so text is readable on dark */
+body.dark input:not([type=checkbox]):not([type=radio]):not([type=file]),
+body.dark textarea, body.dark select{background:#241c15 !important;color:#f0e6d8 !important;border-color:#3a2f24 !important}
+body.dark input::placeholder, body.dark textarea::placeholder{color:#9a8775 !important}
+body.dark select option{background:#241c15;color:#f0e6d8}
+body.dark .qty-num,body.dark .cart-qty-num,body.dark .qty-label{color:#f0e6d8 !important}
+body.dark .product-name,body.dark .product-modal-name,body.dark .cart-item-name,body.dark .product-modal-desc,body.dark .section-title{color:var(--text)}
 body.dark .chat-messages{background:#1a1410}
 body.dark .chat-msg.bot .chat-msg-bubble{background:#2c2218;color:var(--text)}
 body.dark .payment-info,body.dark .highlight-chip,body.dark .qr-btn{background:#2c2218}
@@ -342,9 +376,10 @@ body.dark .recent-card{background:#241c15}
 .recent-card .rc-n{font-size:.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
 .recent-card .rc-p{font-size:.85rem;color:var(--primary);font-weight:700}
 
-/* ── Countdown promo ── */
-#promo-countdown{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;text-align:center;padding:9px 16px;font-size:.85rem;font-weight:600;display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
-#promo-countdown .cd-time{background:rgba(255,255,255,.18);padding:2px 10px;border-radius:8px;font-variant-numeric:tabular-nums;letter-spacing:1px}
+/* ── Countdown (folded into announce bar) ── */
+#cd-wrap{white-space:nowrap}
+#announce-bar .cd-time{background:rgba(255,255,255,.2);padding:1px 8px;border-radius:6px;font-variant-numeric:tabular-nums;letter-spacing:1px;font-weight:700}
+@media(max-width:600px){ #announce-bar{font-size:.72rem;line-height:1.5;padding:7px 32px 7px 12px} }
 
 /* ── Fly to cart ── */
 .fly-dot{position:fixed;width:46px;height:46px;border-radius:10px;object-fit:cover;z-index:9998;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.3);transition:all .8s cubic-bezier(.3,-0.2,.7,1)}
@@ -410,29 +445,39 @@ body.dark #bottom-nav{background:#241c15}
 </head>
 <body>
 
+<!-- BRAND LOGO (reusable SVG emblem — gold seal with honey-drop motif) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="lt-gold" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f4cf63"/><stop offset=".55" stop-color="#d4a017"/><stop offset="1" stop-color="#b5860f"/>
+  </linearGradient>
+  <symbol id="lt-emblem" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="47" fill="none" stroke="url(#lt-gold)" stroke-width="2.5"/>
+    <circle cx="50" cy="50" r="40.5" fill="none" stroke="url(#lt-gold)" stroke-width="1" stroke-dasharray="1.5 3.5" opacity=".65"/>
+    <path d="M50 27 C58.5 41 66.5 49 66.5 59.5 a16.5 16.5 0 1 1 -33 0 C33.5 49 41.5 41 50 27 Z" fill="url(#lt-gold)"/>
+    <ellipse cx="43.5" cy="58" rx="3.6" ry="6.5" fill="#fff" opacity=".38"/>
+    <path d="M50 9 l1.7 4.6 4.6 1.7 -4.6 1.7 -1.7 4.6 -1.7 -4.6 -4.6 -1.7 4.6 -1.7z" fill="url(#lt-gold)"/>
+    <circle cx="79" cy="26" r="1.8" fill="url(#lt-gold)"/><circle cx="21" cy="26" r="1.8" fill="url(#lt-gold)"/>
+  </symbol>
+</defs></svg>
+
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
   <span id="announce-text">🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
+  <span id="cd-wrap">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
-</div>
-
-<!-- PROMO COUNTDOWN -->
-<div id="promo-countdown">
-  <span>🔥 <b data-i18n="promoFlash">โปรพิเศษวันนี้</b> — ลดเพิ่มทุกออเดอร์</span>
-  <span class="cd-time" id="cd-time">--:--:--</span>
 </div>
 
 <!-- NAVBAR -->
 <nav id="navbar">
-  <div class="nav-logo">@ลานทอง<span>·</span></div>
+  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer"><svg class="brand-emblem" viewBox="0 0 100 100" aria-label="ร้านลานทอง"><use href="#lt-emblem"/></svg><span class="nav-logo-word">ลานทอง</span></div>
   <div class="nav-links">
-    <button class="nav-btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
-    <button class="nav-btn" onclick="openAbout()">เกี่ยวกับเรา</button>
+    <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
+    <button class="nav-btn" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
     <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')" data-i18n="navChat">CHAT ไพลิน</button>
     <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🌐</button>
     <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
-    <button class="nav-btn" id="nav-myorders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
-    <button class="nav-btn solid" id="nav-login-btn" onclick="openLogin()">เข้าสู่ระบบ</button>
+    <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
+    <button class="nav-btn solid" id="nav-login-btn" data-i18n="navLogin" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
     <button class="cart-btn" onclick="openCart()">
       🛒<span class="cart-badge" id="cart-badge">0</span>
@@ -442,47 +487,48 @@ body.dark #bottom-nav{background:#241c15}
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-badge">✦ ขนมไทยแท้คัดสรร ✦</div>
+  <div class="hero-badge" data-i18n="heroBadge">✦ ขนมไทยแท้คัดสรร ✦</div>
+  <svg class="hero-emblem" viewBox="0 0 100 100" aria-label="ตราร้านลานทอง"><use href="#lt-emblem"/></svg>
   <h1 class="hero-title">ลานทอง</h1>
-  <p class="hero-sub">Khanom Lanthong — รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
+  <p class="hero-sub" data-i18n="heroSub">Khanom Lanthong — รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
   <div class="hero-cta">
-    <button class="hero-cta-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
-    <button class="hero-cta-secondary" onclick="document.getElementById('chat-panel').classList.add('open')">CHAT กับไพลิน</button>
+    <button class="hero-cta-primary" data-i18n="heroShop" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
+    <button class="hero-cta-secondary" data-i18n="heroChat" onclick="document.getElementById('chat-panel').classList.add('open')">CHAT กับไพลิน</button>
   </div>
   <div class="hero-stats">
-    <span><b>1,200+</b>ลูกค้าประจำ</span>
-    <span><b>98%</b>ความพึงพอใจ</span>
-    <span><b>15</b>สินค้าคัดสรร</span>
+    <span><b>1,200+</b><span data-i18n="heroStat1">ลูกค้าประจำ</span></span>
+    <span><b>98%</b><span data-i18n="heroStat2">ความพึงพอใจ</span></span>
+    <span><b>15</b><span data-i18n="heroStat3">สินค้าคัดสรร</span></span>
   </div>
 </section>
 
 <!-- PRODUCTS -->
 <section id="products">
-  <div class="section-label">✦ สินค้าของเรา</div>
-  <h2 class="section-title">ขนมไทยทุกชนิด</h2>
+  <div class="section-label" data-i18n="prodLabel">✦ สินค้าของเรา</div>
+  <h2 class="section-title" data-i18n="prodTitle">ขนมไทยทุกชนิด</h2>
   <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterProducts('all',this)">ทั้งหมด</button>
-    <button class="filter-btn" onclick="filterProducts('ขนมไทยโบราณ',this)">ขนมไทยโบราณ</button>
-    <button class="filter-btn" onclick="filterProducts('ผลไม้แปรรูป',this)">ผลไม้แปรรูป</button>
-    <button class="filter-btn" onclick="filterProducts('คุกกี้/แครกเกอร์',this)">คุกกี้/แครกเกอร์</button>
-    <button class="filter-btn" onclick="filterProducts('ถั่วอบ/ทอด',this)">ถั่วอบ/ทอด</button>
-    <button class="filter-btn" onclick="filterProducts('ขนมนึ่ง',this)">ขนมนึ่ง</button>
-    <button class="filter-btn" onclick="filterProducts('ขนมอบ',this)">ขนมอบ</button>
-    <button class="filter-btn" onclick="filterProducts('__wish__',this)">❤️ ที่ถูกใจ</button>
+    <button class="filter-btn active" data-i18n="fAll" onclick="filterProducts('all',this)">ทั้งหมด</button>
+    <button class="filter-btn" data-i18n="fAncient" onclick="filterProducts('ขนมไทยโบราณ',this)">ขนมไทยโบราณ</button>
+    <button class="filter-btn" data-i18n="fFruit" onclick="filterProducts('ผลไม้แปรรูป',this)">ผลไม้แปรรูป</button>
+    <button class="filter-btn" data-i18n="fCookie" onclick="filterProducts('คุกกี้/แครกเกอร์',this)">คุกกี้/แครกเกอร์</button>
+    <button class="filter-btn" data-i18n="fNuts" onclick="filterProducts('ถั่วอบ/ทอด',this)">ถั่วอบ/ทอด</button>
+    <button class="filter-btn" data-i18n="fSteam" onclick="filterProducts('ขนมนึ่ง',this)">ขนมนึ่ง</button>
+    <button class="filter-btn" data-i18n="fBaked" onclick="filterProducts('ขนมอบ',this)">ขนมอบ</button>
+    <button class="filter-btn" data-i18n="fWish" onclick="filterProducts('__wish__',this)">❤️ ที่ถูกใจ</button>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px">
-    <input id="prodSearch" type="search" placeholder="🔍 ค้นหาขนม..." oninput="applyProductView()"
+    <input id="prodSearch" type="search" placeholder="🔍 ค้นหาขนม..." data-i18n-ph="searchPh" oninput="applyProductView()"
       style="flex:1;min-width:180px;padding:9px 14px;border:2px solid var(--border);border-radius:20px;font-size:.88rem;font-family:inherit;color:var(--text);background:#fff;outline:none">
     <select id="prodSort" onchange="applyProductView()"
       style="padding:9px 14px;border:2px solid var(--border);border-radius:20px;font-size:.85rem;font-family:inherit;color:var(--text);background:#fff;cursor:pointer">
-      <option value="default">แนะนำ</option>
-      <option value="price-asc">ราคา: น้อย→มาก</option>
-      <option value="price-desc">ราคา: มาก→น้อย</option>
-      <option value="name">ชื่อ ก-ฮ</option>
+      <option value="default" data-i18n="sortDefault">แนะนำ</option>
+      <option value="price-asc" data-i18n="sortPriceAsc">ราคา: น้อย→มาก</option>
+      <option value="price-desc" data-i18n="sortPriceDesc">ราคา: มาก→น้อย</option>
+      <option value="name" data-i18n="sortName">ชื่อ ก-ฮ</option>
     </select>
   </div>
   <div class="products-grid" id="productsGrid"></div>
-  <div id="noProducts" style="display:none;text-align:center;padding:40px;color:var(--muted)">😔 ไม่พบสินค้าที่ค้นหา</div>
+  <div id="noProducts" style="display:none;text-align:center;padding:40px;color:var(--muted)" data-i18n="noProducts">😔 ไม่พบสินค้าที่ค้นหา</div>
 </section>
 
 <!-- FOR YOU (AI reco) -->
@@ -522,8 +568,8 @@ body.dark #bottom-nav{background:#241c15}
 
 <!-- TESTIMONIALS -->
 <section id="testimonials">
-  <div class="section-label">✦ เสียงจากลูกค้า</div>
-  <h2 class="section-title">รีวิวจากลูกค้าจริง</h2>
+  <div class="section-label" data-i18n="tLabel">✦ เสียงจากลูกค้า</div>
+  <h2 class="section-title" data-i18n="tTitle">รีวิวจากลูกค้าจริง</h2>
   <div class="testimonials-grid">
     <div class="testimonial-card">
       <div class="testimonial-stars">★★★★★</div>
@@ -549,7 +595,7 @@ body.dark #bottom-nav{background:#241c15}
 <!-- FOOTER -->
 <footer id="footer">
   <div class="footer-logo">@ลานทอง</div>
-  <p>ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
+  <p data-i18n="fTagline">ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
   <p style="margin-top:10px">
     <a onclick="openPolicy('privacy')" style="cursor:pointer;color:var(--gold)" data-i18n="fPrivacy">นโยบายความเป็นส่วนตัว</a> ·
     <a onclick="openPolicy('return')" style="cursor:pointer;color:var(--gold)" data-i18n="fReturn">การคืนสินค้า</a> ·
@@ -562,28 +608,34 @@ body.dark #bottom-nav{background:#241c15}
 <div id="about-overlay" onclick="closeAbout()"></div>
 <div id="about-panel">
   <button class="panel-close" onclick="closeAbout()">✕</button>
-  <div class="about-logo">@ลานทอง<span>·</span></div>
-  <p class="about-tagline">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
-  <hr class="about-divider">
-  <p class="about-text">ร้าน@ลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
-  <div class="about-features">
-    <div class="about-feature">
-      <div class="about-feature-icon">🍯</div>
-      <div class="about-feature-text"><strong>วัตถุดิบแท้ คัดสรร</strong><span>ไม่ใส่สีสังเคราะห์ ไม่ใส่สารกันบูด</span></div>
-    </div>
-    <div class="about-feature">
-      <div class="about-feature-icon">🤖</div>
-      <div class="about-feature-text"><strong>ระบบ AI อัจฉริยะ</strong><span>ไพลินดูแลลูกค้า 24/7 อัตโนมัติ</span></div>
-    </div>
-    <div class="about-feature">
-      <div class="about-feature-icon">🚚</div>
-      <div class="about-feature-text"><strong>จัดส่งรวดเร็ว</strong><span>บรรจุภัณฑ์แน่นหนา สินค้าถึงมือสด</span></div>
-    </div>
+  <div class="about-hero">
+    <svg class="about-emblem" viewBox="0 0 100 100" aria-hidden="true"><use href="#lt-emblem"/></svg>
+    <div class="about-logo">ลานทอง</div>
+    <p class="about-tagline" data-i18n="aboutTagline">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
   </div>
-  <div class="about-stats">
-    <div class="about-stat"><b>1,200+</b><span>ลูกค้า</span></div>
-    <div class="about-stat"><b>15</b><span>สินค้า</span></div>
-    <div class="about-stat"><b>98%</b><span>พึงพอใจ</span></div>
+  <div class="about-body">
+    <p class="about-text" data-i18n="aboutText">ร้าน@ลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
+    <div class="about-features">
+      <div class="about-feature">
+        <div class="about-feature-icon">🍯</div>
+        <div class="about-feature-text"><strong data-i18n="aboutF1t">วัตถุดิบแท้ คัดสรร</strong><span data-i18n="aboutF1s">ไม่ใส่สีสังเคราะห์ ไม่ใส่สารกันบูด</span></div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon">🤖</div>
+        <div class="about-feature-text"><strong data-i18n="aboutF2t">ระบบ AI อัจฉริยะ</strong><span data-i18n="aboutF2s">ไพลินดูแลลูกค้า 24/7 อัตโนมัติ</span></div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon">🚚</div>
+        <div class="about-feature-text"><strong data-i18n="aboutF3t">จัดส่งรวดเร็ว</strong><span data-i18n="aboutF3s">บรรจุภัณฑ์แน่นหนา สินค้าถึงมือสด</span></div>
+      </div>
+    </div>
+    <div class="about-stats">
+      <div class="about-stat"><b>1,200+</b><span data-i18n="aboutStat1">ลูกค้า</span></div>
+      <div class="about-stat"><b>15</b><span data-i18n="aboutStat2">สินค้า</span></div>
+      <div class="about-stat"><b>98%</b><span data-i18n="aboutStat3">พึงพอใจ</span></div>
+    </div>
+    <div class="about-quote">“รสชาติต้นตำรับที่ส่งต่อความสุขถึงมือคุณ” 🍯</div>
+    <button class="about-cta" onclick="closeAbout();document.getElementById('chat-panel').classList.add('open')">💬 <span data-i18n="heroChat">CHAT กับไพลิน</span></button>
   </div>
 </div>
 
@@ -1494,17 +1546,38 @@ const I18N={ en:{
   story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
   story2t:'Original recipes',story2p:'We keep traditional Thai recipes, freshly made, no synthetic colors or preservatives.',
   story3t:'Delivered with care',story3p:'Sturdy packaging keeps the crunch, shipped nationwide with Pailin AI helping every step.',
-  promoFlash:"Today's special", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',
+  promoFlash:"Today's deal ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',
   cookieMsg:'🍪 We use cookies to improve your experience and analytics, per our',
   cookieLink:'Privacy Policy',cookieAccept:'Accept',cookieDeny:'Decline',
   fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you',
-  payMethod:'Payment method', payTransfer:'📲 Transfer/PromptPay', payCod:'🚚 Cash on delivery'
+  payMethod:'Payment method', payTransfer:'📲 Transfer/PromptPay', payCod:'🚚 Cash on delivery',
+  /* nav */ navProducts:'Products', navAbout:'About us', navMyOrders:'📦 My orders', navLogin:'Sign in',
+  /* hero */ heroBadge:'✦ Authentic Thai sweets ✦', heroSub:'Khanom Lanthong — original taste, delivered to your door',
+  heroShop:'Shop all sweets', heroChat:'CHAT with Pailin',
+  heroStat1:'Loyal customers', heroStat2:'Satisfaction', heroStat3:'Curated items',
+  /* products section */ prodLabel:'✦ Our products', prodTitle:'All Thai sweets',
+  fAll:'All', fAncient:'Traditional Thai', fFruit:'Dried fruit', fCookie:'Cookies/Crackers', fNuts:'Roasted nuts', fSteam:'Steamed', fBaked:'Baked', fWish:'❤️ Favourites',
+  searchPh:'🔍 Search sweets...', sortDefault:'Recommended', sortPriceAsc:'Price: low→high', sortPriceDesc:'Price: high→low', sortName:'Name A–Z',
+  /* testimonials */ tLabel:'✦ Voices from customers', tTitle:'Reviews from real customers',
+  /* footer */ fTagline:'Curated Thai sweet shop · powered by 5 AI Agents',
+  /* about panel */ aboutTagline:'Authentic Thai sweets, delivered to your door',
+  aboutText:'Lanthong hand-picks quality products from trusted local makers — real ingredients, no synthetic colours, no preservatives, original recipes — bringing the sweetness of Thailand to your door.',
+  aboutF1t:'Real, selected ingredients', aboutF1s:'No synthetic colours, no preservatives',
+  aboutF2t:'Smart AI system', aboutF2s:'Pailin cares for customers 24/7',
+  aboutF3t:'Fast delivery', aboutF3s:'Sturdy packaging, fresh on arrival',
+  aboutStat1:'Customers', aboutStat2:'Products', aboutStat3:'Satisfied',
+  noProducts:'😔 No products found', emptyCart:'Your cart is empty', cartTitle:'🛒 Cart', cartTotal:'Total', checkout:'Checkout →'
 }};
 function applyLang(lang){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k=el.getAttribute('data-i18n');
-    if(lang==='en'&&I18N.en[k]){ if(!el.dataset.th)el.dataset.th=el.textContent; el.textContent=I18N.en[k]; }
-    else if(el.dataset.th){ el.textContent=el.dataset.th; }
+    if(lang==='en'&&I18N.en[k]){ if(el.dataset.th==null)el.dataset.th=el.textContent; el.textContent=I18N.en[k]; }
+    else if(el.dataset.th!=null){ el.textContent=el.dataset.th; }
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const k=el.getAttribute('data-i18n-ph');
+    if(lang==='en'&&I18N.en[k]){ if(el.dataset.thPh==null)el.dataset.thPh=el.placeholder||''; el.placeholder=I18N.en[k]; }
+    else if(el.dataset.thPh!=null){ el.placeholder=el.dataset.thPh; }
   });
   document.documentElement.lang=lang;
   const lt=$('lang-toggle'); if(lt)lt.textContent=lang==='en'?'🇹🇭':'🌐';
@@ -1684,10 +1757,9 @@ window.stickyAdd=stickyAdd;
 /* hide sticky when product modal closes */
 (function(){ const m=$('product-modal'); if(m){ new MutationObserver(()=>{ if(!m.classList.contains('show')) $('sticky-buy').classList.remove('show'); }).observe(m,{attributes:true,attributeFilter:['class']}); } })();
 
-/* ════════ PROMO COUNTDOWN — Phase 1 ════════ */
+/* ════════ PROMO COUNTDOWN (folded into the announce bar) — Phase 1 ════════ */
 (function(){
-  const bar=$('promo-countdown'), el=$('cd-time'); if(!bar) return;
-  bar.style.display='flex';
+  const el=$('cd-time'); if(!el) return;
   function tick(){ const now=new Date(); const end=new Date(now); end.setHours(23,59,59,999);
     let s=Math.floor((end-now)/1000); if(s<0)s=0;
     const h=String(Math.floor(s/3600)).padStart(2,'0'), m=String(Math.floor(s%3600/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
@@ -1753,10 +1825,8 @@ function abTest(name,variants){
   if(!v){ v=variants[Math.floor(Math.random()*variants.length)]; localStorage.setItem(k,v); }
   track('ab_exposure',{test:name,variant:v}); return v;
 }
-/* demo: hero primary CTA copy */
-(function(){ const btn=document.querySelector('.hero-cta-primary'); if(!btn)return;
-  const v=abTest('hero_cta',['ดูสินค้าทั้งหมด','เลือกซื้อขนมไทย']);
-  if(localStorage.getItem('lt_lang')!=='en') btn.textContent=v; })();
+/* demo: record an A/B exposure (no DOM change so it doesn't fight i18n) */
+abTest('hero_cta',['a','b']);
 
 /* ════════ PROACTIVE PAILIN — Phase 6 ════════ */
 (function(){
