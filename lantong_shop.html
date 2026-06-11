@@ -335,9 +335,14 @@ body.dark input::placeholder, body.dark textarea::placeholder{color:#9a8775 !imp
 body.dark select option{background:#241c15;color:#f0e6d8}
 body.dark .qty-num,body.dark .cart-qty-num,body.dark .qty-label{color:#f0e6d8 !important}
 body.dark .product-name,body.dark .product-modal-name,body.dark .cart-item-name,body.dark .product-modal-desc,body.dark .section-title{color:var(--text)}
-body.dark .chat-messages{background:#1a1410}
-body.dark .chat-msg.bot .chat-msg-bubble{background:#2c2218;color:var(--text)}
-body.dark .highlight-chip,body.dark .qr-btn{background:#2c2218}
+/* Chat is LOCKED to a light theme even in dark mode — no half-dark look (per request) */
+body.dark #chat-panel{background:#fff !important}
+body.dark .chat-messages{background:#faf5f0 !important}
+body.dark .chat-msg.bot .chat-msg-bubble{background:#fff !important;color:#3a2a1a !important}
+body.dark .chat-input{background:#fff !important;color:#3a2a1a !important}
+body.dark .chat-input-row,body.dark .chat-quick-replies{background:#fff !important}
+body.dark .qr-btn{background:#fff !important;color:var(--primary) !important}
+body.dark .highlight-chip{background:#2c2218}
 /* F4: keep payment box light so PromptPay/bank numbers are always readable */
 body.dark .payment-info{background:#fff8ee;border-color:#f0d890}
 body.dark .payment-info-row{color:#4a3520}
@@ -1428,6 +1433,7 @@ async function submitOrder() {
       const mine = JSON.parse(localStorage.getItem('lt_myorders') || '[]');
       mine.unshift({ order_id: orderNum, total, items, at: new Date().toISOString() });
       localStorage.setItem('lt_myorders', JSON.stringify(mine.slice(0, 50)));
+      if (typeof updateAuthUI==='function') updateAuthUI();   // reveal "ออเดอร์ของฉัน" for guests
     } catch (e) {}
 
     // ── Confirmation UX (step 2) ──
@@ -1586,8 +1592,16 @@ try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ c
   const { data } = await sbAuth.from('app_config').select('*').eq('id',1).maybeSingle();
   if (!data) return; window.SHOP_CFG = data;
   const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.textContent=v; };
-  if (data.promo_banner) { const a=document.getElementById('announce-text'); if(a) a.innerHTML='🍯 '+data.promo_banner+' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.'; }
+  // announce bar: owner's promo_banner shown verbatim; if empty, auto welcome + real shipping config
+  // (avoids duplicating/contradicting shipping text the owner may type into the banner)
+  const th=Number(data.free_threshold)||0, fee=Number(data.shipping_fee)||0;
+  const shipMsg = th>0 ? `🚚 ส่งฟรีเมื่อซื้อครบ ฿${th}` : (fee>0 ? `🚚 ค่าส่ง ฿${fee}` : '🚚 จัดส่งทั่วไทย');
+  const a=document.getElementById('announce-text');
+  if(a) a.innerHTML = data.promo_banner
+    ? ('🍯 ' + data.promo_banner + ' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.')
+    : ('🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; ' + shipMsg + ' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.');
   set('pi-promptpay', data.promptpay); set('pi-bank-label', data.bank_name); set('pi-bank-no', data.bank_no); set('pi-account', data.bank_account);
+  if (typeof updateCartUI==='function') updateCartUI();   // refresh cart/free-shipping with real config now
 } catch (e) {} })();
 
 // Live two-way chat: receive admin replies in real time (Supabase Realtime broadcast)
@@ -1652,7 +1666,9 @@ function updateAuthUI(){
   const u=window.MEMBER;
   document.getElementById('nav-login-btn').style.display = u?'none':'';
   document.getElementById('nav-user-btn').style.display = u?'':'none';
-  document.getElementById('nav-myorders').style.display = u?'':'none';
+  // show "ออเดอร์ของฉัน" to guests too if they placed an order on this device (localStorage)
+  let hasLocal=false; try{ hasLocal=(JSON.parse(localStorage.getItem('lt_myorders')||'[]')).length>0; }catch(e){}
+  document.getElementById('nav-myorders').style.display = (u||hasLocal)?'':'none';
   if(u) document.getElementById('nav-user-name').textContent = (u.email||'').split('@')[0];
 }
 sbAuth.auth.onAuthStateChange((_e,session)=>{ window.MEMBER = session?session.user:null; updateAuthUI(); });
