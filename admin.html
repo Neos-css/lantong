@@ -683,6 +683,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     </div>
     <div class="field"><label>วิธีเก็บรักษา</label><input id="pm-storage" placeholder="เช่น เก็บในที่แห้ง ปิดถุงให้สนิท"></div>
     <div class="field"><label>เหมาะสำหรับ</label><input id="pm-suitable" placeholder="เช่น ของฝาก / ทานเล่น / งานเลี้ยง"></div>
+    <div style="border-top:1px dashed var(--border,#ddd);margin:6px 0 12px;padding-top:10px;font-weight:700;font-size:.9rem">🎚️ ตัวเลือกสินค้า / ขนาด (ไม่บังคับ — เว้นว่างถ้าขายแบบเดียว)</div>
+    <div class="field"><label>1 บรรทัด = 1 ตัวเลือก · รูปแบบ <code>ชื่อ | ราคา | สต็อก</code></label>
+      <textarea id="pm-variants" rows="3" style="width:100%;font-family:monospace;font-size:.82rem" placeholder="เล็ก 80g | 45 | 20&#10;ใหญ่ 200g | 99 | 10"></textarea>
+      <small style="color:var(--muted)">ถ้ามีตัวเลือก ลูกค้าจะเลือกในหน้าสินค้า และราคา/สต็อกจะอิงตามตัวเลือกที่เลือก</small>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeProductModal()">ยกเลิก</button>
       <button class="btn btn-primary" id="pm-save" onclick="saveProduct()">บันทึก</button>
@@ -1280,10 +1285,19 @@ function renderProducts(){
         <td><input class="stock-input needs-edit" type="number" min="0" value="${av}" ${dis} onchange="updateStock('${esc(p.id)}',this)"><span style="font-size:.74rem;color:var(--muted)">${esc(p.unit)||''}</span></td>
         <td style="color:var(--muted)">${p.reserved||0}</td>
         <td>${badge}</td>
-        <td><button class="btn btn-ghost btn-sm needs-edit" onclick='openProductModal(${JSON.stringify(p.id)})'>✏️ แก้</button></td>
+        <td><button class="btn btn-ghost btn-sm needs-edit" onclick='openProductModal(${JSON.stringify(p.id)})'>✏️ แก้</button>${av>0?`<button class="btn btn-ghost btn-sm needs-edit" title="แจ้งลูกค้าที่กดรอสินค้านี้ (LINE)" onclick='notifyRestock(${JSON.stringify(p.id)})'>📣 แจ้งคนรอ</button>`:''}</td>
         <td><button class="btn btn-del btn-sm needs-edit" onclick='deleteProduct(${JSON.stringify(p.id)},${JSON.stringify(p.name)})'>🗑</button></td>
       </tr>`; }).join('')}
   </tbody></table>`;
+}
+// Sprint 4C: push a "back in stock" LINE message to everyone who tapped 🔔 on this product.
+// Web/email customers have no LINE channel and are reported as skipped (honest count).
+async function notifyRestock(id){
+  if(!requireEdit()) return;
+  if(!(await confirmAction({ title:'📣 แจ้งลูกค้าที่รอสินค้า', message:`ส่งข้อความ "กลับมามีของแล้ว" ให้ลูกค้าที่กดรอสินค้า <b>${esc(id)}</b> ผ่าน LINE?`, ackText:'ฉันเติมสต็อกสินค้านี้แล้ว ต้องการแจ้งลูกค้า', confirmText:'แจ้งเลย' }))) return;
+  const r=await workerPost('/admin/restock-notify',{ product_id:id });
+  if(!r.ok){ toast('แจ้งไม่สำเร็จ: '+(r.error||r.status),true); return; }
+  toast(r.total? `แจ้งทาง LINE แล้ว ${r.pushed} ราย${r.skipped?` · ลูกค้าเว็บแจ้งไม่ได้ ${r.skipped} ราย`:''}` : 'ยังไม่มีลูกค้ารอสินค้านี้ค่ะ');
 }
 async function updateStock(id, inp){
   if(!requireEdit()){ loadAll(); return; }
@@ -1377,6 +1391,8 @@ function openProductModal(id){
   document.getElementById('pm-shelf').value=p?(p.shelf_life||''):'';
   document.getElementById('pm-storage').value=p?(p.storage||''):'';
   document.getElementById('pm-suitable').value=p?(p.suitable_for||''):'';
+  const vEl=document.getElementById('pm-variants'); vEl.value='';
+  if(p){ sb.from('product_variants').select('label,price,available').eq('product_id',id).order('sort').then(({data})=>{ if(data&&data.length) vEl.value=data.map(v=>`${v.label} | ${v.price} | ${v.available}`).join('\n'); }); }
   document.getElementById('pm-file').value='';
   document.getElementById('pm-image').value=p?(p.image_url||''):'';
   document.getElementById('pm-imgnote').textContent='อัปโหลด JPG/PNG → เก็บใน Supabase Storage → เว็บร้านเห็นทันที';
@@ -1408,6 +1424,12 @@ async function saveProduct(){
       r=await sb.from('stock').insert({ product_id:id, available, reserved:0 }); if(r.error) throw r.error;
       toast('เพิ่มสินค้าแล้วค่ะ');
     }
+    // sync variants (Sprint 4C): parse the textarea and replace all rows for this product
+    const vlines=document.getElementById('pm-variants').value.split('\n').map(s=>s.trim()).filter(Boolean);
+    const vrows=vlines.map((line,i)=>{ const parts=line.split('|').map(x=>(x||'').trim()); const label=parts[0];
+      return label?{ product_id:id, label, price:Number(parts[1]||0), available:Number(parts[2]||0), sort:i }:null; }).filter(Boolean);
+    await sb.from('product_variants').delete().eq('product_id',id);
+    if(vrows.length){ const rv=await sb.from('product_variants').insert(vrows); if(rv.error) throw rv.error; }
     closeProductModal(); await loadAll();
   }catch(e){ toast('บันทึกไม่สำเร็จ: '+e.message,true); }
   finally{ btn.disabled=false; }
