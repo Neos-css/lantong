@@ -718,9 +718,9 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 </div>
 
 <!-- PRODUCT MODAL -->
-<div class="modal-overlay" id="product-modal" onclick="if(event.target===this)this.classList.remove('show')">
+<div class="modal-overlay" id="product-modal" onclick="if(event.target===this)closeProductModal()">
   <div class="modal-box">
-    <button class="modal-close-btn" onclick="document.getElementById('product-modal').classList.remove('show')">✕</button>
+    <button class="modal-close-btn" onclick="closeProductModal()">✕</button>
     <img class="product-modal-img" id="pm-img" src="" alt="">
     <div class="product-modal-body">
       <div class="product-modal-cat" id="pm-cat"></div>
@@ -1030,6 +1030,8 @@ let WISHLIST = JSON.parse(localStorage.getItem('lt_wishlist')||'[]');
 let REVIEWS = {};      // product_id -> [{stars,text,...}]
 let COUPON = null, DISCOUNT = 0;
 function isWished(slug){ return WISHLIST.includes(slug); }
+// image source: admin-uploaded image_url (bundles / new products) overrides the local seed file
+function imgSrc(p){ return p && p.img ? p.img : `รูปสินค้า_web/${p&&p.slug}.jpg`; }
 function reviewStarsHTML(pid){
   const r=REVIEWS[pid]; if(!r||!r.length) return '<div class="review-stars"><span class="rc">ยังไม่มีรีวิว</span></div>';
   const avg=r.reduce((s,x)=>s+x.stars,0)/r.length, full=Math.round(avg);
@@ -1046,7 +1048,8 @@ function renderProducts(arr) {
       else if(av<=5){ stockBadge=`<span class="stock-badge low">ใกล้หมด</span>`; } }
     return `<div class="product-card${soldout}">
       <div class="product-card-img-wrap">
-        <img class="product-card-img" src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+        <img class="product-card-img" src="${imgSrc(p)}" alt="${p.name_th}" loading="lazy" width="300" height="225" decoding="async">
+        ${p.is_bundle ? `<span class="discount-badge" style="background:var(--gold);color:var(--dark);left:10px;right:auto">🎁 ชุด</span>` : ''}
         ${disc ? `<span class="discount-badge">-${disc}%</span>` : ''}
         ${stockBadge}
         <button class="wish-btn${isWished(p.slug)?' on':''}" title="ถูกใจ" aria-label="เพิ่ม/เอาออกจากรายการที่ถูกใจ" onclick="toggleWish(event,'${p.slug}')">${isWished(p.slug)?'❤️':'🤍'}</button>
@@ -1108,7 +1111,7 @@ const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
 async function syncProductsFromSupabase() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,price,orig_price,category,ingredients,allergens,shelf_life,storage,pack_size,suitable_for&order=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,category,image_url,is_bundle,bundle_items,deleted_at,ingredients,allergens,shelf_life,storage,pack_size,suitable_for&order=id`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
     if (!res.ok) return;
@@ -1128,9 +1131,13 @@ async function syncProductsFromSupabase() {
       const vres = await fetch(`${SUPA_URL}/rest/v1/product_variants?select=id,product_id,label,price,available,orig_price&order=sort`, { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } });
       if (vres.ok) (await vres.json()).forEach(v => { (variantsByPid[v.product_id] = variantsByPid[v.product_id] || []).push({ id: String(v.id), label: v.label, price: Number(v.price) || 0, available: v.available, orig: v.orig_price != null ? Number(v.orig_price) : null }); });
     } catch (e) {}
-    PRODUCTS = PRODUCTS.filter(p => byId[p.id]).map(p => ({
+    const HARD = PRODUCTS.slice();
+    const known = new Set(HARD.map(p => p.id));
+    PRODUCTS = HARD.filter(p => byId[p.id] && !byId[p.id].deleted_at).map(p => ({
       ...p,
       name_th: byId[p.id].name || p.name_th,
+      name_en: byId[p.id].name_en || p.name_en,        // EN from DB (admin-editable) → fallback to seed
+      img:     byId[p.id].image_url || null,            // admin-uploaded image overrides local file
       price:   byId[p.id].price != null ? Number(byId[p.id].price) : p.price,
       orig:    byId[p.id].orig_price != null ? Number(byId[p.id].orig_price) : null,
       cat:     byId[p.id].category || p.cat,
@@ -1143,8 +1150,26 @@ async function syncProductsFromSupabase() {
       pack_size:    byId[p.id].pack_size    || '',
       suitable_for: byId[p.id].suitable_for || '',
     }));
+    // Append DB-only bundles (gift sets created in admin · is_bundle). A bundle is a normal
+    // product row (own price/stock/image) so the worker validates it like any product.
+    rows.filter(r => r.is_bundle && !known.has(r.id) && !r.deleted_at).forEach(r => {
+      const items = Array.isArray(r.bundle_items) ? r.bundle_items : [];
+      const lines = items.map(it => `${it.name || it.product_id}${(it.qty > 1) ? (' ×' + it.qty) : ''}`);
+      PRODUCTS.push({
+        id: r.id, slug: 'bundle-' + r.id, name_th: r.name, name_en: r.name_en || '',
+        cat: r.category || 'ชุดของฝาก', price: Number(r.price) || 0,
+        orig: r.orig_price != null ? Number(r.orig_price) : null,
+        weight: r.pack_size || '', img: r.image_url || null, is_bundle: true, bundle_items: items,
+        available: stockById[r.id] != null ? Number(stockById[r.id]) : null, variants: null,
+        desc: lines.length ? ('ชุดนี้ประกอบด้วย: ' + lines.join(' · ')) : (r.suitable_for || ''),
+        hl: lines.length ? lines : ['ชุดของฝากคัดสรร'],
+        ingredients: r.ingredients || '', allergens: r.allergens || '', shelf_life: r.shelf_life || '',
+        storage: r.storage || '', pack_size: r.pack_size || '', suitable_for: r.suitable_for || '',
+      });
+    });
     renderCategoryChips();   // rebuild chips from the live categories
     applyProductView();
+    if(typeof openFromHash==='function') openFromHash();   // deep-link: open shared product once catalog is live
   } catch (e) {
     /* keep static fallback */
   }
@@ -1155,7 +1180,7 @@ function openProductModal(slug) {
   const p = PRODUCTS.find(x => x.slug === slug);
   if (!p) return;
   currentProduct = p;
-  document.getElementById('pm-img').src = `รูปสินค้า_web/${p.slug}.jpg`;
+  document.getElementById('pm-img').src = imgSrc(p);
   document.getElementById('pm-img').alt = p.name_th;
   document.getElementById('pm-cat').textContent = p.cat;
   document.getElementById('pm-name').textContent = p.name_th;
@@ -1176,7 +1201,35 @@ function openProductModal(slug) {
   renderVariantSelector(p);
   renderProductReviews(p.id);
   document.getElementById('product-modal').classList.add('show');
+  applyProductSEO(p);   // deep-link + <title>/og + per-product JSON-LD
 }
+// ── Per-product deep-link + SEO ──
+const _BASE_TITLE = document.title;
+function setMeta(prop, val){ let m=document.querySelector(`meta[property="${prop}"]`); if(!m){ m=document.createElement('meta'); m.setAttribute('property',prop); document.head.appendChild(m); } m.setAttribute('content', val); }
+function applyProductSEO(p){
+  try{
+    if(location.hash !== '#p='+p.slug) history.replaceState(null,'','#p='+p.slug);
+    const en=localStorage.getItem('lt_lang')==='en';
+    const nm=(en&&p.name_en)?p.name_en:p.name_th;
+    document.title = `${nm} · ร้านลานทอง`;
+    setMeta('og:title', `${nm} · ร้านลานทอง`);
+    setMeta('og:description', `${nm} ฿${p.price} · ${p.cat||''} · ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน`);
+    let s=document.getElementById('ld-product'); if(!s){ s=document.createElement('script'); s.type='application/ld+json'; s.id='ld-product'; document.head.appendChild(s); }
+    s.textContent=JSON.stringify({"@context":"https://schema.org","@type":"Product",name:p.name_th,alternateName:p.name_en||undefined,category:p.cat,
+      image:imgSrc(p).startsWith('http')?imgSrc(p):(location.origin+location.pathname.replace(/[^/]*$/,'')+imgSrc(p)),
+      offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}});
+  }catch(e){}
+}
+function closeProductModal(){
+  document.getElementById('product-modal').classList.remove('show');
+  if(location.hash.startsWith('#p=')) history.replaceState(null,'',location.pathname+location.search);
+  document.title=_BASE_TITLE;
+  const s=document.getElementById('ld-product'); if(s) s.remove();
+}
+window.closeProductModal=closeProductModal;
+// open a product directly from a shared link (#p=<slug>) once the catalog is ready
+function openFromHash(){ const m=(location.hash||'').match(/^#p=(.+)$/); if(m){ const slug=decodeURIComponent(m[1]); if(PRODUCTS.find(x=>x.slug===slug)) openProductModal(slug); } }
+window.addEventListener('hashchange',()=>{ if((location.hash||'').startsWith('#p=')) openFromHash(); });
 
 // Variant selector (Sprint 4C) — shown only when a product has variants in product_variants.
 let currentVariant = null;
@@ -1613,7 +1666,7 @@ async function askLisa(txt) {
   try {
     const res = await fetch(WEB_API + '/web-chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: txt, sessionId: CHAT_SID }),
+      body: JSON.stringify({ message: txt, sessionId: CHAT_SID, lang: (localStorage.getItem('lt_lang')==='en'?'en':'th') }),
     });
     const j = await res.json();
     typing.remove();
