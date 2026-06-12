@@ -356,6 +356,9 @@ body.dark #confirm-qr-block #pp-amount{color:#a01010 !important}
 .hero-logo .brand-logo-img{height:118px;margin:0 auto;filter:drop-shadow(0 3px 15px rgba(0,0,0,.5))}
 .footer-logo .brand-logo-img{height:50px;margin:0 auto}
 .theme-toggle{width:40px;height:40px;border-radius:50%;background:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.nav-icon-btn{position:relative;width:40px;height:40px;border-radius:50%;background:none;font-size:1.05rem;display:flex;align-items:center;justify-content:center;transition:background .2s;cursor:pointer}
+.nav-icon-btn:hover{background:rgba(139,0,0,.08)}
+.fav-badge{position:absolute;top:-1px;right:-1px;background:var(--primary);color:#fff;font-size:.58rem;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1}
 .theme-toggle:hover{background:#f3e8d8}
 body.dark .theme-toggle:hover{background:#2c2218}
 
@@ -515,12 +518,13 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
     </div>
   </div>
   <div class="nav-links">
+    <button class="nav-btn" data-i18n="navHome" onclick="window.scrollTo({top:0,behavior:'smooth'})">หน้าหลัก</button>
     <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
     <button class="nav-btn" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
-    <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')" data-i18n="navChat">CHAT ไพลิน</button>
+    <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
+    <button class="nav-icon-btn" id="nav-fav" onclick="openWishlist()" title="รายการที่ถูกใจ" aria-label="รายการที่ถูกใจ">❤️<span class="fav-badge" id="fav-badge" style="display:none">0</span></button>
     <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🌐</button>
     <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
-    <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
     <button class="nav-btn solid" id="nav-login-btn" data-i18n="navLogin" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
     <button class="cart-btn" onclick="openCart()" aria-label="เปิดตะกร้าสินค้า">
@@ -536,7 +540,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <p class="hero-sub" data-i18n="heroSub">รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
   <div class="hero-cta">
     <button class="hero-cta-primary" data-i18n="heroShop" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
-    <button class="hero-cta-secondary" data-i18n="heroChat" onclick="document.getElementById('chat-panel').classList.add('open')">CHAT กับไพลิน</button>
+    <button class="hero-cta-secondary" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
   </div>
   <div class="hero-stats">
     <span><b>1,200+</b><span data-i18n="heroStat1">ลูกค้าประจำ</span></span>
@@ -1081,8 +1085,8 @@ async function syncProductsFromSupabase() {
     // product variants (Sprint 4C) — public-readable; grouped per product
     const variantsByPid = {};
     try {
-      const vres = await fetch(`${SUPA_URL}/rest/v1/product_variants?select=id,product_id,label,price,available&order=sort`, { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } });
-      if (vres.ok) (await vres.json()).forEach(v => { (variantsByPid[v.product_id] = variantsByPid[v.product_id] || []).push({ id: String(v.id), label: v.label, price: Number(v.price) || 0, available: v.available }); });
+      const vres = await fetch(`${SUPA_URL}/rest/v1/product_variants?select=id,product_id,label,price,available,orig_price&order=sort`, { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } });
+      if (vres.ok) (await vres.json()).forEach(v => { (variantsByPid[v.product_id] = variantsByPid[v.product_id] || []).push({ id: String(v.id), label: v.label, price: Number(v.price) || 0, available: v.available, orig: v.orig_price != null ? Number(v.orig_price) : null }); });
     } catch (e) {}
     PRODUCTS = PRODUCTS.filter(p => byId[p.id]).map(p => ({
       ...p,
@@ -1143,7 +1147,7 @@ function renderVariantSelector(p){
   const en=localStorage.getItem('lt_lang')==='en';
   slot.innerHTML=`<div style="font-size:.84rem;font-weight:700;margin-bottom:6px">${en?'Choose an option':'เลือกตัวเลือก'}</div>
     <select id="pm-variant" onchange="selectVariant()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--card,#fff);color:var(--text)">
-      ${p.variants.map((v,i)=>`<option value="${i}" ${v.available!=null&&v.available<=0?'disabled':''}>${v.label} — ฿${v.price}${v.available!=null&&v.available<=0?(en?' (out of stock)':' (หมด)'):''}</option>`).join('')}
+      ${p.variants.map((v,i)=>`<option value="${i}" ${v.available!=null&&v.available<=0?'disabled':''}>${v.label} — ฿${v.price}${v.orig&&v.orig>v.price?(en?` (was ฿${v.orig})`:` (ปกติ ฿${v.orig})`):''}${v.available!=null&&v.available<=0?(en?' (out of stock)':' (หมด)'):''}</option>`).join('')}
     </select>`;
   selectVariant();
 }
@@ -1788,7 +1792,18 @@ async function uploadSlip(input){
 updateCartUI();
 
 // ===== W6 wishlist · W3 reviews · W8 coupon =====
-function toggleWish(ev, slug){ ev.stopPropagation(); const i=WISHLIST.indexOf(slug); if(i>=0)WISHLIST.splice(i,1); else WISHLIST.push(slug); localStorage.setItem('lt_wishlist',JSON.stringify(WISHLIST)); applyProductView(); }
+function toggleWish(ev, slug){ ev.stopPropagation(); const i=WISHLIST.indexOf(slug); if(i>=0)WISHLIST.splice(i,1); else WISHLIST.push(slug); localStorage.setItem('lt_wishlist',JSON.stringify(WISHLIST)); applyProductView(); updateFavBadge(); }
+// Wishlist as a first-class action (navbar ❤️) — opens the favourites view in the catalog.
+function updateFavBadge(){ const b=document.getElementById('fav-badge'); if(!b) return; const n=WISHLIST.length; b.textContent=n; b.style.display=n>0?'flex':'none'; }
+function openWishlist(){
+  CURRENT_CAT='__wish__';
+  if(window.renderCategoryChips) renderCategoryChips();
+  applyProductView();
+  const p=document.getElementById('products'); if(p) p.scrollIntoView({behavior:'smooth'});
+  if(!WISHLIST.length) showToast(localStorage.getItem('lt_lang')==='en'?'No favourites yet — tap 🤍 on products you like':'ยังไม่มีรายการที่ถูกใจ — กด 🤍 ที่สินค้าที่ชอบได้เลยค่ะ');
+}
+window.openWishlist=openWishlist; window.updateFavBadge=updateFavBadge;
+updateFavBadge();
 
 async function loadReviews(){
   try{ const res=await fetch(SUPA_URL+'/rest/v1/reviews?select=product_id,customer_name,stars,text&order=created_at.desc',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}});
@@ -1871,7 +1886,7 @@ const I18N={ en:{
   cookieLink:'Privacy Policy',cookieAccept:'Accept',cookieDeny:'Decline',
   fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you',
   payMethod:'Payment method', payTransfer:'📲 Transfer/PromptPay', payCod:'🚚 Cash on delivery',
-  /* nav */ navProducts:'Products', navAbout:'About us', navMyOrders:'📦 My orders', navLogin:'Sign in',
+  /* nav */ navHome:'Home', navProducts:'Products', navAbout:'About us', navMyOrders:'📦 My orders', navLogin:'Sign in',
   /* hero */ heroBadge:'✦ Authentic Thai sweets ✦', heroSub:'Khanom Lanthong — original taste, delivered to your door',
   heroSub:'Original taste, delivered to your door', heroShop:'Shop all sweets', heroChat:'CHAT with Pailin',
   heroStat1:'Loyal customers', heroStat2:'Satisfaction', heroStat3:'Curated items',
@@ -1996,15 +2011,10 @@ window.quickAdd=quickAdd;
 /* ════════ RECENTLY VIEWED — Phase 1 ════════ */
 let RECENT=JSON.parse(localStorage.getItem('lt_recent')||'[]');
 function pushRecent(slug){ RECENT=[slug,...RECENT.filter(s=>s!==slug)].slice(0,10); localStorage.setItem('lt_recent',JSON.stringify(RECENT)); renderRecent(); renderForYou(); }
-function renderRecent(){
-  const sec=$('recently'), row=$('recentRow'); if(!sec) return;
-  const items=RECENT.map(s=>PRODUCTS.find(p=>p.slug===s)).filter(Boolean).slice(0,8);
-  if(items.length<2){ sec.style.display='none'; return; }
-  sec.style.display='block';
-  row.innerHTML=items.map(p=>`<div class="recent-card" onclick="openProductModal('${p.slug}')">
-    <img src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
-    <div class="rc-b"><div class="rc-n">${p.name_th}</div><div class="rc-p">฿${p.price}</div></div></div>`).join('');
-}
+// "ดูสินค้าล่าสุด" ถูกนำออกจากหน้าเว็บ (ลดความรก) — ยังเก็บ RECENT ไว้ใช้คำนวณ "แนะนำสำหรับคุณ"
+function renderRecent(){ const sec=$('recently'); if(sec) sec.style.display='none'; }
+/* Phase 2 reorder: ย้าย "แนะนำสำหรับคุณ" ขึ้นเหนือแคตตาล็อกสินค้า */
+(function(){ const fy=$('foryou'), pr=$('products'); if(fy&&pr&&pr.parentNode) pr.parentNode.insertBefore(fy,pr); })();
 
 /* ════════ CROSS-SELL (buy together) — Phase 1 ════════ */
 function crossSellFor(p){
