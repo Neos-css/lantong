@@ -696,6 +696,15 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     </div>
     <div class="field"><label>รหัสสินค้า (เช่น LT-P16)</label><input id="pm-id" placeholder="LT-P16"></div>
     <div class="field"><label>ชื่อสินค้า</label><input id="pm-name"></div>
+    <div class="field"><label>ชื่อภาษาอังกฤษ (English name · โชว์ในเว็บโหมด EN)</label><input id="pm-name-en" placeholder="e.g. Peanut Brittle Gift Set"></div>
+    <div style="border-top:1px dashed var(--border,#ddd);margin:6px 0 12px;padding-top:10px">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem;cursor:pointer"><input type="checkbox" id="pm-isbundle" onchange="document.getElementById('pm-bundle-box').style.display=this.checked?'block':'none'" style="width:auto"> 🎁 เป็นชุดของฝาก (Gift set / Bundle)</label>
+      <div id="pm-bundle-box" style="display:none;margin-top:8px">
+        <label>รายการสินค้าในชุด · 1 บรรทัด = 1 อย่าง · รูปแบบ <code>ชื่อสินค้า | จำนวน</code></label>
+        <textarea id="pm-bundle-items" rows="3" style="width:100%;font-family:monospace;font-size:.82rem" placeholder="ถั่วตัด | 2&#10;กล้วยตากอบน้ำผึ้ง | 1&#10;มะขามคลุก 4 รส | 1"></textarea>
+        <small style="color:var(--muted)">ตั้ง <b>ราคาขาย/สต็อก/รูป</b> ของชุดในช่องด้านล่างตามปกติ (ชุดคือสินค้า 1 รายการ) · รายการนี้แสดงให้ลูกค้าเห็นว่าในชุดมีอะไร · ระบบไม่ตัดสต็อกสินค้าย่อยอัตโนมัติ</small>
+      </div>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="field" style="margin-bottom:12px"><label>ราคาขาย (บาท)</label><input id="pm-price" type="number" min="0" step="1"></div>
       <div class="field" style="margin-bottom:12px"><label>ราคาทุน (บาท)</label><input id="pm-cost" type="number" min="0" step="1" placeholder="0"></div>
@@ -1011,7 +1020,7 @@ async function saveConfig(){
 // ── Load ──
 async function loadAll(manual){
   const [pr,st,or,cu,pa,vi,cf] = await Promise.all([
-    sb.from('products').select('id,name,price,orig_price,cost_price,category,unit,min_stock_alert,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for').order('id'),
+    sb.from('products').select('id,name,name_en,is_bundle,bundle_items,deleted_at,price,orig_price,cost_price,category,unit,min_stock_alert,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for').order('id'),
     sb.from('stock').select('product_id,available,reserved'),
     sb.from('orders').select('order_id,customer_id,items,total_amount,status,shipping_address,note,tracking_number,carrier,created_at,updated_at').order('created_at',{ascending:false}),
     sb.from('customers').select('customer_id,name,username,phone,address,platform,source,note,created_at'),
@@ -1020,13 +1029,16 @@ async function loadAll(manual){
     sb.from('app_config').select('*').eq('id',1).maybeSingle(),
   ]);
   if(pr.error||or.error) toast('โหลดข้อมูลไม่สำเร็จ: '+(pr.error||or.error).message,true);
-  const products=pr.data||[], stock=st.data||[], orders=or.data||[], customers=cu.data||[], payments=pa.data||[], visits=vi.data||[];
+  const allProducts=pr.data||[], stock=st.data||[], orders=or.data||[], customers=cu.data||[], payments=pa.data||[], visits=vi.data||[];
   CONFIG = cf.data || {};
   const stockMap={}; stock.forEach(s=>stockMap[s.product_id]=s);
-  products.forEach(p=>{ const s=stockMap[p.id]||{}; p.available=s.available??0; p.reserved=s.reserved??0; });
+  allProducts.forEach(p=>{ const s=stockMap[p.id]||{}; p.available=s.available??0; p.reserved=s.reserved??0; });
+  // soft delete: active products drive all stats/marketing; deleted live only in the trash view
+  const products=allProducts.filter(p=>!p.deleted_at);
+  const productsDeleted=allProducts.filter(p=>p.deleted_at);
   const custMap={}; customers.forEach(c=>custMap[c.customer_id]=c);
   orders.forEach(o=>{ const c=custMap[o.customer_id]; o.customer_name=(c&&c.name)||o.customer_id||'—'; o.customer_username=(c&&c.username)||''; });
-  DATA={products,orders,customers,payments,visits};
+  DATA={products,productsDeleted,orders,customers,payments,visits};
   document.getElementById('lastUpd').textContent=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById('cnt-orders').textContent=orders.length;
   document.getElementById('cnt-products').textContent=products.length;
@@ -1334,31 +1346,39 @@ async function adjustStock(orderId, items, sign){
 }
 
 // ── Products (+A6 stock quick-edit, +A11 thumbnail) ──
+let SHOW_TRASH=false;
+function toggleTrash(){ SHOW_TRASH=!SHOW_TRASH; renderProducts(); }
+window.toggleTrash=toggleTrash;
 function renderProducts(){
   const q=(document.getElementById('prodSearch').value||'').toLowerCase();
-  let rows=DATA.products;
-  if(q) rows=rows.filter(p=>(p.id+' '+p.name+' '+(p.category||'')).toLowerCase().includes(q));
+  const trashCount=(DATA.productsDeleted||[]).length;
+  let rows=(SHOW_TRASH ? (DATA.productsDeleted||[]) : DATA.products).slice();
+  if(q) rows=rows.filter(p=>(p.id+' '+p.name+' '+(p.name_en||'')+' '+(p.category||'')).toLowerCase().includes(q));
   const el=document.getElementById('productsTable');
-  if(!rows.length){ el.innerHTML='<div class="empty-state"><span>📦</span>ไม่พบสินค้า</div>'; return; }
+  const trashBar=`<div style="margin-bottom:10px"><button class="btn btn-ghost btn-sm" onclick="toggleTrash()">${SHOW_TRASH?'← กลับไปสินค้าที่ขายอยู่':`🗑 ถังขยะ${trashCount?` (${trashCount})`:''}`}</button>${SHOW_TRASH?' <span style="font-size:.76rem;color:var(--muted)">สินค้าที่ลบแล้ว — กดกู้คืนเพื่อนำกลับมาขาย</span>':''}</div>`;
+  if(!rows.length){ el.innerHTML=trashBar+'<div class="empty-state"><span>📦</span>'+(SHOW_TRASH?'ถังขยะว่าง':'ไม่พบสินค้า')+'</div>'; return; }
   const dis=canEdit()?'':'disabled';
-  el.innerHTML=`<table><thead><tr><th>รูป</th><th>รหัส</th><th>ชื่อสินค้า</th><th>หมวด</th><th>ราคา</th><th>คงเหลือ</th><th>จอง</th><th>สถานะ</th><th></th><th></th></tr></thead><tbody>
+  el.innerHTML=trashBar+`<table><thead><tr><th>รูป</th><th>รหัส</th><th>ชื่อสินค้า</th><th>หมวด</th><th>ราคา</th><th>คงเหลือ</th><th>จอง</th><th>สถานะ</th><th></th><th></th></tr></thead><tbody>
     ${rows.map(p=>{
       const av=p.available||0, min=p.min_stock_alert||10;
       let badge='<span class="badge-stock badge-ok">ปกติ</span>';
       if(av===0) badge='<span class="badge-stock badge-empty">หมด!</span>';
       else if(av<=min) badge='<span class="badge-stock badge-low">ต่ำ ⚠</span>';
       const thumb = p.image_url ? `<img class="prod-thumb" src="${esc(p.image_url)}" alt="" onerror="this.outerHTML='<span class=\\'prod-thumb\\'>🍮</span>'">` : '<span class="prod-thumb">🍮</span>';
+      const nameCell = `${p.is_bundle?'🎁 ':''}${esc(p.name)}${p.name_en?`<br><span style="font-size:.68rem;color:var(--muted)">${esc(p.name_en)}</span>`:''}`;
       return `<tr>
         <td>${thumb}</td>
         <td><code class="idc">${esc(p.id)}</code></td>
-        <td style="font-weight:600">${esc(p.name)}</td>
+        <td style="font-weight:600">${nameCell}</td>
         <td style="font-size:.76rem;color:var(--muted)">${esc(p.category)||'—'}</td>
         <td>฿${fmt(p.price)}${p.cost_price>0?`<br><span style="font-size:.66rem;color:var(--green)">กำไร ฿${fmt(p.price-p.cost_price)} (${Math.round((1-p.cost_price/p.price)*100)}%)</span>`:''}</td>
         <td><input class="stock-input needs-edit" type="number" min="0" value="${av}" ${dis} onchange="updateStock('${esc(p.id)}',this)"><span style="font-size:.74rem;color:var(--muted)">${esc(p.unit)||''}</span></td>
         <td style="color:var(--muted)">${p.reserved||0}</td>
         <td>${badge}</td>
-        <td><button class="btn btn-ghost btn-sm needs-edit" onclick='openProductModal(${JSON.stringify(p.id)})'>✏️ แก้</button>${av>0?`<button class="btn btn-ghost btn-sm needs-edit" title="แจ้งลูกค้าที่กดรอสินค้านี้ (LINE)" onclick='notifyRestock(${JSON.stringify(p.id)})'>📣 แจ้งคนรอ</button>`:''}</td>
-        <td><button class="btn btn-del btn-sm needs-edit" onclick='deleteProduct(${JSON.stringify(p.id)},${JSON.stringify(p.name)})'>🗑</button></td>
+        ${SHOW_TRASH
+          ? `<td colspan="2"><button class="btn btn-gold btn-sm needs-edit" onclick='restoreProduct(${JSON.stringify(p.id)},${JSON.stringify(p.name)})'>♻️ กู้คืน</button></td>`
+          : `<td><button class="btn btn-ghost btn-sm needs-edit" onclick='openProductModal(${JSON.stringify(p.id)})'>✏️ แก้</button>${av>0?`<button class="btn btn-ghost btn-sm needs-edit" title="แจ้งลูกค้าที่กดรอสินค้านี้ (LINE)" onclick='notifyRestock(${JSON.stringify(p.id)})'>📣 แจ้งคนรอ</button>`:''}</td>
+        <td><button class="btn btn-del btn-sm needs-edit" onclick='deleteProduct(${JSON.stringify(p.id)},${JSON.stringify(p.name)})'>🗑</button></td>`}
       </tr>`; }).join('')}
   </tbody></table>`;
 }
@@ -1452,6 +1472,10 @@ function openProductModal(id){
   document.getElementById('prodModalTitle').textContent=p?'แก้ไขสินค้า':'เพิ่มสินค้า';
   document.getElementById('pm-id').value=p?p.id:''; document.getElementById('pm-id').disabled=!!p;
   document.getElementById('pm-name').value=p?p.name:'';
+  document.getElementById('pm-name-en').value=p?(p.name_en||''):'';
+  const isB=!!(p&&p.is_bundle); document.getElementById('pm-isbundle').checked=isB;
+  document.getElementById('pm-bundle-box').style.display=isB?'block':'none';
+  document.getElementById('pm-bundle-items').value=(p&&Array.isArray(p.bundle_items))?p.bundle_items.map(it=>`${it.name||it.product_id} | ${it.qty||1}`).join('\n'):'';
   document.getElementById('pm-price').value=p?p.price:'';
   document.getElementById('pm-orig').value=p?(p.orig_price||''):'';
   document.getElementById('pm-cost').value=p?(p.cost_price||''):'';
@@ -1479,8 +1503,11 @@ async function saveProduct(){
   const id=document.getElementById('pm-id').value.trim();
   const name=document.getElementById('pm-name').value.trim();
   if(!id||!name){ toast('กรุณากรอกรหัสและชื่อสินค้า',true); return; }
-  const prod={ name, price:Number(document.getElementById('pm-price').value||0), orig_price:Number(document.getElementById('pm-orig').value||0)||null, cost_price:Number(document.getElementById('pm-cost').value||0),
-    category:document.getElementById('pm-category').value.trim(), unit:document.getElementById('pm-unit').value.trim(),
+  const isBundle=document.getElementById('pm-isbundle').checked;
+  const bundleItems=isBundle ? document.getElementById('pm-bundle-items').value.split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{ const parts=line.split('|').map(x=>(x||'').trim()); return parts[0]?{ name:parts[0], qty:Number(parts[1]||1)||1 }:null; }).filter(Boolean) : [];
+  const prod={ name, name_en:document.getElementById('pm-name-en').value.trim(), is_bundle:isBundle, bundle_items:bundleItems,
+    price:Number(document.getElementById('pm-price').value||0), orig_price:Number(document.getElementById('pm-orig').value||0)||null, cost_price:Number(document.getElementById('pm-cost').value||0),
+    category:document.getElementById('pm-category').value.trim()||(isBundle?'ชุดของฝาก':''), unit:document.getElementById('pm-unit').value.trim(),
     min_stock_alert:Number(document.getElementById('pm-min').value||0), image_url:document.getElementById('pm-image').value.trim(),
     ingredients:document.getElementById('pm-ingredients').value.trim(), allergens:document.getElementById('pm-allergens').value.trim(),
     pack_size:document.getElementById('pm-pack').value.trim(), shelf_life:document.getElementById('pm-shelf').value.trim(),
@@ -1511,12 +1538,21 @@ async function saveProduct(){
 }
 async function deleteProduct(id,name){
   if(!requireEdit()) return;
-  if(!(await confirmAction({ title:'🗑 ลบสินค้า', message:`ต้องการลบสินค้า <b>${esc(name)}</b> (${esc(id)}) ใช่ไหมคะ?`, detail:'⚠️ สต็อกของสินค้านี้จะถูกลบไปด้วย และกู้คืนไม่ได้', confirmText:'ลบสินค้า' }))) return;
-  const { error } = await sb.from('products').delete().eq('id',id);
+  if(!(await confirmAction({ title:'🗑 ลบสินค้า', message:`ต้องการลบสินค้า <b>${esc(name)}</b> (${esc(id)}) ใช่ไหมคะ?`, detail:'สินค้าจะถูกย้ายไป “ถังขยะ” และซ่อนจากเว็บร้านทันที · กู้คืนได้ภายหลัง (ไม่ลบถาวร)', confirmText:'ลบสินค้า' }))) return;
+  const { error } = await sb.from('products').update({ deleted_at:new Date().toISOString(), updated_at:new Date().toISOString() }).eq('id',id);
   if(error){ toast('ลบไม่สำเร็จ: '+error.message,true); return; }
   logAdminAction('product.delete', id, {name});
-  toast('ลบสินค้าแล้วค่ะ'); await loadAll();
+  toast('ย้ายไปถังขยะแล้วค่ะ (กู้คืนได้)'); await loadAll();
 }
+async function restoreProduct(id,name){
+  if(!requireEdit()) return;
+  if(!(await confirmAction({ title:'♻️ กู้คืนสินค้า', message:`นำสินค้า <b>${esc(name)}</b> (${esc(id)}) กลับมาขายใช่ไหมคะ?`, confirmText:'กู้คืน' }))) return;
+  const { error } = await sb.from('products').update({ deleted_at:null, updated_at:new Date().toISOString() }).eq('id',id);
+  if(error){ toast('กู้คืนไม่สำเร็จ: '+error.message,true); return; }
+  logAdminAction('product.restore', id, {name});
+  toast('กู้คืนสินค้าแล้วค่ะ'); await loadAll();
+}
+window.restoreProduct=restoreProduct;
 
 // ── Customers ──
 function custStats(cid){ const os=DATA.orders.filter(o=>o.customer_id===cid); const spent=os.filter(o=>PAID.has(o.status)).reduce((s,o)=>s+Number(o.total_amount||0),0); return {count:os.length,spent,orders:os}; }
