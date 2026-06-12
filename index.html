@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ร้าน@ลานทอง — ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</title>
-<meta name="description" content="ร้าน@ลานทอง ขนมไทยแท้คัดสรร 15 รายการ ถั่วตัด ขนมเปี๊ยะ กล้วยตาก สั่งง่ายผ่านเว็บ/LINE ส่งฟรีเมื่อครบ ฿600 มี AI ไพลินดูแล 24 ชม.">
+<title>ร้านลานทอง — ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</title>
+<meta name="description" content="ร้านลานทอง ขนมไทยแท้คัดสรร 15 รายการ ถั่วตัด ขนมเปี๊ยะ กล้วยตาก สั่งง่ายผ่านเว็บ/LINE ส่งฟรีเมื่อครบ ฿600 มี AI ไพลินดูแล 24 ชม.">
 <meta name="theme-color" content="#8B0000">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍯%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="ร้าน@ลานทอง — ขนมไทยแท้คัดสรร">
+<meta property="og:title" content="ร้านลานทอง — ขนมไทยแท้คัดสรร">
 <meta property="og:description" content="ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน · ส่งฟรีเมื่อครบ ฿600 · AI ไพลินดูแล 24 ชม.">
 <meta property="og:image" content="https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg">
 <meta property="og:url" content="https://neos-css.github.io/lantong/">
@@ -227,7 +227,7 @@ input,textarea{font-family:inherit}
 .login-modal-body{padding:32px 28px 36px}
 .login-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--primary);margin-bottom:4px}
 .login-sub{font-size:.85rem;color:var(--muted);margin-bottom:22px}
-.login-google-btn{width:100%;padding:11px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;cursor:pointer}
+.login-google-btn{width:100%;padding:11px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:.9rem;color:#3c3c3c;font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;cursor:pointer}
 .login-google-btn:hover{border-color:#aaa}
 .login-divider{text-align:center;font-size:.78rem;color:var(--muted);margin-bottom:16px;position:relative}
 .login-divider::before,.login-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
@@ -355,6 +355,26 @@ body.dark #confirm-qr-block #pp-amount{color:#a01010 !important}
 /* navbar logo = text wordmark only, no plaque box (per request) */
 .hero-logo .brand-logo-img{height:118px;margin:0 auto;filter:drop-shadow(0 3px 15px rgba(0,0,0,.5))}
 .footer-logo .brand-logo-img{height:50px;margin:0 auto}
+/* navbar: hamburger menu + logo image (Feedback round) */
+#navbar{justify-content:flex-start}
+.nav-hamburger{background:none;border:none;font-size:1.5rem;color:var(--primary);cursor:pointer;padding:2px 10px 2px 0;line-height:1}
+.nav-logo-img{height:46px;display:block;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(90,40,0,.4))}
+.nav-right{display:flex;align-items:center;gap:6px;margin-left:auto}
+.nav-menu{position:absolute;top:calc(100% + 6px);left:14px;background:var(--card,#fff);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.16);display:none;flex-direction:column;min-width:190px;padding:8px;z-index:1001}
+.nav-menu.open{display:flex}
+.nav-menu-item{text-align:left;padding:11px 14px;border-radius:9px;background:none;border:none;font-family:inherit;font-size:.95rem;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s}
+.nav-menu-item:hover{background:rgba(139,0,0,.08)}
+body.dark .nav-menu{background:#241c15;border-color:#5a4a30}
+.hero-logo-img{height:172px;max-width:90%;display:block;margin:0 auto;object-fit:contain;filter:drop-shadow(0 4px 22px rgba(0,0,0,.5))}
+body.dark .nav-logo-img{filter:drop-shadow(0 1px 3px rgba(0,0,0,.65))}
+@media(max-width:600px){ .nav-logo-img{height:34px} .nav-right{gap:3px} #nav-login-btn,#nav-user-btn{display:none} .hero-logo-img{height:120px} }
+/* About panel — richer/credible (Feedback round) */
+.about-logo-img{height:88px;max-width:90%;object-fit:contain;margin:0 auto;display:block;filter:drop-shadow(0 3px 14px rgba(0,0,0,.45))}
+.about-section-h{font-weight:700;font-size:.96rem;color:var(--primary);margin:22px 0 10px;border-top:1px solid var(--border);padding-top:16px}
+.about-trust{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;font-size:.82rem;color:var(--text)}
+.about-contact{font-size:.88rem;line-height:2;color:#3a2a1a;background:#f9f0e8;border-radius:10px;padding:12px 16px}
+.about-contact b{color:var(--primary)}
+@media(max-width:600px){ .about-trust{grid-template-columns:1fr} }
 .theme-toggle{width:40px;height:40px;border-radius:50%;background:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
 .nav-icon-btn{position:relative;width:40px;height:40px;border-radius:50%;background:none;font-size:1.05rem;display:flex;align-items:center;justify-content:center;transition:background .2s;cursor:pointer}
 .nav-icon-btn:hover{background:rgba(139,0,0,.08)}
@@ -460,7 +480,7 @@ body.dark #bottom-nav{background:#241c15}
 #bottom-nav .bn-badge{position:absolute;top:-4px;right:-8px;background:var(--gold);color:var(--dark);font-size:.55rem;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px}
 
 /* ── For-you reco ── */
-#foryou{max-width:1280px;margin:0 auto;padding:0 24px 48px;display:none}
+#foryou{max-width:1280px;margin:0 auto;padding:36px 24px 48px;display:none}
 
 /* ── Policy modal lists ── */
 .policy-body{padding:28px 26px 32px}
@@ -504,44 +524,37 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
-  <span id="announce-text">🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
+  <span id="announce-text">🍯 ยินดีต้อนรับสู่ร้านลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
   <span id="cd-wrap" style="display:none">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
 
 <!-- NAVBAR -->
 <nav id="navbar">
-  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ร้านลานทอง ขนม ลานทอง">
-    <div class="lt-logo">
-      <span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span> ลานทอง</span>
-      <span class="lt-logo-en">LANTHONG</span>
-    </div>
+  <button class="nav-hamburger" onclick="toggleNavMenu()" aria-label="เมนู" aria-expanded="false">☰</button>
+  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ลานทอง">
+    <img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="nav-logo-img">
   </div>
-  <div class="nav-links">
-    <button class="nav-btn" data-i18n="navHome" onclick="window.scrollTo({top:0,behavior:'smooth'})">หน้าหลัก</button>
-    <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
-    <button class="nav-btn" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
-    <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
+  <div class="nav-right">
     <button class="nav-icon-btn" id="nav-fav" onclick="openWishlist()" title="รายการที่ถูกใจ" aria-label="รายการที่ถูกใจ">❤️<span class="fav-badge" id="fav-badge" style="display:none">0</span></button>
-    <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🌐</button>
+    <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🇹🇭</button>
     <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
     <button class="nav-btn solid" id="nav-login-btn" data-i18n="navLogin" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
-    <button class="cart-btn" onclick="openCart()" aria-label="เปิดตะกร้าสินค้า">
-      🛒<span class="cart-badge" id="cart-badge">0</span>
-    </button>
+    <button class="cart-btn" onclick="openCart()" aria-label="เปิดตะกร้าสินค้า">🛒<span class="cart-badge" id="cart-badge">0</span></button>
+  </div>
+  <div class="nav-menu" id="navMenu">
+    <button class="nav-menu-item" data-i18n="navHome" onclick="closeNavMenu();window.scrollTo({top:0,behavior:'smooth'})">หน้าหลัก</button>
+    <button class="nav-menu-item" data-i18n="navProducts" onclick="closeNavMenu();document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
+    <button class="nav-menu-item" data-i18n="navAbout" onclick="closeNavMenu();openAbout()">เกี่ยวกับเรา</button>
+    <button class="nav-menu-item" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="closeNavMenu();openMyOrders()">📦 ออเดอร์ของฉัน</button>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- HERO (logo-focused) -->
 <section id="hero">
-  <div class="hero-badge" data-i18n="heroBadge">✦ ขนมไทยแท้คัดสรร ✦</div>
-  <div class="hero-logo"><img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" class="brand-logo-img"></div>
+  <div class="hero-logo"><img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="hero-logo-img"></div>
   <p class="hero-sub" data-i18n="heroSub">รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
-  <div class="hero-cta">
-    <button class="hero-cta-primary" data-i18n="heroShop" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
-    <button class="hero-cta-secondary" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
-  </div>
   <div class="hero-stats">
     <span><b>1,200+</b><span data-i18n="heroStat1">ลูกค้าประจำ</span></span>
     <span><b>98%</b><span data-i18n="heroStat2">ความพึงพอใจ</span></span>
@@ -641,7 +654,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- FOOTER -->
 <footer id="footer">
-  <div class="footer-logo"><img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" class="brand-logo-img"></div>
+  <div class="footer-logo"><img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="brand-logo-img" style="height:56px"></div>
   <p data-i18n="fTagline">ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
   <p style="margin-top:10px">
     <a onclick="openPolicy('faq')" style="cursor:pointer;color:var(--gold)" data-i18n="fFaq">คำถามพบบ่อย</a> ·
@@ -658,32 +671,44 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <div id="about-panel">
   <button class="panel-close" onclick="closeAbout()">✕</button>
   <div class="about-hero">
-    <img src="รูปสินค้า_web/lantong-logo.png" alt="ขนม ลานทอง" class="brand-logo-img">
+    <img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="about-logo-img">
     <p class="about-tagline" data-i18n="aboutTagline" style="margin-top:14px">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
   </div>
   <div class="about-body">
-    <p class="about-text" data-i18n="aboutText">ร้าน@ลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
+    <p class="about-text" data-i18n="aboutText">ร้านลานทองถือกำเนิดจากความตั้งใจที่อยากส่งต่อรสชาติขนมไทยแท้ ๆ ให้คนยุคใหม่ได้ลิ้มลอง เราคัดสรรขนมคุณภาพจากผู้ผลิตท้องถิ่นที่ไว้ใจได้ ใช้วัตถุดิบแท้ ไม่ใส่สีสังเคราะห์และสารกันบูด รักษาสูตรต้นตำรับ แล้วส่งมอบความหวานแบบไทยถึงมือคุณอย่างใส่ใจในทุกขั้นตอน</p>
+
+    <div class="about-section-h">🧺 เราใส่ใจอย่างไร</div>
     <div class="about-features">
-      <div class="about-feature">
-        <div class="about-feature-icon">🍯</div>
-        <div class="about-feature-text"><strong data-i18n="aboutF1t">วัตถุดิบแท้ คัดสรร</strong><span data-i18n="aboutF1s">ไม่ใส่สีสังเคราะห์ ไม่ใส่สารกันบูด</span></div>
-      </div>
-      <div class="about-feature">
-        <div class="about-feature-icon">🤖</div>
-        <div class="about-feature-text"><strong data-i18n="aboutF2t">ระบบ AI อัจฉริยะ</strong><span data-i18n="aboutF2s">ไพลินดูแลลูกค้า 24/7 อัตโนมัติ</span></div>
-      </div>
-      <div class="about-feature">
-        <div class="about-feature-icon">🚚</div>
-        <div class="about-feature-text"><strong data-i18n="aboutF3t">จัดส่งรวดเร็ว</strong><span data-i18n="aboutF3s">บรรจุภัณฑ์แน่นหนา สินค้าถึงมือสด</span></div>
-      </div>
+      <div class="about-feature"><div class="about-feature-icon">🌾</div><div class="about-feature-text"><strong>คัดสรรวัตถุดิบ</strong><span>เลือกถั่ว งา กล้วย และผลไม้จากแหล่งที่ไว้ใจ คัดทีละล็อตเพื่อรสชาติที่คงที่</span></div></div>
+      <div class="about-feature"><div class="about-feature-icon">🍯</div><div class="about-feature-text"><strong>สูตรต้นตำรับ</strong><span>รักษาสูตรไทยดั้งเดิม ทำสดใหม่ ไม่ใส่สีสังเคราะห์ ไม่ใส่สารกันบูด</span></div></div>
+      <div class="about-feature"><div class="about-feature-icon">📦</div><div class="about-feature-text"><strong>ส่งมอบใส่ใจ</strong><span>แพ็กกันกระแทกอย่างดี เก็บความกรอบ ส่งทั่วไทย พร้อมเลขพัสดุทุกออเดอร์</span></div></div>
     </div>
+
+    <div class="about-section-h">✅ ทำไมลูกค้าวางใจ</div>
+    <div class="about-trust">
+      <div>🔒 ตรวจสลิปอัตโนมัติ ปลอดภัย</div>
+      <div>🚚 แจ้งเลขพัสดุทุกออเดอร์</div>
+      <div>⭐ รีวิวจากลูกค้าจริง</div>
+      <div>🧾 ระบุส่วนผสม/สารก่อภูมิแพ้ชัดเจน</div>
+      <div>💬 ไพลิน AI ดูแล 24 ชม.</div>
+      <div>🪪 ดูแลข้อมูลส่วนตัว (PDPA)</div>
+    </div>
+
     <div class="about-stats">
-      <div class="about-stat"><b>1,200+</b><span data-i18n="aboutStat1">ลูกค้า</span></div>
-      <div class="about-stat"><b>15</b><span data-i18n="aboutStat2">สินค้า</span></div>
+      <div class="about-stat"><b>1,200+</b><span data-i18n="aboutStat1">ลูกค้าประจำ</span></div>
+      <div class="about-stat"><b>15</b><span data-i18n="aboutStat2">เมนูคัดสรร</span></div>
       <div class="about-stat"><b>98%</b><span data-i18n="aboutStat3">พึงพอใจ</span></div>
     </div>
-    <div class="about-quote">“รสชาติต้นตำรับที่ส่งต่อความสุขถึงมือคุณ” 🍯</div>
-    <button class="about-cta" onclick="closeAbout();document.getElementById('chat-panel').classList.add('open')">💬 <span data-i18n="heroChat">CHAT กับไพลิน</span></button>
+
+    <div class="about-section-h">📞 ติดต่อ & ช่องทางชำระเงิน</div>
+    <div class="about-contact">
+      <div>📱 PromptPay <b id="about-pp">0982695608</b></div>
+      <div>🏦 <span id="about-bank">กสิกรไทย</span> <b id="about-bankno">1443385696</b></div>
+      <div>👤 <span id="about-bankacc">นาย กฤตเมธ สุทีวรรณ</span></div>
+    </div>
+
+    <div class="about-quote">"รสชาติต้นตำรับที่ส่งต่อความสุขถึงมือคุณ" 🍯</div>
+    <button class="about-cta" onclick="closeAbout();document.getElementById('products').scrollIntoView({behavior:'smooth'})">🛍️ เลือกซื้อขนม</button>
   </div>
 </div>
 
@@ -807,7 +832,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       </div>
       <div class="confirm-icon">✓</div>
       <div class="confirm-title">บันทึกออเดอร์แล้ว!</div>
-      <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับร้าน@ลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ไพลินค่ะ</div>
+      <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับร้านลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ไพลินค่ะ</div>
       <div class="confirm-order-num" id="confirm-order-num"></div>
       <div class="confirm-items" id="confirm-items-list"></div>
 
@@ -1051,13 +1076,14 @@ function filterProducts(cat, btn) {
 }
 
 // Build category chips dynamically from the live catalog (admin adds a category → chip appears).
+const CAT_EN={'ขนมไทยโบราณ':'Traditional Thai','ผลไม้แปรรูป':'Dried fruit','คุกกี้/แครกเกอร์':'Cookies/Crackers','ถั่วอบ/ทอด':'Roasted nuts','ขนมนึ่ง':'Steamed','ขนมอบ':'Baked'};
 function renderCategoryChips(){
   const host=document.getElementById('filterBar'); if(!host) return;
   const en=localStorage.getItem('lt_lang')==='en';
   const esc=s=>String(s).replace(/[<>"']/g,'');
   const cats=[...new Set(PRODUCTS.map(p=>p.cat).filter(Boolean))];
   host.innerHTML = `<button class="filter-btn${CURRENT_CAT==='all'?' active':''}" onclick="filterProducts('all',this)">${en?'All':'ทั้งหมด'}</button>`
-    + cats.map(c=>`<button class="filter-btn${CURRENT_CAT===c?' active':''}" data-cat="${esc(c)}" onclick="filterProducts(this.dataset.cat,this)">${esc(c)}</button>`).join('')
+    + cats.map(c=>`<button class="filter-btn${CURRENT_CAT===c?' active':''}" data-cat="${esc(c)}" onclick="filterProducts(this.dataset.cat,this)">${esc(en&&CAT_EN[c]?CAT_EN[c]:c)}</button>`).join('')
     + `<button class="filter-btn${CURRENT_CAT==='__wish__'?' active':''}" onclick="filterProducts('__wish__',this)">❤️ ${en?'Favourites':'ที่ถูกใจ'}</button>`;
 }
 window.renderCategoryChips=renderCategoryChips;
@@ -1220,7 +1246,7 @@ function updateCartUI() {
     DISCOUNT = COUPON.discount_type==='percent' ? Math.round(subtotal*COUPON.value/100) : Math.min(COUPON.value, subtotal);
   }
   const prodTotal = Math.max(0, subtotal - DISCOUNT);
-  const shipping = shopShipping(prodTotal);                 // added on top, never discounted
+  const shipping = cart.length ? shopShipping(prodTotal) : 0;   // no shipping on an empty cart
   const total = prodTotal + shipping;
   const count = cart.reduce((s, i) => s + i.qty, 0);
   const badge = document.getElementById('cart-badge');
@@ -1310,7 +1336,7 @@ async function openOrderForm() {
     if (bal > 0 && slot) {
       const en = localStorage.getItem('lt_lang') === 'en';
       const maxUse = Math.min(bal, Math.max(0, total - 1));   // keep ≥ ฿1 payable
-      slot.innerHTML = `<div style="background:#f9f0e8;border-radius:10px;padding:10px 12px;margin:8px 0">
+      slot.innerHTML = `<div style="background:#f9f0e8;border-radius:10px;padding:10px 12px;margin:8px 0;color:#3a2a1a">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem">
           <span>⭐ ${en ? 'You have' : 'คุณมี'} <b>${bal}</b> ${en ? 'points' : 'แต้ม'}</span>
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
@@ -1330,7 +1356,7 @@ async function openOrderForm() {
   } else {
     const slot0=document.getElementById('order-redeem-slot');
     const en0=localStorage.getItem('lt_lang')==='en';
-    if(slot0) slot0.innerHTML=`<div style="background:#f9f0e8;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.78rem;text-align:center;color:var(--text)">🔒 <a onclick="document.getElementById('order-modal').classList.remove('show');openLogin()" style="color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline">${en0?'Sign in':'เข้าสู่ระบบ'}</a> ${en0?'to collect & use points':'เพื่อสะสม & ใช้แต้ม'}</div>`;
+    if(slot0) slot0.innerHTML=`<div style="background:#f9f0e8;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.78rem;text-align:center;color:#3a2a1a">🔒 <a onclick="document.getElementById('order-modal').classList.remove('show');openLogin()" style="color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline">${en0?'Sign in':'เข้าสู่ระบบ'}</a> ${en0?'to collect & use points':'เพื่อสะสม & ใช้แต้ม'}</div>`;
   }
   onRedeemInput();   // set shipping line + grand total (works with or without the redeem slider)
 }
@@ -1415,6 +1441,17 @@ async function sbInsertAnon(table, row) {
     return false;
   }
 }
+
+// Log a visit once per session (admin "ช่องทางการเข้าชม" reads the visits table)
+(function(){ try{
+  if(sessionStorage.getItem('lt_visited')) return; sessionStorage.setItem('lt_visited','1');
+  const p=new URLSearchParams(location.search); let src=p.get('utm_source')||p.get('ref')||'';
+  if(!src && document.referrer){ try{ const h=new URL(document.referrer).hostname.replace(/^www\./,'').toLowerCase();
+    if(h && !h.includes(location.hostname)){ src = /google/.test(h)?'google':/facebook|fb\.com|fb\.me/.test(h)?'facebook':/instagram/.test(h)?'instagram':/line/.test(h)?'line':/t\.co|twitter|x\.com/.test(h)?'twitter':/tiktok/.test(h)?'tiktok':h; }
+  }catch(e){} }
+  if(!src) src='direct';
+  sbInsertAnon('visits',{ source:String(src).slice(0,40) });
+}catch(e){} })();
 
 async function submitOrder() {
   const name = document.getElementById('order-name').value.trim();
@@ -1505,7 +1542,7 @@ function showToast(msg) {
 }
 
 const LISA = {
-  'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ร้าน@ลานทอง ดิฉันไพลินค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
+  'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ร้านลานทอง ดิฉันไพลินค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
   'ว่าไง':'สวัสดีค่ะ ยินดีต้อนรับ มีอะไรให้ช่วยบอกได้เลยนะคะ',
   'ราคา':'ราคาสินค้าเริ่มต้น ฿45 ถึง ฿99 ค่ะ กด VIEW DETAILS ที่การ์ดสินค้าเพื่อดูราคาได้เลยค่ะ 🏷️',
   'เท่าไร':'ราคาเริ่มต้น ฿45 ค่ะ กด VIEW DETAILS ที่สินค้าที่สนใจเพื่อดูราคาและรายละเอียดได้เลยค่ะ',
@@ -1597,7 +1634,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-setTimeout(() => addChatMsg('สวัสดีค่ะ ดิฉันไพลิน AI Sale ของร้าน@ลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?', 'bot'), 300);
+setTimeout(() => addChatMsg('สวัสดีค่ะ ดิฉันไพลิน AI Sale ของร้านลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?', 'bot'), 300);
 </script>
 
 <script>
@@ -1624,8 +1661,9 @@ try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ c
   const a=document.getElementById('announce-text');
   if(a) a.innerHTML = data.promo_banner
     ? ('🍯 ' + data.promo_banner + ' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.')
-    : ('🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; ' + shipMsg + ' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.');
+    : ('🍯 ยินดีต้อนรับสู่ร้านลานทอง &nbsp;·&nbsp; ' + shipMsg + ' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.');
   set('pi-promptpay', data.promptpay); set('pi-bank-label', data.bank_name); set('pi-bank-no', data.bank_no); set('pi-account', data.bank_account);
+  set('about-pp', data.promptpay); set('about-bank', data.bank_name); set('about-bankno', data.bank_no); set('about-bankacc', data.bank_account);
   // editable "เกี่ยวกับเรา" content (overrides static text; drop data-i18n so it isn't reverted on lang toggle)
   if (data.about_tagline) document.querySelectorAll('.about-tagline').forEach(e=>{ e.removeAttribute('data-i18n'); e.textContent=data.about_tagline; });
   if (data.about_text)    document.querySelectorAll('.about-text').forEach(e=>{ e.removeAttribute('data-i18n'); e.textContent=data.about_text; });
@@ -1811,6 +1849,11 @@ function openWishlist(){
 }
 window.openWishlist=openWishlist; window.updateFavBadge=updateFavBadge;
 updateFavBadge();
+// Hamburger nav menu (links live inside; icons stay outside)
+function toggleNavMenu(){ const m=document.getElementById('navMenu'); if(m) m.classList.toggle('open'); const h=document.querySelector('.nav-hamburger'); if(h) h.setAttribute('aria-expanded', m&&m.classList.contains('open')?'true':'false'); }
+function closeNavMenu(){ const m=document.getElementById('navMenu'); if(m) m.classList.remove('open'); }
+window.toggleNavMenu=toggleNavMenu; window.closeNavMenu=closeNavMenu;
+document.addEventListener('click',e=>{ const m=document.getElementById('navMenu'); if(m&&m.classList.contains('open')&&!e.target.closest('#navMenu')&&!e.target.closest('.nav-hamburger')) m.classList.remove('open'); });
 
 async function loadReviews(){
   try{ const res=await fetch(SUPA_URL+'/rest/v1/reviews?select=product_id,customer_name,stars,text&order=created_at.desc',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}});
@@ -1923,7 +1966,7 @@ function applyLang(lang){
     else if(el.dataset.thPh!=null){ el.placeholder=el.dataset.thPh; }
   });
   document.documentElement.lang=lang;
-  const lt=$('lang-toggle'); if(lt)lt.textContent=lang==='en'?'🇹🇭':'🌐';
+  const lt=$('lang-toggle'); if(lt)lt.textContent=lang==='en'?'🇬🇧':'🇹🇭';   // show current language flag
   localStorage.setItem('lt_lang',lang);
   if(window.renderCategoryChips) window.renderCategoryChips();   // re-translate All/Favourites on dynamic chips
 }
@@ -2146,7 +2189,7 @@ window.onPayMethodChange=onPayMethodChange;
 /* ════════ POLICY MODAL (PDPA/return/shipping) — Phase 7 ════════ */
 const POLICIES={
   privacy:{th:`<h2>นโยบายความเป็นส่วนตัว</h2>
-    <p>ร้าน@ลานทอง เก็บข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร ที่อยู่ อีเมล) เพื่อจัดส่งสินค้าและให้บริการเท่านั้น ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
+    <p>ร้านลานทอง เก็บข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร ที่อยู่ อีเมล) เพื่อจัดส่งสินค้าและให้บริการเท่านั้น ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
     <h3>ข้อมูลที่เก็บ</h3><ul><li>ข้อมูลคำสั่งซื้อและการจัดส่ง</li><li>ประวัติการแชตกับไพลิน AI เพื่อปรับปรุงบริการ</li><li>คุกกี้/สถิติการใช้งานเว็บ (เมื่อคุณยอมรับ)</li></ul>
     <h3>สิทธิของคุณ</h3><p>คุณขอดู แก้ไข หรือลบข้อมูลได้ทุกเมื่อ ผ่านแชตไพลินหรือ LINE OA ของร้าน เราไม่ขายข้อมูลให้บุคคลที่สาม</p>`,
     en:`<h2>Privacy Policy</h2><p>Lanthong collects personal data (name, phone, address, email) only to fulfill orders and provide service, in line with Thailand's PDPA.</p>
@@ -2176,10 +2219,10 @@ const POLICIES={
     <h3>💳 How to pay?</h3><p>Bank transfer / PromptPay (details on checkout) then upload the slip for auto-verification, or Cash on Delivery (COD).</p>
     <h3>📦 Damaged / wrong item?</h3><p>Photograph the item and parcel, tell Pailin within 3 days — we reship or fully refund.</p>
     <h3>🥜 Allergen info?</h3><p>Shown on each product page (ingredients/allergens). If you have allergies, ask Pailin before ordering.</p>`},
-  contact:{th:`<h2>ติดต่อร้าน@ลานทอง</h2>
+  contact:{th:`<h2>ติดต่อร้านลานทอง</h2>
     <p>เรายินดีตอบทุกคำถามค่ะ 💛</p>
     <ul><li>💬 <b>แชตไพลิน AI</b> บนเว็บนี้ — ตอบอัตโนมัติ 24 ชม. (ปุ่มแชตมุมขวาล่าง)</li>
-    <li>📱 <b>LINE OA:</b> @ลานทอง (แอดมินตอบกลับในเวลาทำการ)</li>
+    <li>📱 <b>LINE OA:</b> ลานทอง (แอดมินตอบกลับในเวลาทำการ)</li>
     <li>🏪 <b>ร้านลานทอง</b> — ขนมไทยคัดสรร ส่งตรงถึงบ้าน</li></ul>
     <p style="margin-top:10px">ชำระเงิน: PromptPay 0982695608 / กสิกรไทย 1443385696 (ชื่อบัญชี ร้านลานทอง) — โปรดโอนเข้าบัญชีนี้เท่านั้น</p>`,
     en:`<h2>Contact Lanthong</h2>
@@ -2267,7 +2310,7 @@ function myReferralCode(){
   c=(base.slice(0,4).toUpperCase().replace(/[^A-Z0-9]/g,'')||'LT')+String(Math.floor(1000+Math.random()*9000));
   localStorage.setItem('lt_ref',c); return c;
 }
-function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ร้าน@ลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
+function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ร้านลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
   window.open('https://line.me/R/msg/text/?'+t,'_blank'); track('share',{method:'line'}); }
 window.shareLine=shareLine; window.myReferralCode=myReferralCode;
 /* capture inbound ?ref= */
@@ -2298,9 +2341,9 @@ if(_openMyOrders){
       const isMem = window.MEMBER && window._loyalty && typeof window._loyalty.balance==='number';
       if(!isMem){
         // points are member-only → encourage sign-in instead of showing fake points
-        extra.innerHTML=`<div style="background:#f9f0e8;border-radius:14px;padding:16px;text-align:center">
+        extra.innerHTML=`<div style="background:#f9f0e8;border-radius:14px;padding:16px;text-align:center;color:#3a2a1a">
           <div style="font-size:1.4rem">🔒⭐</div>
-          <div style="font-weight:700;margin:6px 0;color:var(--text)">${en?'Sign in to collect & use points':'เข้าสู่ระบบเพื่อสะสม & ใช้แต้ม'}</div>
+          <div style="font-weight:700;margin:6px 0">${en?'Sign in to collect & use points':'เข้าสู่ระบบเพื่อสะสม & ใช้แต้ม'}</div>
           <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px">${en?`Earn 1 point per ฿${earnBaht} · 1 point = ฿${redeemValue} off · invite friends for discounts`:`ทุก ฿${earnBaht} = 1 แต้ม · 1 แต้ม = ส่วนลด ฿${redeemValue} · ชวนเพื่อนรับส่วนลด`}</div>
           <button onclick="document.getElementById('myorders-modal').classList.remove('show');openLogin()" style="padding:9px 22px;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;border:none;cursor:pointer">${en?'Sign in':'เข้าสู่ระบบ'}</button>
         </div>`;
@@ -2323,7 +2366,7 @@ if(_openMyOrders){
           <div style="font-size:.76rem;color:var(--muted);margin-bottom:8px">${en?`Share your link — friends get ฿ off their first order, you get points when they pay. <b>Invited ${rf.invited} · earned ${rf.earned} pts</b>`:`แชร์ลิงก์ของคุณ · เพื่อนได้ส่วนลดออเดอร์แรก คุณได้แต้มเมื่อเพื่อนจ่ายเงิน · <b>ชวนแล้ว ${rf.invited} คน · ได้ ${rf.earned} แต้ม</b>`}</div>
           <div style="display:flex;gap:8px;align-items:center">
             <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
-            <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้าน@ลานทอง รับส่วนลด ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">${en?'Share':'แชร์'} LINE</button>
+            <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้านลานทอง รับส่วนลด ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">${en?'Share':'แชร์'} LINE</button>
           </div>`;
         box.appendChild(extra);
       }
@@ -2340,7 +2383,7 @@ function injectSchema(){
       image:`https://neos-css.github.io/lantong/รูปสินค้า_web/${p.slug}.jpg`,
       offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}
     }));
-    const ld={"@context":"https://schema.org","@type":"Store",name:"ร้าน@ลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
+    const ld={"@context":"https://schema.org","@type":"Store",name:"ร้านลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
       url:"https://neos-css.github.io/lantong/",image:"https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg",
       aggregateRating:{"@type":"AggregateRating",ratingValue:"4.9",reviewCount:"1200"},
       hasOfferCatalog:{"@type":"OfferCatalog",name:"ขนมไทย",itemListElement:items}};
