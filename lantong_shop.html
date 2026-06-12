@@ -854,6 +854,10 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <input class="form-input" id="login-email" type="email" placeholder="your@email.com">
       <label class="form-label">รหัสผ่าน</label>
       <input class="form-input" id="login-password" type="password" placeholder="••••••••">
+      <div id="login-username-wrap" style="display:none">
+        <label class="form-label">ชื่อที่ใช้แสดง <span style="color:var(--muted);font-weight:400">(ไม่บังคับ)</span></label>
+        <input class="form-input" id="login-username" type="text" placeholder="เช่น คุณนัท · ชื่อนี้ใช้ระบุตัวตนกับทางร้าน" maxlength="60">
+      </div>
       <button class="login-btn" id="login-submit" onclick="doMemberAuth()">เข้าสู่ระบบ</button>
       <div style="text-align:center;font-size:.82rem;color:var(--muted);margin-top:14px">
         <span id="login-toggle-text">ยังไม่มีบัญชี?</span>
@@ -1651,6 +1655,7 @@ function openLogin(){
   document.getElementById('login-submit').textContent='เข้าสู่ระบบ';
   document.getElementById('login-toggle-text').textContent='ยังไม่มีบัญชี?';
   document.getElementById('login-toggle-link').textContent='สมัครสมาชิก';
+  document.getElementById('login-username-wrap').style.display='none';
   showLoginError('');
   document.getElementById('login-modal').classList.add('show');
 }
@@ -1663,6 +1668,7 @@ function toggleAuthMode(ev){
   document.getElementById('login-submit').textContent = s?'สมัครสมาชิก':'เข้าสู่ระบบ';
   document.getElementById('login-toggle-text').textContent = s?'มีบัญชีอยู่แล้ว?':'ยังไม่มีบัญชี?';
   document.getElementById('login-toggle-link').textContent = s?'เข้าสู่ระบบ':'สมัครสมาชิก';
+  document.getElementById('login-username-wrap').style.display = s?'block':'none';
   showLoginError('');
 }
 async function doMemberAuth(){
@@ -1671,7 +1677,8 @@ async function doMemberAuth(){
   if(!email||!password){ showLoginError('กรอกอีเมลและรหัสผ่านค่ะ'); return; }
   showLoginError('');
   if(AUTH_MODE==='signup'){
-    const {error}=await sbAuth.auth.signUp({email,password});
+    const username=(document.getElementById('login-username').value||'').trim().slice(0,60);
+    const {error}=await sbAuth.auth.signUp({email,password,options:username?{data:{username}}:undefined});
     if(error){ showLoginError(error.message); return; }
     showToast('สมัครสมาชิกสำเร็จค่ะ 🎉');
   } else {
