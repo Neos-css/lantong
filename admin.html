@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ร้าน@ลานทอง — Admin Dashboard</title>
+<title>ร้านลานทอง — Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -272,7 +272,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 <div id="login-screen">
   <div class="login-card">
     <div class="logo">🍮</div>
-    <h2>ร้าน@ลานทอง</h2>
+    <h2>ร้านลานทอง</h2>
     <p class="sub">เข้าสู่ระบบหลังบ้าน</p>
     <div class="login-error" id="login-error"></div>
     <input id="login-email" placeholder="ชื่อผู้ใช้ หรืออีเมล" autocomplete="username" aria-label="ชื่อผู้ใช้ หรืออีเมล">
@@ -307,7 +307,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
       <div class="nav-item nav-ai" data-tab="marketing" onclick="navTo('marketing')"><span class="ic">📣</span> การตลาด AI</div>
       <div class="nav-item nav-ai" data-tab="aipower" onclick="navTo('aipower')"><span class="ic">🔋</span> พลัง AI</div>
     </nav>
-    <div class="sb-foot">ขับเคลื่อนโดย <b>ไพลิน</b> &amp; <b>พลอย</b> · Neo-S AI<br>ร้าน@ลานทอง © 2026</div>
+    <div class="sb-foot">ขับเคลื่อนโดย <b>ไพลิน</b> &amp; <b>พลอย</b> · Neo-S AI<br>ร้านลานทอง © 2026</div>
   </aside>
   <div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar(false)"></div>
 
@@ -617,6 +617,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         </div>
         <button class="btn btn-primary needs-edit" style="margin-top:8px" onclick="saveConfig()">💾 บันทึกการตั้งค่า</button>
         <p style="font-size:.74rem;color:var(--muted);margin-top:10px">💡 ระดับ: เงิน 🥈 (เริ่มต้น) → ทอง 🥇 → แพลทินัม 💎 ตามแต้มสะสม · ลูกค้าที่ไม่ล็อกอินจะไม่สะสม/ใช้แต้ม (กันสับสน)</p>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="toolbar"><div class="section-title" style="margin:0">📜 ประวัติการแก้ไข (Audit Log)</div><div class="spacer"></div><button class="btn btn-ghost btn-sm" onclick="loadAuditLog()">🔄 โหลด</button></div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:10px">บันทึกการแก้ไขข้อมูล สินค้า สต็อก ออเดอร์ ตั้งค่า คูปอง โดยทีมงาน (ใครทำอะไรเมื่อไหร่)</p>
+        <div id="auditLog"><div class="loading">กด 🔄 เพื่อโหลด…</div></div>
       </div>
     </div>
 
@@ -957,7 +962,22 @@ function navTo(id){
   if(id==='advisor') initAdvisor();
   if(id==='aipower') renderAiPower();
   if(id==='finance') renderFinance();
-  if(id==='settings') fillConfigForm();
+  if(id==='settings'){ fillConfigForm(); loadAuditLog(); }
+}
+// Audit trail for manual admin changes (worker logs order/stock/user already; this covers client-side edits)
+async function logAdminAction(action, target, detail){
+  try{ await sb.from('audit_logs').insert({ actor_email:(document.getElementById('user-email')||{}).textContent||'', actor_role:(typeof role!=='undefined'?role:'admin'), action:String(action).slice(0,60), target:String(target||'').slice(0,200), detail: detail!=null?JSON.stringify(detail).slice(0,1500):null }); }catch(e){}
+}
+async function loadAuditLog(){
+  const el=document.getElementById('auditLog'); if(!el) return; el.innerHTML='<div class="loading">โหลด…</div>';
+  const { data, error } = await sb.from('audit_logs').select('created_at,actor_email,action,target,detail').order('created_at',{ascending:false}).limit(80);
+  if(error){ el.innerHTML='<div class="empty-state"><span>📜</span>โหลดประวัติไม่ได้</div>'; return; }
+  if(!data||!data.length){ el.innerHTML='<div class="empty-state"><span>📜</span>ยังไม่มีประวัติการแก้ไข</div>'; return; }
+  el.innerHTML='<table><thead><tr><th>เวลา</th><th>ผู้ทำ</th><th>การกระทำ</th><th>รายการ</th></tr></thead><tbody>'+
+    data.map(a=>`<tr><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">${a.created_at?new Date(a.created_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—'}</td>
+      <td style="font-size:.74rem">${esc((a.actor_email||'').split('@')[0])}</td>
+      <td><code class="idc">${esc(a.action)}</code></td>
+      <td style="font-size:.76rem">${esc(a.target)||'—'}${a.detail?`<br><span style="color:var(--muted);font-size:.68rem">${esc(String(a.detail).slice(0,80))}</span>`:''}</td></tr>`).join('')+'</tbody></table>';
 }
 const CFG_FIELDS=['shop_name','promo_banner','promo_countdown_end','about_tagline','about_text','promptpay','bank_name','bank_no','bank_account','shipping_fee','free_threshold','low_stock_default','loyalty_earn_baht','loyalty_redeem_value','tier_gold','tier_platinum','referral_discount','referral_min','referral_owner_points'];
 const CFG_NUM=['shipping_fee','free_threshold','low_stock_default','loyalty_earn_baht','loyalty_redeem_value','tier_gold','tier_platinum','referral_discount','referral_min','referral_owner_points'];
@@ -976,6 +996,7 @@ async function saveConfig(){
   const { error } = await sb.from('app_config').update(patch).eq('id',1);
   if(error){ st.textContent='❌ '+error.message; toast('บันทึกไม่สำเร็จ',true); return; }
   CONFIG={...CONFIG,...patch}; st.textContent='✅ บันทึกแล้ว — เว็บร้านจะใช้ค่าใหม่ทันที'; toast('บันทึกการตั้งค่าแล้วค่ะ');
+  logAdminAction('config.save','ตั้งค่าร้าน',patch);
 }
 
 // ── Load ──
@@ -1348,6 +1369,7 @@ async function updateStock(id, inp){
   inp.disabled=false;
   if(error){ toast('แก้สต็อกไม่สำเร็จ: '+error.message,true); return; }
   const p=DATA.products.find(x=>x.id===id); if(p) p.available=val;
+  logAdminAction('stock.update', id, {available:val});
   toast(`สต็อก ${id} → ${val} แล้วค่ะ`); renderProducts(); renderDashboard();
 }
 // A11: upload image to Supabase Storage
@@ -1386,7 +1408,7 @@ function makeDemoImage(name){
   x.fillStyle='rgba(255,255,255,.92)'; x.beginPath(); x.arc(320,290,150,0,Math.PI*2); x.fill();
   x.textAlign='center'; x.font='110px serif'; x.fillText('🍮',320,330);
   x.fillStyle='#fff'; x.font='700 42px Segoe UI,sans-serif'; x.fillText(String(name).slice(0,18),320,520);
-  x.font='500 22px Segoe UI,sans-serif'; x.fillStyle='rgba(255,255,255,.9)'; x.fillText('ร้าน@ลานทอง · ตัวอย่าง AI (สาธิต)',320,560);
+  x.font='500 22px Segoe UI,sans-serif'; x.fillStyle='rgba(255,255,255,.9)'; x.fillText('ร้านลานทอง · ตัวอย่าง AI (สาธิต)',320,560);
   return c.toDataURL('image/jpeg',0.9);
 }
 async function genAiImage(){
@@ -1473,6 +1495,7 @@ async function saveProduct(){
       return label?{ product_id:id, label, price:Number(parts[1]||0), available:Number(parts[2]||0), orig_price:Number(parts[3]||0)||null, sort:i }:null; }).filter(Boolean);
     await sb.from('product_variants').delete().eq('product_id',id);
     if(vrows.length){ const rv=await sb.from('product_variants').insert(vrows); if(rv.error) throw rv.error; }
+    logAdminAction(editingId?'product.edit':'product.add', id, {name, price:prod.price, available});
     closeProductModal(); await loadAll();
   }catch(e){ toast('บันทึกไม่สำเร็จ: '+e.message,true); }
   finally{ btn.disabled=false; }
@@ -1482,6 +1505,7 @@ async function deleteProduct(id,name){
   if(!(await confirmAction({ title:'🗑 ลบสินค้า', message:`ต้องการลบสินค้า <b>${esc(name)}</b> (${esc(id)}) ใช่ไหมคะ?`, detail:'⚠️ สต็อกของสินค้านี้จะถูกลบไปด้วย และกู้คืนไม่ได้', confirmText:'ลบสินค้า' }))) return;
   const { error } = await sb.from('products').delete().eq('id',id);
   if(error){ toast('ลบไม่สำเร็จ: '+error.message,true); return; }
+  logAdminAction('product.delete', id, {name});
   toast('ลบสินค้าแล้วค่ะ'); await loadAll();
 }
 
@@ -1625,7 +1649,7 @@ function printInvoice(oid){
     body{font-family:'Segoe UI',Tahoma,sans-serif;padding:26px;color:#222}h1{color:#8B0000;font-size:20px;margin:0}
     table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}td,th{padding:7px 6px;border-bottom:1px solid #eee;text-align:left}
     .tot{text-align:right;font-weight:800;font-size:18px;margin-top:12px}.muted{color:#777;font-size:13px}hr{border:none;border-top:1px solid #eee;margin:12px 0}</style></head><body>
-    <h1>🍯 ${esc(CONFIG.shop_name||'ร้าน@ลานทอง')}</h1>
+    <h1>🍯 ${esc(CONFIG.shop_name||'ร้านลานทอง')}</h1>
     <div class="muted">ใบเสร็จ/ใบส่งของ · ${esc(oid)} · ${o.created_at?new Date(o.created_at).toLocaleString('th-TH'):''}</div><hr>
     <div><b>ลูกค้า:</b> ${esc(o.customer_name)} ${c.phone?'· '+esc(c.phone):''}</div>
     <div><b>ที่อยู่:</b> ${esc(o.shipping_address||c.address||'-')}</div>
@@ -1718,10 +1742,10 @@ function genContent(){
   const p=DATA.products.find(x=>x.id===id); if(!p){ toast('เลือกสินค้าก่อนค่ะ',true); return; }
   const price='฿'+fmt(p.price); const disc=p.orig_price&&p.orig_price>p.price?` (ปกติ ฿${fmt(p.orig_price)} ลด ${Math.round((1-p.price/p.orig_price)*100)}%)`:'';
   const T={
-    caption:[`🍯 ${p.name} ${price}${disc}\nหอม อร่อย ขนมไทยแท้ร้านลานทอง ✨ สั่งเลยทาง LINE @ลานทอง 🚚 ส่งฟรีครบ ฿600`,
+    caption:[`🍯 ${p.name} ${price}${disc}\nหอม อร่อย ขนมไทยแท้ร้านลานทอง ✨ สั่งเลยทาง LINE ลานทอง 🚚 ส่งฟรีครบ ฿600`,
       `อยากกินของอร่อย? 😋 ${p.name} ${price}\nคัดสรรอย่างดี ทำสดใหม่ทุกวัน 💛 ทักมาสั่งได้เลยค่ะ`,
       `${p.name} มาแล้วจ้า! ${price}${disc}\nของดีบอกต่อ ร้านลานทอง 🍡 #ขนมไทย #ลานทอง`],
-    promo:[`🔥 โปรเด็ดวันนี้! ${p.name} ${price}${disc} 🔥\nมีจำนวนจำกัด รีบเลยค่ะ ⏰ สั่งทาง LINE @ลานทอง · ส่งฟรี ฿600 ขึ้นไป`,
+    promo:[`🔥 โปรเด็ดวันนี้! ${p.name} ${price}${disc} 🔥\nมีจำนวนจำกัด รีบเลยค่ะ ⏰ สั่งทาง LINE ลานทอง · ส่งฟรี ฿600 ขึ้นไป`,
       `⚡ ลดแรง! ${p.name} เหลือ ${price}${disc}\nวันนี้วันเดียว 🛒 ทักแชทจองด่วนก่อนหมดนะคะ`,
       `🎁 ดีลพิเศษเฉพาะลูกค้าลานทอง! ${p.name} ${price}\nสั่ง 2 ชิ้นขึ้นไปส่งฟรีทันที 🚚 อย่าพลาดนะคะ`],
     story:[`✨ รู้ไหมคะว่า ${p.name} ของลานทอง คัดวัตถุดิบอย่างดี ทำมือทุกขั้นตอน 💛\nคำแรกที่ลอง คือคำที่ติดใจ 😋 ${price} · ลองแล้วจะรักเลยค่ะ`,
@@ -2191,18 +2215,19 @@ async function addCoupon(){
   const { error } = await sb.from('coupons').upsert({ code, discount_type, value, min_total, max_per_user, max_uses, active:true },{ onConflict:'code' });
   if(error){ toast('เพิ่มไม่สำเร็จ: '+esc(error.message),true); return; }
   ['cp-code','cp-value','cp-min','cp-peruser','cp-maxuses'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
+  logAdminAction('coupon.add', code, {value, discount_type, max_per_user, max_uses});
   toast('บันทึกคูปอง '+code+' แล้วค่ะ'); loadCoupons();
 }
 async function toggleCoupon(code,active){
   if(!requireEdit())return;
   const { error } = await sb.from('coupons').update({ active }).eq('code',code);
-  if(error){ toast('อัปเดตไม่สำเร็จ',true); return; } loadCoupons();
+  if(error){ toast('อัปเดตไม่สำเร็จ',true); return; } logAdminAction('coupon.toggle', code, {active}); loadCoupons();
 }
 async function deleteCoupon(code){
   if(!requireEdit())return;
   if(!(await confirmAction({ title:'🗑 ลบคูปอง', message:`ลบคูปอง <b>${esc(code)}</b> ?`, detail:'⚠️ ลูกค้าจะใช้โค้ดนี้ไม่ได้อีก', confirmText:'ลบคูปอง' }))) return;
   const { error } = await sb.from('coupons').delete().eq('code',code);
-  if(error){ toast('ลบไม่สำเร็จ',true); return; } toast('ลบคูปองแล้วค่ะ'); loadCoupons();
+  if(error){ toast('ลบไม่สำเร็จ',true); return; } logAdminAction('coupon.delete', code); toast('ลบคูปองแล้วค่ะ'); loadCoupons();
 }
 async function loadLoyaltyOverview(){
   const el=document.getElementById('loyaltyOverview'); if(!el)return; el.innerHTML='<div class="loading">โหลด…</div>';
@@ -2262,7 +2287,7 @@ async function sendFinanceLine(){
 }
 function printFinance(){
   const f=finCalc(); const label={month:'เดือนนี้','30':'30 วันล่าสุด',all:'ทั้งหมด'}[finRange()];
-  const shop=(typeof CONFIG!=='undefined'&&CONFIG&&CONFIG.shop_name)||'ร้าน@ลานทอง';
+  const shop=(typeof CONFIG!=='undefined'&&CONFIG&&CONFIG.shop_name)||'ร้านลานทอง';
   const w=window.open('','_blank'); if(!w) return;
   const catRows=EXP_CATS.map(c=>{ const s=f.exp.filter(e=>e.category===c).reduce((a,e)=>a+Number(e.amount||0),0); return s>0?`<tr><td>${c}</td><td class="r">฿${fmt(Math.round(s))}</td></tr>`:''; }).join('')||'<tr><td colspan="2" style="color:#888">ไม่มีรายจ่าย</td></tr>';
   w.document.write(`<html><head><title>งบกำไรขาดทุน ${label}</title><meta charset="utf8">
