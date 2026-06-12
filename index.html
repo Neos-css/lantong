@@ -535,23 +535,18 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- NAVBAR -->
 <nav id="navbar">
-  <button class="nav-hamburger" onclick="toggleNavMenu()" aria-label="เมนู" aria-expanded="false">☰</button>
   <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ลานทอง">
     <img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="nav-logo-img">
   </div>
   <div class="nav-right">
+    <button class="nav-btn" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
+    <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
     <button class="nav-icon-btn" id="nav-fav" onclick="openWishlist()" title="รายการที่ถูกใจ" aria-label="รายการที่ถูกใจ">❤️<span class="fav-badge" id="fav-badge" style="display:none">0</span></button>
     <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()"><svg viewBox="0 0 9 6" width="22" height="15" style="border-radius:2px;display:block" aria-hidden="true"><rect width="9" height="6" fill="#A51931"/><rect y="1" width="9" height="4" fill="#fff"/><rect y="2" width="9" height="2" fill="#2D2A4A"/></svg></button>
     <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
     <button class="nav-btn solid" id="nav-login-btn" data-i18n="navLogin" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
     <button class="cart-btn" onclick="openCart()" aria-label="เปิดตะกร้าสินค้า">🛒<span class="cart-badge" id="cart-badge">0</span></button>
-  </div>
-  <div class="nav-menu" id="navMenu">
-    <button class="nav-menu-item" data-i18n="navHome" onclick="closeNavMenu();window.scrollTo({top:0,behavior:'smooth'})">หน้าหลัก</button>
-    <button class="nav-menu-item" data-i18n="navProducts" onclick="closeNavMenu();document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
-    <button class="nav-menu-item" data-i18n="navAbout" onclick="closeNavMenu();openAbout()">เกี่ยวกับเรา</button>
-    <button class="nav-menu-item" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="closeNavMenu();openMyOrders()">📦 ออเดอร์ของฉัน</button>
   </div>
 </nav>
 
@@ -598,8 +593,8 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- FOR YOU (AI reco) -->
 <section id="foryou">
-  <div class="section-label">✦ ไพลินเลือกให้</div>
-  <h2 class="section-title" id="foryou-title">แนะนำสำหรับคุณ</h2>
+  <div class="section-label" data-i18n="foryouLabel">✦ ไพลินเลือกให้</div>
+  <h2 class="section-title" id="foryou-title" data-i18n="foryouTitle">แนะนำสำหรับคุณ</h2>
   <div class="products-grid" id="foryouGrid"></div>
 </section>
 
@@ -622,7 +617,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- STORY -->
 <section id="story">
-  <div class="section-label" style="text-align:center">✦ เรื่องราวของเรา</div>
+  <div class="section-label" style="text-align:center" data-i18n="storyLabel">✦ เรื่องราวของเรา</div>
   <h2 class="section-title" style="text-align:center" data-i18n="storyTitle">กว่าจะเป็นขนมลานทอง</h2>
   <div class="story-grid">
     <div class="story-card"><div class="sc-ic">🌾</div><h3 data-i18n="story1t">คัดวัตถุดิบเอง</h3><p data-i18n="story1p">เราเลือกถั่ว งา กล้วย และผลไม้จากแหล่งปลูกท้องถิ่นที่ไว้ใจได้ คัดทีละล็อตเพื่อรสชาติที่สม่ำเสมอ</p></div>
@@ -2035,7 +2030,7 @@ const I18N={ en:{
   promoFlash:"ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',bnAbout:'About',
   cookieMsg:'🍪 We use cookies to improve your experience and analytics, per our',
   cookieLink:'Privacy Policy',cookieAccept:'Accept',cookieDeny:'Decline',
-  fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you',
+  fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you', foryouLabel:'✦ Pailin picks for you', storyLabel:'✦ Our story',
   payMethod:'Payment method', payTransfer:'📲 Transfer/PromptPay', payCod:'🚚 Cash on delivery',
   /* nav */ navHome:'Home', navProducts:'Products', navAbout:'About us', navMyOrders:'📦 My orders', navLogin:'Sign in',
   /* hero */ heroBadge:'✦ Authentic Thai sweets ✦', heroSub:'Khanom Lanthong — original taste, delivered to your door',
