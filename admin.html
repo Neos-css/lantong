@@ -710,9 +710,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     <div class="field"><label>วิธีเก็บรักษา</label><input id="pm-storage" placeholder="เช่น เก็บในที่แห้ง ปิดถุงให้สนิท"></div>
     <div class="field"><label>เหมาะสำหรับ</label><input id="pm-suitable" placeholder="เช่น ของฝาก / ทานเล่น / งานเลี้ยง"></div>
     <div style="border-top:1px dashed var(--border,#ddd);margin:6px 0 12px;padding-top:10px;font-weight:700;font-size:.9rem">🎚️ ตัวเลือกสินค้า / ขนาด (ไม่บังคับ — เว้นว่างถ้าขายแบบเดียว)</div>
-    <div class="field"><label>1 บรรทัด = 1 ตัวเลือก · รูปแบบ <code>ชื่อ | ราคา | สต็อก</code></label>
-      <textarea id="pm-variants" rows="3" style="width:100%;font-family:monospace;font-size:.82rem" placeholder="เล็ก 80g | 45 | 20&#10;ใหญ่ 200g | 99 | 10"></textarea>
-      <small style="color:var(--muted)">ถ้ามีตัวเลือก ลูกค้าจะเลือกในหน้าสินค้า และราคา/สต็อกจะอิงตามตัวเลือกที่เลือก</small>
+    <div class="field"><label>1 บรรทัด = 1 ตัวเลือก · รูปแบบ <code>ชื่อ | ราคา | สต็อก | ราคาก่อนลด</code> (ราคาก่อนลด = ไม่บังคับ)</label>
+      <textarea id="pm-variants" rows="3" style="width:100%;font-family:monospace;font-size:.82rem" placeholder="เล็ก 80g | 45 | 20&#10;ใหญ่ 200g | 99 | 10 | 120&#10;(ใส่ชื่ออะไรก็ได้ เช่น รสช็อกโกแลต / แพ็ก 3 ชิ้น)"></textarea>
+      <small style="color:var(--muted)">ลูกค้าเลือกตัวเลือกในหน้าสินค้า · ราคา/สต็อกอิงตามตัวเลือก · ใส่ราคาก่อนลด (ช่องที่ 4) เพื่อโชว์ขีดฆ่า+ส่วนลด</small>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeProductModal()">ยกเลิก</button>
@@ -1426,7 +1426,7 @@ function openProductModal(id){
   document.getElementById('pm-storage').value=p?(p.storage||''):'';
   document.getElementById('pm-suitable').value=p?(p.suitable_for||''):'';
   const vEl=document.getElementById('pm-variants'); vEl.value='';
-  if(p){ sb.from('product_variants').select('label,price,available').eq('product_id',id).order('sort').then(({data})=>{ if(data&&data.length) vEl.value=data.map(v=>`${v.label} | ${v.price} | ${v.available}`).join('\n'); }); }
+  if(p){ sb.from('product_variants').select('label,price,available,orig_price').eq('product_id',id).order('sort').then(({data})=>{ if(data&&data.length) vEl.value=data.map(v=>`${v.label} | ${v.price} | ${v.available}${v.orig_price?(' | '+v.orig_price):''}`).join('\n'); }); }
   document.getElementById('pm-file').value='';
   document.getElementById('pm-image').value=p?(p.image_url||''):'';
   document.getElementById('pm-imgnote').textContent='อัปโหลด JPG/PNG → เก็บใน Supabase Storage → เว็บร้านเห็นทันที';
@@ -1461,7 +1461,7 @@ async function saveProduct(){
     // sync variants (Sprint 4C): parse the textarea and replace all rows for this product
     const vlines=document.getElementById('pm-variants').value.split('\n').map(s=>s.trim()).filter(Boolean);
     const vrows=vlines.map((line,i)=>{ const parts=line.split('|').map(x=>(x||'').trim()); const label=parts[0];
-      return label?{ product_id:id, label, price:Number(parts[1]||0), available:Number(parts[2]||0), sort:i }:null; }).filter(Boolean);
+      return label?{ product_id:id, label, price:Number(parts[1]||0), available:Number(parts[2]||0), orig_price:Number(parts[3]||0)||null, sort:i }:null; }).filter(Boolean);
     await sb.from('product_variants').delete().eq('product_id',id);
     if(vrows.length){ const rv=await sb.from('product_variants').insert(vrows); if(rv.error) throw rv.error; }
     closeProductModal(); await loadAll();
