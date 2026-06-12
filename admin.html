@@ -977,7 +977,16 @@ async function loadAuditLog(){
     data.map(a=>`<tr><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">${a.created_at?new Date(a.created_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—'}</td>
       <td style="font-size:.74rem">${esc((a.actor_email||'').split('@')[0])}</td>
       <td><code class="idc">${esc(a.action)}</code></td>
-      <td style="font-size:.76rem">${esc(a.target)||'—'}${a.detail?`<br><span style="color:var(--muted);font-size:.68rem">${esc(String(a.detail).slice(0,80))}</span>`:''}</td></tr>`).join('')+'</tbody></table>';
+      <td style="font-size:.76rem">${esc(a.target)||'—'}${a.detail?`<br><span style="color:var(--muted);font-size:.68rem">${esc(fmtAuditDetail(a.detail))}</span>`:''}</td></tr>`).join('')+'</tbody></table>';
+}
+// worker logs detail as a JSON object (jsonb → JS object); client logAudit logs it as a JSON string.
+// Render both readably instead of "[object Object]".
+function fmtAuditDetail(d){
+  if(d==null) return '';
+  if(typeof d==='string'){ try{ d=JSON.parse(d); }catch(e){ return d.slice(0,80); } }
+  if(typeof d!=='object') return String(d).slice(0,80);
+  if(d.from&&d.to) return `${d.from} → ${d.to}${d.reason?' · '+d.reason:''}`.slice(0,80);   // order.status
+  return Object.entries(d).map(([k,v])=>`${k}: ${v}`).join(' · ').slice(0,80);
 }
 const CFG_FIELDS=['shop_name','promo_banner','promo_countdown_end','about_tagline','about_text','promptpay','bank_name','bank_no','bank_account','shipping_fee','free_threshold','low_stock_default','loyalty_earn_baht','loyalty_redeem_value','tier_gold','tier_platinum','referral_discount','referral_min','referral_owner_points'];
 const CFG_NUM=['shipping_fee','free_threshold','low_stock_default','loyalty_earn_baht','loyalty_redeem_value','tier_gold','tier_platinum','referral_discount','referral_min','referral_owner_points'];
