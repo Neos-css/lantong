@@ -984,7 +984,7 @@ async function loadAll(manual){
     sb.from('products').select('id,name,price,orig_price,cost_price,category,unit,min_stock_alert,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for').order('id'),
     sb.from('stock').select('product_id,available,reserved'),
     sb.from('orders').select('order_id,customer_id,items,total_amount,status,shipping_address,note,tracking_number,carrier,created_at,updated_at').order('created_at',{ascending:false}),
-    sb.from('customers').select('customer_id,name,phone,address,platform,source,note,created_at'),
+    sb.from('customers').select('customer_id,name,username,phone,address,platform,source,note,created_at'),
     sb.from('payments').select('payment_id,order_id,amount,slip_url,trans_ref,status,created_at').order('created_at',{ascending:false}),
     sb.from('visits').select('source,created_at'),
     sb.from('app_config').select('*').eq('id',1).maybeSingle(),
@@ -995,7 +995,7 @@ async function loadAll(manual){
   const stockMap={}; stock.forEach(s=>stockMap[s.product_id]=s);
   products.forEach(p=>{ const s=stockMap[p.id]||{}; p.available=s.available??0; p.reserved=s.reserved??0; });
   const custMap={}; customers.forEach(c=>custMap[c.customer_id]=c);
-  orders.forEach(o=>{ const c=custMap[o.customer_id]; o.customer_name=(c&&c.name)||o.customer_id||'—'; });
+  orders.forEach(o=>{ const c=custMap[o.customer_id]; o.customer_name=(c&&c.name)||o.customer_id||'—'; o.customer_username=(c&&c.username)||''; });
   DATA={products,orders,customers,payments,visits};
   document.getElementById('lastUpd').textContent=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById('cnt-orders').textContent=orders.length;
@@ -1260,9 +1260,18 @@ async function updateStatus(orderId,status,sel){
   const _o=DATA.orders.find(o=>o.order_id===orderId)||{};
   const from=_o.status || 'PENDING';
   if(from===status) return;
-  if(status==='SHIPPED' && !String(_o.tracking_number||'').trim()){   // F8: กำลังจัดส่ง ต้องมีเลขพัสดุ
-    toast('ตั้งเป็น "กำลังจัดส่ง" ต้องใส่เลขพัสดุก่อน — เปิดรายละเอียดออเดอร์ → ใส่เลข → กด "บันทึก + แจ้งลูกค้า" ค่ะ',true);
-    loadAll(); return;
+  if(status==='SHIPPED' && !String(_o.tracking_number||'').trim()){   // กำลังจัดส่ง ต้องมีเลขพัสดุ → ถามตรงนี้เลย
+    const tracking=(prompt('ตั้งเป็น "กำลังจัดส่ง" 📦\nใส่เลขพัสดุ:')||'').trim();
+    if(!tracking){ toast('ยกเลิก — ต้องใส่เลขพัสดุก่อนค่ะ',true); loadAll(); return; }
+    const carrier=(prompt('ขนส่ง (เช่น Kerry / Flash / ไปรษณีย์ไทย) — เว้นว่างได้:')||'').trim();
+    sel.disabled=true;
+    const ur=await sb.from('orders').update({ tracking_number:tracking, carrier, updated_at:new Date().toISOString() }).eq('order_id',orderId);
+    if(ur.error){ sel.disabled=false; toast('บันทึกเลขพัสดุไม่สำเร็จ: '+ur.error.message,true); loadAll(); return; }
+    const sr=await workerPost('/admin/order-status',{ order_id:orderId, status:'SHIPPED', reason:'แจ้งเลขพัสดุ/กำลังจัดส่ง' });
+    if(!sr.ok){ sel.disabled=false; toast('ตั้งกำลังจัดส่งไม่สำเร็จ: '+(sr.message||sr.error||sr.status),true); loadAll(); return; }
+    const msg=`📦 ออเดอร์ ${orderId} กำลังจัดส่งแล้วค่ะ\nขนส่ง: ${carrier||'-'}\nเลขพัสดุ: ${tracking}\nขอบคุณที่อุดหนุนร้านลานทองนะคะ 💛`;
+    await workerPost('/admin/reply',{ customer_key:String(_o.customer_id||''), message:msg });
+    sel.disabled=false; toast('ตั้งกำลังจัดส่ง + แจ้งลูกค้าแล้วค่ะ 📤'); await loadAll(); return;
   }
   let reason='';
   if(!(ORDER_FWD[from]||[]).includes(status)){
@@ -1514,6 +1523,7 @@ function showCustomer(cid){
     </div>
     <div style="margin-bottom:14px">
       ${row('👤 ชื่อ', esc(c.name))}
+      ${c.username?row('🏷️ ชื่อที่ใช้แสดง', esc(c.username)):''}
       ${row('📞 เบอร์โทร', esc(c.phone))}
       ${row('🏠 ที่อยู่', esc(c.address))}
       ${row('🔗 ช่องทาง', esc(c.platform||'line'))}
@@ -1582,7 +1592,8 @@ function openOrderDetail(oid){
       <select class="st-sel st-${o.status}" ${dis} onchange="updateStatus('${esc(oid)}',this.value,this);document.getElementById('od-st').textContent=this.value">${STATUSES.map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select>
       <span id="od-st" style="display:none">${esc(o.status)}</span></div>
     <div style="font-size:.84rem;line-height:1.9;margin-bottom:12px">
-      <div>👤 <b>${esc(o.customer_name)}</b> ${c.phone?'· 📞 '+esc(c.phone):''}</div>
+      <div>👤 <b>${esc(o.customer_name)}</b>${o.customer_username?` <span style="color:var(--muted)">(@${esc(o.customer_username)})</span>`:''} ${c.phone?'· 📞 '+esc(c.phone):''}</div>
+      <div style="font-size:.72rem;color:var(--muted)">ID: ${esc(o.customer_id)}</div>
       <div>🏠 ${esc(o.shipping_address)||esc(c.address)||'<span style="color:#ccc">ยังไม่มีที่อยู่</span>'}</div>
       <div>📅 ${o.created_at?new Date(o.created_at).toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'}):'—'}</div>
       ${o.note?'<div style="color:var(--muted);font-size:.78rem">📝 '+esc(o.note).slice(0,160)+'</div>':''}
