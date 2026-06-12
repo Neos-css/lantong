@@ -357,7 +357,9 @@ body.dark #confirm-qr-block #pp-amount{color:#a01010 !important}
 .footer-logo .brand-logo-img{height:50px;margin:0 auto}
 /* navbar: hamburger menu + logo image (Feedback round) */
 #navbar{justify-content:flex-start}
-.nav-hamburger{background:none;border:none;font-size:1.5rem;color:var(--primary);cursor:pointer;padding:2px 10px 2px 0;line-height:1}
+.nav-hamburger{background:none;border:none;font-size:1.9rem;font-weight:700;color:var(--primary);cursor:pointer;padding:2px 6px 2px 2px;line-height:1}
+body.dark .nav-hamburger{color:#fff}
+#navbar .nav-logo{margin-left:14px}
 .nav-logo-img{height:46px;display:block;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(90,40,0,.4))}
 .nav-right{display:flex;align-items:center;gap:6px;margin-left:auto}
 .nav-menu{position:absolute;top:calc(100% + 6px);left:14px;background:var(--card,#fff);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.16);display:none;flex-direction:column;min-width:190px;padding:8px;z-index:1001}
@@ -491,6 +493,8 @@ body.dark #bottom-nav{background:#241c15}
 
 @media(max-width:600px){
   #bottom-nav{display:block}
+  .nav-hamburger{display:none}            /* mobile: bottom-nav replaces the menu */
+  #navbar .nav-logo{margin-left:0}
   #foryou,#recently{padding-bottom:80px}
   #footer{padding-bottom:74px}
   #chat-btn{bottom:72px}
@@ -537,7 +541,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   </div>
   <div class="nav-right">
     <button class="nav-icon-btn" id="nav-fav" onclick="openWishlist()" title="รายการที่ถูกใจ" aria-label="รายการที่ถูกใจ">❤️<span class="fav-badge" id="fav-badge" style="display:none">0</span></button>
-    <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🇹🇭</button>
+    <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()"><svg viewBox="0 0 9 6" width="22" height="15" style="border-radius:2px;display:block" aria-hidden="true"><rect width="9" height="6" fill="#A51931"/><rect y="1" width="9" height="4" fill="#fff"/><rect y="2" width="9" height="2" fill="#2D2A4A"/></svg></button>
     <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
     <button class="nav-btn solid" id="nav-login-btn" data-i18n="navLogin" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
@@ -553,6 +557,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- HERO (logo-focused) -->
 <section id="hero">
+  <div class="hero-badge" data-i18n="heroBadge">✦ ขนมไทยแท้คัดสรร ✦</div>
   <div class="hero-logo"><img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="hero-logo-img"></div>
   <p class="hero-sub" data-i18n="heroSub">รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
   <div class="hero-stats">
@@ -768,6 +773,12 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <button onclick="applyCoupon()" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
     </div>
     <div id="coupon-msg" style="font-size:.76rem;margin-bottom:8px;display:none"></div>
+    <div style="display:flex;gap:8px;margin-bottom:6px">
+      <input id="ref-code" placeholder="โค้ดชวนเพื่อน (ลูกค้าใหม่)" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:inherit;text-transform:uppercase">
+      <button onclick="applyRefCode()" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
+    </div>
+    <div id="ref-msg" style="font-size:.76rem;margin-bottom:6px;display:none"></div>
+    <div id="ref-hint" style="font-size:.7rem;color:var(--muted);line-height:1.5;margin-bottom:8px"></div>
     <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span>ส่วนลด</span><span id="cart-discount">-฿0</span></div>
     <div id="cart-shipping-row" class="cart-total-row" style="display:none;font-size:.86rem"><span data-i18n="shippingLabel">ค่าจัดส่ง</span><span id="cart-shipping">฿0</span></div>
     <div class="cart-total-row">
@@ -909,8 +920,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="bn-row">
     <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="bn-ic">🏠</span><span data-i18n="bnHome">หน้าแรก</span></button>
     <button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})"><span class="bn-ic">🛍️</span><span data-i18n="bnShop">สินค้า</span></button>
-    <button onclick="toggleChat()"><span class="bn-ic">💬</span><span data-i18n="bnChat">ไพลิน</span></button>
-    <button onclick="openCart()"><span class="bn-ic">🛒<span class="bn-badge" id="bn-cart-badge">0</span></span><span data-i18n="bnCart">ตะกร้า</span></button>
+    <button onclick="openAbout()"><span class="bn-ic">📖</span><span data-i18n="bnAbout">เกี่ยวกับเรา</span></button>
     <button onclick="bottomNavAccount()"><span class="bn-ic">👤</span><span data-i18n="bnMe">ฉัน</span></button>
   </div>
 </nav>
@@ -1896,6 +1906,44 @@ async function applyCoupon(){
     updateCartUI();
   }catch(e){ msg.style.color='var(--primary2)'; msg.textContent='ตรวจโค้ดไม่ได้ค่ะ'; }
 }
+
+/* ── Referral code (new-customer promo) ──
+   Conditions live in the worker (single-use forever, member-only, min total).
+   Anon can't read the referrals table (RLS), so the client only stores the code,
+   shows the conditions, and reminds non-members to sign in. The worker validates. */
+function refConditionText(){
+  const cfg=window.SHOP_CFG||{}; const en=localStorage.getItem('lt_lang')==='en';
+  const m=Number(cfg.referral_min)||200, d=Number(cfg.referral_discount)||10;
+  return en
+    ? `🎁 New-customer code · ฿${d} off when total reaches ฿${m} · must be signed in first.`
+    : `🎁 โค้ดสำหรับลูกค้าใหม่ · ลด ฿${d} เมื่อยอดถึง ฿${m} · ต้องเข้าสู่ระบบก่อน`;
+}
+function applyRefCode(){
+  const inp=document.getElementById('ref-code'), msg=document.getElementById('ref-msg'); if(!inp||!msg) return;
+  const en=localStorage.getItem('lt_lang')==='en';
+  const code=(inp.value||'').trim().toUpperCase().slice(0,40);
+  msg.style.display='block';
+  if(!code){ localStorage.removeItem('lt_ref_from'); msg.style.display='none'; return; }
+  localStorage.setItem('lt_ref_from', code);
+  if(!window.MEMBER){
+    msg.style.color='#b8860b';
+    msg.innerHTML=(en?'⚠️ Code saved — please sign in before ordering to receive the discount. ':'⚠️ บันทึกโค้ดแล้ว · กรุณาเข้าสู่ระบบก่อนสั่งซื้อเพื่อรับส่วนลด ')
+      +`<a onclick="document.getElementById('cart-sidebar').classList.remove('open');document.getElementById('cart-overlay').classList.remove('show');openLogin()" style="color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline">${en?'Sign in':'เข้าสู่ระบบ'}</a>`;
+  } else {
+    msg.style.color='#1e8a4f';
+    msg.textContent=en?`✓ Code ${code} saved — applied at checkout if eligible.`:`✓ บันทึกโค้ด ${code} แล้ว · ระบบจะใส่ส่วนลดให้ตอนสั่งซื้อหากเข้าเงื่อนไข`;
+  }
+}
+window.applyRefCode=applyRefCode;
+// refresh referral UI (prefill stored code + show conditions + status) — call when the cart opens
+function initRefUI(){
+  const inp=document.getElementById('ref-code'); const hint=document.getElementById('ref-hint');
+  if(hint) hint.textContent=refConditionText();
+  if(inp){ const saved=localStorage.getItem('lt_ref_from'); if(saved && !inp.value){ inp.value=saved; applyRefCode(); } }
+}
+window.initRefUI=initRefUI;
+const _openCartRef=window.openCart;
+window.openCart=function(){ if(_openCartRef)_openCartRef(); setTimeout(initRefUI,0); };
 </script>
 
 <script>
@@ -1931,7 +1979,7 @@ const I18N={ en:{
   story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
   story2t:'Original recipes',story2p:'We keep traditional Thai recipes, freshly made, no synthetic colors or preservatives.',
   story3t:'Delivered with care',story3p:'Sturdy packaging keeps the crunch, shipped nationwide with Pailin AI helping every step.',
-  promoFlash:"ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',
+  promoFlash:"ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',bnAbout:'About',
   cookieMsg:'🍪 We use cookies to improve your experience and analytics, per our',
   cookieLink:'Privacy Policy',cookieAccept:'Accept',cookieDeny:'Decline',
   fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you',
@@ -1966,7 +2014,9 @@ function applyLang(lang){
     else if(el.dataset.thPh!=null){ el.placeholder=el.dataset.thPh; }
   });
   document.documentElement.lang=lang;
-  const lt=$('lang-toggle'); if(lt)lt.textContent=lang==='en'?'🇬🇧':'🇹🇭';   // show current language flag
+  // TH → inline Thai-flag SVG (Windows desktop can't render the 🇹🇭 emoji), EN → globe 🌐
+  const FLAG_TH_SVG='<svg viewBox="0 0 9 6" width="22" height="15" style="border-radius:2px;display:block" aria-hidden="true"><rect width="9" height="6" fill="#A51931"/><rect y="1" width="9" height="4" fill="#fff"/><rect y="2" width="9" height="2" fill="#2D2A4A"/></svg>';
+  const lt=$('lang-toggle'); if(lt)lt.innerHTML=lang==='en'?'🌐':FLAG_TH_SVG;   // show current language
   localStorage.setItem('lt_lang',lang);
   if(window.renderCategoryChips) window.renderCategoryChips();   // re-translate All/Favourites on dynamic chips
 }
@@ -2313,8 +2363,15 @@ function myReferralCode(){
 function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ร้านลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
   window.open('https://line.me/R/msg/text/?'+t,'_blank'); track('share',{method:'line'}); }
 window.shareLine=shareLine; window.myReferralCode=myReferralCode;
-/* capture inbound ?ref= */
-(function(){ const ref=new URLSearchParams(location.search).get('ref'); if(ref){ localStorage.setItem('lt_ref_from',ref.slice(0,20)); } })();
+/* capture inbound ?ref= — store the friend's code and nudge guests to sign in (discount is member-only) */
+(function(){ const ref=new URLSearchParams(location.search).get('ref'); if(!ref) return;
+  localStorage.setItem('lt_ref_from',ref.slice(0,20));
+  setTimeout(()=>{ try{
+    const en=localStorage.getItem('lt_lang')==='en';
+    if(window.MEMBER){ showToast(en?`🎁 New-customer code ${ref} ready — applied at checkout if eligible`:`🎁 รับโค้ดลูกค้าใหม่ ${ref} แล้ว · ใส่ส่วนลดให้ตอนสั่งซื้อหากเข้าเงื่อนไข`); }
+    else{ showToast(en?`🎁 You have a new-customer code — sign in before ordering to use it`:`🎁 คุณได้รับโค้ดลูกค้าใหม่ · เข้าสู่ระบบก่อนสั่งซื้อเพื่อรับส่วนลดนะคะ`); }
+  }catch(e){} }, 1400);
+})();
 
 /* enrich My Orders modal with re-order + referral + share (hook openMyOrders) */
 const _openMyOrders=typeof openMyOrders==='function'?openMyOrders:null;
@@ -2354,6 +2411,8 @@ if(_openMyOrders){
         const ref=myReferralCode();
         if(typeof sbInsertAnon==='function') sbInsertAnon('referrals',{ code:ref, owner_id:'USER-'+window.MEMBER.id });
         const rf=window._referral||{invited:0,earned:0};
+        const _rcfg=window.SHOP_CFG||{};
+        const refMin=Number(_rcfg.referral_min)||200, refDisc=Number(_rcfg.referral_discount)||10, refOwnerPts=Number(_rcfg.referral_owner_points)||5;
         const nextTier = pts<tg ? (en?`${tg-pts} pts to Gold 🥇`:`อีก ${tg-pts} แต้มเป็นทอง 🥇`) : pts<tp ? (en?`${tp-pts} pts to Platinum 💎`:`อีก ${tp-pts} แต้มเป็นแพลทินัม 💎`) : (en?'Top tier 💎':'ระดับสูงสุดแล้ว 💎');
         extra.innerHTML=`<div style="background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px">
             <div style="display:flex;justify-content:space-between;align-items:center">
@@ -2362,11 +2421,12 @@ if(_openMyOrders){
             </div>
             <div style="font-size:.72rem;opacity:.85;margin-top:6px">${en?`฿${earnBaht} = 1 pt · 1 pt = ฿${redeemValue} off · ${nextTier}`:`ทุก ฿${earnBaht} = 1 แต้ม · 1 แต้ม = ฿${redeemValue} · ${nextTier}`}</div>
           </div>
-          <div style="font-size:.84rem;font-weight:700;margin-bottom:4px">🎁 ${en?'Invite friends':'ชวนเพื่อน รับส่วนลด'}</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-bottom:8px">${en?`Share your link — friends get ฿ off their first order, you get points when they pay. <b>Invited ${rf.invited} · earned ${rf.earned} pts</b>`:`แชร์ลิงก์ของคุณ · เพื่อนได้ส่วนลดออเดอร์แรก คุณได้แต้มเมื่อเพื่อนจ่ายเงิน · <b>ชวนแล้ว ${rf.invited} คน · ได้ ${rf.earned} แต้ม</b>`}</div>
+          <div style="font-size:.84rem;font-weight:700;margin-bottom:4px">🎁 ${en?'Invite a friend (new-customer code)':'ชวนเพื่อน รับส่วนลด (โค้ดลูกค้าใหม่)'}</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-bottom:6px">${en?`Share your link — your friend gets a discount on their order, you get points when they pay. <b>Invited ${rf.invited} · earned ${rf.earned} pts</b>`:`แชร์ลิงก์ของคุณ · เพื่อนได้ส่วนลด คุณได้แต้มเมื่อเพื่อนจ่ายเงินจริง · <b>ชวนแล้ว ${rf.invited} คน · ได้ ${rf.earned} แต้ม</b>`}</div>
+          <div style="font-size:.7rem;color:var(--muted);background:#f9f0e8;border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.55">${en?`<b>Conditions:</b> friend must sign in · min total ฿${refMin} · ฿${refDisc} off · you get ${refOwnerPts} pts when they pay`:`<b>เงื่อนไข:</b> เพื่อนต้องเข้าสู่ระบบ · ยอดขั้นต่ำ ฿${refMin} · ลด ฿${refDisc} · คุณได้ ${refOwnerPts} แต้มเมื่อเพื่อนจ่ายเงิน`}</div>
           <div style="display:flex;gap:8px;align-items:center">
             <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
-            <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้านลานทอง รับส่วนลด ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">${en?'Share':'แชร์'} LINE</button>
+            <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้านลานทอง — โค้ดลูกค้าใหม่ (เข้าสู่ระบบก่อนสั่งซื้อเพื่อรับส่วนลด) ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">${en?'Share':'แชร์'} LINE</button>
           </div>`;
         box.appendChild(extra);
       }
