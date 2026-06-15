@@ -507,6 +507,41 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
           <div id="ct-ideas"></div>
         </div>
       </div>
+      <!-- 🎬 ทำคลิปสินค้า (ลานทอง · 2 โหมด) -->
+      <div class="card" style="margin-top:18px">
+        <div class="section-title">🎬 ทำคลิปสินค้า (TikTok / Reels)</div>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:10px">เลือกรูปสินค้า → ใส่หัวคลิป → ได้คลิปแนวตั้ง 9:16 พร้อมโพสต์ · <b>ฟรี ไม่เปลือง AI</b> (อักษรไทยคมชัด · ใส่เพลงได้ · โชว์ชื่อ+ราคาสินค้า)</p>
+        <div id="clipThumbs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;max-height:200px;overflow:auto;margin-bottom:8px"></div>
+        <input id="clipHeadline" placeholder="ข้อความหัวคลิป เช่น ขนมไทยแท้ ส่งฟรีทั่วไทย" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font-family:inherit">
+        <div style="margin-top:8px;font-size:.8rem;color:var(--muted)">🎵 เพลงประกอบ (ถ้ามี · mp3/m4a): <input type="file" id="clipAudio" accept="audio/*" style="font-size:.82rem"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn btn-primary btn-sm needs-edit" id="clipGo" onclick="makeClip()">🎬 สร้างคลิป</button>
+          <button class="btn btn-ghost btn-sm" onclick="aiClipHeadline()">✍️ ให้ Claude คิดหัวคลิป</button>
+          <button class="btn btn-ghost btn-sm" onclick="clipClear()">ล้างที่เลือก</button>
+        </div>
+        <div style="font-size:.74rem;color:var(--muted);margin-top:6px">⏱️ อัดเรียลไทม์ ~15 วิ · เปิดหน้านี้ค้างจนเสร็จ · ได้ไฟล์ .mp4/.webm</div>
+        <div id="clipStage" style="display:none;margin-top:12px;text-align:center">
+          <video id="clipVideo" controls playsinline style="max-width:280px;width:100%;border-radius:12px;background:#000"></video><br>
+          <a id="clipDl" class="btn btn-gold btn-sm" style="margin-top:8px;display:none" download="lantong-clip.mp4">⬇️ ดาวน์โหลดคลิป</a>
+        </div>
+        <canvas id="clipCanvas" width="540" height="960" style="display:none"></canvas>
+        <!-- โหมด 2: AI วิดีโอจริง (scaffold รอเชื่อม API) -->
+        <div style="border-top:1px dashed var(--border);margin-top:16px;padding-top:14px">
+          <div class="section-title" style="font-size:.92rem">🎥 AI วิดีโอจริง (เชื่อมบริการภายนอก)</div>
+          <p style="font-size:.78rem;color:var(--muted);margin-bottom:8px">สร้างวิดีโอ AI จาก prompt + รูป (คุณภาพสูง · <b>มีค่าใช้จ่ายสูง</b>) — ฟอร์มพร้อม เหลือเลือกเจ้า + ใส่ key ใน worker (เปิดเมื่อเจ้าของร้านตัดสินใจ)</p>
+          <textarea id="aivPrompt" rows="2" placeholder="prompt วิดีโอ (อังกฤษ) เช่น cinematic close-up of Thai dessert, warm light..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font-family:inherit;font-size:.86rem"></textarea>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <select id="aivProvider" style="padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)"><option value="">— เลือกผู้ให้บริการ —</option><option value="fal">fal.ai (Kling/Hailuo)</option><option value="runway">Runway</option><option value="replicate">Replicate</option></select>
+            <select id="aivRatio" style="padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)"><option value="9:16">📱 9:16</option><option value="1:1">⬛ 1:1</option><option value="16:9">🖥️ 16:9</option></select>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <button class="btn btn-primary btn-sm needs-edit" id="aivGo" onclick="generateAiVideo()">🎥 สร้างวิดีโอ AI</button>
+            <button class="btn btn-ghost btn-sm" onclick="aivBuildPrompt()">✨ Claude เขียน prompt</button>
+          </div>
+          <div id="aivStage" style="display:none;margin-top:12px;text-align:center"><video id="aivVideo" controls playsinline style="max-width:280px;width:100%;border-radius:12px;background:#000"></video><br><a id="aivDl" class="btn btn-gold btn-sm" style="margin-top:8px;display:none" download="lantong-ai-video.mp4">⬇️ ดาวน์โหลด</a></div>
+        </div>
+      </div>
+
       <!-- F6: คูปอง + แต้ม/referral ใช้จริง -->
       <div class="two-col" style="margin-top:18px">
         <div class="card">
@@ -922,7 +957,7 @@ function navTo(id){
   toggleSidebar(false);
   if(id==='chat' && !CHATS) loadChats();
   if(id==='users') loadAdminUsers();
-  if(id==='marketing'){ renderContentIdeas(); loadCoupons(); loadLoyaltyOverview(); }
+  if(id==='marketing'){ renderContentIdeas(); loadCoupons(); loadLoyaltyOverview(); renderClipThumbs(); }
   if(id==='advisor') initAdvisor();
   if(id==='aipower') renderAiPower();
   if(id==='finance') renderFinance();
@@ -1683,6 +1718,120 @@ function genHashtags(){
     <button class="btn btn-gold btn-sm" style="margin-top:6px" onclick="copyContent(this)">📋 คัดลอก</button>`;
 }
 function useLastContent(){ if(!LAST_CONTENT){ toast('สร้างคอนเทนต์ก่อนค่ะ',true); return; } document.getElementById('bc-msg').value=LAST_CONTENT; toast('ดึงคอนเทนต์ล่าสุดมาแล้วค่ะ'); }
+
+/* ===== 🎬 ทำคลิปสินค้า (canvas → MediaRecorder · ฟรี · แบรนด์ลานทอง) ===== */
+let CLIP_SEL=[];
+function clipProducts(){ return (DATA.products||[]).filter(p=>p.image_url); }
+function renderClipThumbs(){
+  const box=document.getElementById('clipThumbs'); if(!box) return;
+  const ps=clipProducts();
+  box.innerHTML = ps.length ? ps.map(p=>{ const i=CLIP_SEL.indexOf(p.id), sel=i>=0;
+    return `<div onclick="clipToggle('${p.id}')" title="${esc(p.name)}" style="position:relative;aspect-ratio:3/4;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid ${sel?'var(--gold)':'transparent'}"><img src="${esc(p.image_url)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">${sel?`<span style="position:absolute;top:2px;left:2px;background:var(--gold);color:#fff;font-size:.62rem;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:grid;place-items:center">${i+1}</span>`:''}</div>`;
+  }).join('') : '<div style="grid-column:1/-1;color:var(--muted);font-size:.82rem">ยังไม่มีรูปสินค้า (ใส่ image_url ในแท็บสินค้าก่อนค่ะ)</div>';
+}
+function clipToggle(id){ const i=CLIP_SEL.indexOf(id); if(i>=0)CLIP_SEL.splice(i,1); else{ if(CLIP_SEL.length>=8){toast('เลือกได้สูงสุด 8 รูปค่ะ',true);return;} CLIP_SEL.push(id);} renderClipThumbs(); }
+function clipClear(){ CLIP_SEL=[]; renderClipThumbs(); }
+function _clipItems(){ const ps=clipProducts(); if(CLIP_SEL.length) return CLIP_SEL.map(id=>ps.find(p=>p.id===id)).filter(Boolean); return ps.slice(0,5); }
+function _loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=()=>rej(src); im.src=src; }); }
+async function aiClipHeadline(){
+  const inp=document.getElementById('clipHeadline'); const p=_clipItems()[0]||clipProducts()[0];
+  if(!p){ toast('ยังไม่มีสินค้าค่ะ',true); return; }
+  const old=inp.placeholder; inp.placeholder='✍️ Claude กำลังคิดหัวคลิป...';
+  try{ const r=await workerPost('/admin/ai-content',{ product:{name:p.name,price:p.price,orig_price:p.orig_price||null,category:p.category||null}, type:'caption', tone:'fun', n:1 });
+    const t=((r.versions&&r.versions[0])||'').split('\n')[0].replace(/[#*•"]/g,'').trim();
+    if(t) inp.value=t.slice(0,60); else toast('AI ไม่ตอบ ลองใหม่ค่ะ',true);
+  }catch(e){ toast('เชื่อม AI ไม่ได้',true); }
+  inp.placeholder=old;
+}
+async function makeClip(){
+  if(!requireEdit()) return;
+  if(typeof MediaRecorder==='undefined'){ toast('เบราว์เซอร์นี้อัดคลิปไม่ได้ ลองใช้ Chrome ค่ะ',true); return; }
+  const btn=document.getElementById('clipGo');
+  const headline=(document.getElementById('clipHeadline').value||'').trim()||'ขนมไทยแท้ ร้าน@ลานทอง';
+  const items=_clipItems();
+  if(!items.length){ toast('ยังไม่มีรูปสินค้าให้ทำคลิปค่ะ',true); return; }
+  btn.disabled=true; btn.textContent='⏳ โหลดรูป...';
+  let imgs;
+  try{ const loaded=await Promise.all(items.map(it=>_loadImg(it.image_url).then(im=>({im,it})).catch(()=>null))); imgs=loaded.filter(Boolean); }catch(e){ imgs=[]; }
+  if(!imgs.length){ toast('โหลดรูปไม่สำเร็จค่ะ (เช็ครูปสินค้า)',true); btn.disabled=false; btn.textContent='🎬 สร้างคลิป'; return; }
+  const cv=document.getElementById('clipCanvas'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const vstream=cv.captureStream(30);
+  let tracks=vstream.getVideoTracks(),audioEl=null,audioCtx=null;
+  const af=(document.getElementById('clipAudio').files||[])[0];
+  if(af){ try{ audioEl=new Audio(URL.createObjectURL(af)); audioEl.loop=true; audioCtx=new (window.AudioContext||window.webkitAudioContext)(); const sn=audioCtx.createMediaElementSource(audioEl),dn=audioCtx.createMediaStreamDestination(); sn.connect(dn); tracks=tracks.concat(dn.stream.getAudioTracks()); }catch(e){ audioEl=null; } }
+  const stream=new MediaStream(tracks);
+  const cands=['video/mp4;codecs=avc1.42E01E','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+  const mime=cands.find(m=>{try{return MediaRecorder.isTypeSupported(m);}catch(e){return false;}})||'video/webm';
+  const ext=mime.indexOf('mp4')>=0?'mp4':'webm';
+  const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:5000000}),chunks=[];
+  rec.ondataavailable=e=>{ if(e.data&&e.data.size)chunks.push(e.data); };
+  const stopped=new Promise(r=>{ rec.onstop=r; });
+  btn.textContent='🔴 กำลังอัดคลิป...';
+  const FONT="'IBM Plex Sans Thai','Sarabun',sans-serif", GOLD='#d4a017';
+  function cover(im,sc,ox){ const ir=im.width/im.height,cr=W/H; let dw,dh; if(ir>cr){dh=H*sc;dw=dh*ir;}else{dw=W*sc;dh=dw/ir;} ctx.drawImage(im,(W-dw)/2,(H-dh)/2+ox,dw,dh); }
+  function wrap(text,x,y,maxW,lh,font,color){ ctx.font=font;ctx.fillStyle=color;ctx.textAlign='center'; const ws=String(text).split(' '); let ln='',yy=y; for(const w of ws){ const t=ln+w+' '; if(ctx.measureText(t).width>maxW&&ln){ctx.fillText(ln.trim(),x,yy);ln=w+' ';yy+=lh;}else ln=t;} ctx.fillText(ln.trim(),x,yy); }
+  rec.start();
+  if(audioEl){ try{ audioEl.currentTime=0; audioEl.play().catch(()=>{}); }catch(e){} }
+  const PER=2600,FADE=550,END=3000,t0=performance.now();
+  await new Promise(resolve=>{
+    function frame(now){
+      const el=now-t0,total=imgs.length*PER+END;
+      if(el>=total){ resolve(); return; }
+      ctx.fillStyle='#1a1206'; ctx.fillRect(0,0,W,H);
+      if(el<imgs.length*PER){
+        const idx=Math.min(imgs.length-1,Math.floor(el/PER)),p=(el-idx*PER)/PER;
+        cover(imgs[idx].im,1.07+p*0.13,0);
+        if(idx>0&&(p*PER)<FADE){ ctx.globalAlpha=1-(p*PER/FADE); cover(imgs[idx-1].im,1.2,0); ctx.globalAlpha=1; }
+        let g=ctx.createLinearGradient(0,0,0,H*0.4); g.addColorStop(0,'rgba(0,0,0,.6)'); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H*0.4);
+        g=ctx.createLinearGradient(0,H*0.5,0,H); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.82)'); ctx.fillStyle=g; ctx.fillRect(0,H*0.45,W,H*0.55);
+        wrap(headline,W/2,92,W-72,46,'800 36px '+FONT,'#fff');
+        ctx.fillStyle=GOLD; ctx.fillRect(W/2-30,112,60,6);
+        const it=imgs[idx].it;
+        wrap(it.name,W/2,H-152,W-80,40,'800 34px '+FONT,'#fff');
+        ctx.font='800 42px '+FONT; ctx.fillStyle=GOLD; ctx.textAlign='center'; ctx.fillText('฿'+Number(it.price||0).toLocaleString(),W/2,H-100);
+        ctx.font='600 24px '+FONT; ctx.fillStyle='#ffe9b0'; ctx.fillText('สั่งเลย · LINE @ลานทอง',W/2,H-58);
+      }else{
+        ctx.fillStyle='#1a1206'; ctx.fillRect(0,0,W,H); ctx.textAlign='center';
+        ctx.font='800 56px '+FONT; ctx.fillStyle=GOLD; ctx.fillText('ขนม@านทอง',W/2,H/2-40);
+        ctx.font='600 28px '+FONT; ctx.fillStyle='#fff'; ctx.fillText('ขนมไทยแท้ คัดสรรคุณภาพ',W/2,H/2+24);
+        ctx.font='700 30px '+FONT; ctx.fillStyle='#ffe9b0'; ctx.fillText('🚚 ส่งฟรีเมื่อครบ ฿600',W/2,H/2+92);
+        ctx.font='600 26px '+FONT; ctx.fillStyle='#cbd5e1'; ctx.fillText('LINE @ลานทอง',W/2,H/2+136);
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  });
+  rec.stop(); await stopped;
+  if(audioEl){ try{audioEl.pause();}catch(e){} } if(audioCtx){ try{audioCtx.close();}catch(e){} }
+  const blob=new Blob(chunks,{type:mime}),url=URL.createObjectURL(blob);
+  document.getElementById('clipStage').style.display='';
+  document.getElementById('clipVideo').src=url;
+  const dl=document.getElementById('clipDl'); dl.href=url; dl.download='lantong-clip.'+ext; dl.style.display='';
+  btn.disabled=false; btn.textContent='🎬 สร้างคลิปใหม่';
+  toast('🎬 คลิปเสร็จแล้วค่ะ! กดเล่น/ดาวน์โหลดไปโพสต์ได้เลย');
+}
+/* ===== โหมด 2: AI วิดีโอ (scaffold · worker /admin/video-gen) ===== */
+async function aivBuildPrompt(){
+  const inp=document.getElementById('aivPrompt'); const old=inp.placeholder; inp.placeholder='✨ Claude กำลังเขียน prompt...';
+  const p=_clipItems()[0]||clipProducts()[0];
+  try{ const r=await workerPost('/admin/ai-content',{ product:{name:p?p.name:'ขนมไทย',price:p?p.price:0}, type:'story', tone:'premium', n:1 });
+    const t=((r.versions&&r.versions[0])||'').split('\n')[0].replace(/[#*•"]/g,'').trim();
+    inp.value=('Cinematic close-up, Thai dessert, warm golden light, appetizing, '+(p?p.name:'')+' — '+t).slice(0,200);
+  }catch(e){ toast('เชื่อม AI ไม่ได้',true); }
+  inp.placeholder=old;
+}
+async function generateAiVideo(){
+  if(!requireEdit()) return;
+  const provider=document.getElementById('aivProvider').value, prompt=(document.getElementById('aivPrompt').value||'').trim();
+  if(!provider){ toast('เลือกผู้ให้บริการก่อนค่ะ (ตอนนี้ยัง scaffold รอใส่ key)',true); return; }
+  if(!prompt){ toast('ใส่ prompt ก่อนค่ะ',true); return; }
+  const btn=document.getElementById('aivGo'); btn.disabled=true; btn.textContent='⏳ กำลังส่ง...';
+  try{ const r=await workerPost('/admin/video-gen',{ provider, prompt, aspectRatio:document.getElementById('aivRatio').value });
+    if(r.ok && r.videoUrl){ document.getElementById('aivStage').style.display=''; const v=document.getElementById('aivVideo'); v.src=r.videoUrl; const dl=document.getElementById('aivDl'); dl.href=r.videoUrl; dl.style.display=''; toast('🎥 วิดีโอเสร็จแล้วค่ะ!'); }
+    else toast(r.message||'ยังไม่ได้เชื่อม API — เลือกเจ้า + ใส่ key ใน worker ก่อนค่ะ',true);
+  }catch(e){ toast('ยังไม่ได้เชื่อม API (route /video-gen) — เหลือเลือกเจ้า+ใส่ key',true); }
+  btn.disabled=false; btn.textContent='🎥 สร้างวิดีโอ AI';
+}
 function renderContentIdeas(){
   const el=document.getElementById('ct-ideas'); if(!el) return;
   const promo=DATA.products.filter(p=>p.orig_price&&p.orig_price>p.price).slice(0,2).map(p=>p.name);
