@@ -53,9 +53,10 @@ input,textarea{font-family:inherit}
 /* HERO */
 #hero{background:linear-gradient(135deg,var(--dark) 0%,#3d0a00 40%,#6b1a00 100%);color:#fff;text-align:center;padding:80px 24px 70px;position:relative;overflow:hidden}
 #hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4a017' fill-opacity='.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")}
-.hero-badge{display:inline-block;border:1px solid var(--gold);color:var(--gold);font-size:.78rem;letter-spacing:2px;padding:5px 18px;border-radius:20px;margin-bottom:20px;text-transform:uppercase}
+.hero-badge{display:inline-block;border:1.5px solid var(--gold);color:var(--gold);font-size:1.08rem;letter-spacing:3px;padding:9px 30px;border-radius:24px;margin-bottom:28px;text-transform:uppercase;font-weight:600}
+@media(max-width:600px){ .hero-badge{font-size:.92rem;letter-spacing:2px;padding:7px 20px} }
 .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,5.5rem);font-weight:600;line-height:1;color:var(--gold);text-shadow:0 2px 20px rgba(212,160,23,.3);margin-bottom:8px}
-.hero-sub{font-size:1rem;opacity:.85;letter-spacing:1px;margin-bottom:28px;color:#f0d8b0}
+.hero-sub{font-size:1.12rem;opacity:.9;letter-spacing:1px;margin-bottom:36px;color:#f0d8b0}
 .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
 .hero-cta-primary{background:var(--gold);color:var(--dark);padding:12px 32px;border-radius:30px;font-size:.95rem;font-weight:700;letter-spacing:.5px;transition:background .2s,transform .2s}
 .hero-cta-primary:hover{background:var(--gold2);transform:translateY(-2px)}
@@ -303,9 +304,9 @@ input,textarea{font-family:inherit}
 .nav-logo{display:flex;align-items:center;cursor:pointer}
 /* logo image on dark plaque (works on light nav/modal) */
 .logo-plaque{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#5e1712,#3a0e08);border-radius:12px;padding:5px 13px;box-shadow:0 3px 10px rgba(0,0,0,.28)}
-.nav-logo-img{height:34px;width:auto;display:block}
-.login-logo-img{width:80%;max-width:230px;height:auto;display:block}
-@media(max-width:600px){ .nav-logo-img{height:28px} .logo-plaque{padding:4px 10px} }
+.nav-logo-img{height:46px;width:auto;display:block;filter:drop-shadow(0 1px 3px rgba(0,0,0,.4))}
+.login-logo-img{width:84%;max-width:250px;height:auto;display:block;margin:0 auto}
+@media(max-width:600px){ .nav-logo-img{height:36px} }
 .nav-logo .lt-logo-th{background:none;-webkit-text-fill-color:var(--primary);color:var(--primary);filter:none}
 .nav-logo .lt-logo-at{-webkit-text-fill-color:var(--gold);color:var(--gold)}
 .nav-logo .lt-logo-en{color:var(--gold);-webkit-text-fill-color:var(--gold)}
@@ -507,7 +508,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ร้านลานทอง">
-    <span class="logo-plaque"><img src="logo.png" class="nav-logo-img" alt="ขนมลานทอง"></span>
+    <img src="logo.png" class="nav-logo-img" alt="ขนมลานทอง">
   </div>
   <div class="nav-links">
     <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
@@ -529,10 +530,6 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="hero-badge" data-i18n="heroBadge">✦ ขนมไทยแท้คัดสรร ✦</div>
   <div class="hero-logo"><img src="logo.png" alt="ขนมลานทอง — Khanom Lanthong" class="hero-logo-img"></div>
   <p class="hero-sub" data-i18n="heroSub">รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
-  <div class="hero-cta">
-    <button class="hero-cta-primary" data-i18n="heroShop" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
-    <button class="hero-cta-secondary" data-i18n="heroChat" onclick="document.getElementById('chat-panel').classList.add('open')">CHAT กับไพลิน</button>
-  </div>
   <div class="hero-stats">
     <span><b>1,200+</b><span data-i18n="heroStat1">ลูกค้าประจำ</span></span>
     <span><b>98%</b><span data-i18n="heroStat2">ความพึงพอใจ</span></span>
@@ -830,7 +827,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="modal-box" style="max-width:420px">
     <button class="modal-close-btn" onclick="document.getElementById('login-modal').classList.remove('show')">✕</button>
     <div class="login-modal-body">
-      <div style="text-align:center;margin-bottom:14px"><span class="logo-plaque" style="padding:11px 18px"><img src="logo.png" class="login-logo-img" alt="ขนมลานทอง"></span></div>
+      <div style="text-align:center;margin-bottom:14px"><img src="logo.png" class="login-logo-img" alt="ขนมลานทอง"></div>
       <div class="login-title" id="login-title">เข้าสู่ระบบ</div>
       <div class="login-sub" id="login-sub">เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก</div>
       <div id="login-error" style="display:none;color:var(--primary2);font-size:.82rem;margin-bottom:10px"></div>
