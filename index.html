@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ร้านลานทอง — ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</title>
-<meta name="description" content="ร้านลานทอง ขนมไทยแท้คัดสรร 15 รายการ ถั่วตัด ขนมเปี๊ยะ กล้วยตาก สั่งง่ายผ่านเว็บ/LINE ส่งฟรีเมื่อครบ ฿600 มี AI ไพลินดูแล 24 ชม.">
+<title>ร้าน@ลานทอง — ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</title>
+<meta name="description" content="ร้าน@ลานทอง ขนมไทยแท้คัดสรร 15 รายการ ถั่วตัด ขนมเปี๊ยะ กล้วยตาก สั่งง่ายผ่านเว็บ/LINE ส่งฟรีเมื่อครบ ฿600 มี AI ไพลินดูแล 24 ชม.">
 <meta name="theme-color" content="#8B0000">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍯%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="ร้านลานทอง — ขนมไทยแท้คัดสรร">
+<meta property="og:title" content="ร้าน@ลานทอง — ขนมไทยแท้คัดสรร">
 <meta property="og:description" content="ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน · ส่งฟรีเมื่อครบ ฿600 · AI ไพลินดูแล 24 ชม.">
 <meta property="og:image" content="https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg">
 <meta property="og:url" content="https://neos-css.github.io/lantong/">
@@ -227,7 +227,7 @@ input,textarea{font-family:inherit}
 .login-modal-body{padding:32px 28px 36px}
 .login-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--primary);margin-bottom:4px}
 .login-sub{font-size:.85rem;color:var(--muted);margin-bottom:22px}
-.login-google-btn{width:100%;padding:11px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:.9rem;color:#3c3c3c;font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;cursor:pointer}
+.login-google-btn{width:100%;padding:11px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;cursor:pointer}
 .login-google-btn:hover{border-color:#aaa}
 .login-divider{text-align:center;font-size:.78rem;color:var(--muted);margin-bottom:16px;position:relative}
 .login-divider::before,.login-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
@@ -294,14 +294,13 @@ input,textarea{font-family:inherit}
 .lt-logo-at{font-size:1.42em;font-family:'Cormorant Garamond',serif;font-weight:600;vertical-align:-.13em;margin:0 -.04em}
 .lt-logo-en{font-family:'Cormorant Garamond',serif;font-size:.3em;letter-spacing:.26em;margin-top:.14em;
   color:#c99a36;-webkit-text-fill-color:#c99a36;text-transform:uppercase;filter:none}
-/* nav logo = bright gold wordmark, no plaque, with a soft dark shadow so it stays legible */
+/* nav sits on light cream → brand red wordmark with a gold @ for contrast */
 .nav-logo{display:flex;align-items:center;cursor:pointer}
-.nav-logo .lt-logo-th{background:linear-gradient(180deg,#ffe488 0%,#f3c343 52%,#dca021 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#dca021;filter:drop-shadow(0 1px 1.2px rgba(90,40,0,.5))}
-.nav-logo .lt-logo-pre{color:var(--primary);-webkit-text-fill-color:var(--primary);background:none;filter:none}
-.nav-logo .lt-logo-en{color:#c79a33;-webkit-text-fill-color:#c79a33}
-body.dark .nav-logo .lt-logo-pre{-webkit-text-fill-color:var(--gold2);color:var(--gold2)}
-body.dark .nav-logo .lt-logo-th{filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))}
-.nav-logo .lt-logo{font-size:1.32rem;align-items:flex-start}
+.nav-logo .lt-logo-th{background:none;-webkit-text-fill-color:var(--primary);color:var(--primary);filter:none}
+.nav-logo .lt-logo-at{-webkit-text-fill-color:var(--gold);color:var(--gold)}
+.nav-logo .lt-logo-en{color:var(--gold);-webkit-text-fill-color:var(--gold)}
+body.dark .nav-logo .lt-logo-th{-webkit-text-fill-color:var(--gold2);color:var(--gold2)}
+.nav-logo .lt-logo{font-size:1.32rem}
 /* hero + about sit on dark → full gold gradient */
 .hero-logo .lt-logo{font-size:3.6rem}
 .hero-logo{margin-bottom:14px}
@@ -335,52 +334,14 @@ body.dark input::placeholder, body.dark textarea::placeholder{color:#9a8775 !imp
 body.dark select option{background:#241c15;color:#f0e6d8}
 body.dark .qty-num,body.dark .cart-qty-num,body.dark .qty-label{color:#f0e6d8 !important}
 body.dark .product-name,body.dark .product-modal-name,body.dark .cart-item-name,body.dark .product-modal-desc,body.dark .section-title{color:var(--text)}
-/* Chat is LOCKED to a light theme even in dark mode — no half-dark look (per request) */
-body.dark #chat-panel{background:#fff !important}
-body.dark .chat-messages{background:#faf5f0 !important}
-body.dark .chat-msg.bot .chat-msg-bubble{background:#fff !important;color:#3a2a1a !important}
-body.dark .chat-input{background:#fff !important;color:#3a2a1a !important}
-body.dark .chat-input-row,body.dark .chat-quick-replies{background:#fff !important}
-body.dark .qr-btn{background:#fff !important;color:var(--primary) !important}
-body.dark .highlight-chip{background:#2c2218}
+body.dark .chat-messages{background:#1a1410}
+body.dark .chat-msg.bot .chat-msg-bubble{background:#2c2218;color:var(--text)}
+body.dark .highlight-chip,body.dark .qr-btn{background:#2c2218}
 /* F4: keep payment box light so PromptPay/bank numbers are always readable */
 body.dark .payment-info{background:#fff8ee;border-color:#f0d890}
 body.dark .payment-info-row{color:#4a3520}
 body.dark .payment-info-title{color:#4a3520}
-/* F4.2: กล่อง QR ในหน้ายืนยัน — ตัวหนังสือต้องดำบนพื้นครีมในโหมดมืด */
-body.dark #confirm-qr-block > div{color:#4a3520 !important}
-body.dark #confirm-qr-block #pp-amount{color:#a01010 !important}
-/* F2/F5: โลโก้แบรนด์จริง "ขนม ลานทอง" (PNG พื้นโปร่ง ทองล้วน) */
-.brand-logo-img{height:38px;display:block;object-fit:contain}
-/* navbar logo = text wordmark only, no plaque box (per request) */
-.hero-logo .brand-logo-img{height:118px;margin:0 auto;filter:drop-shadow(0 3px 15px rgba(0,0,0,.5))}
-.footer-logo .brand-logo-img{height:50px;margin:0 auto}
-/* navbar: hamburger menu + logo image (Feedback round) */
-#navbar{justify-content:flex-start}
-.nav-hamburger{background:none;border:none;font-size:1.9rem;font-weight:700;color:var(--primary);cursor:pointer;padding:2px 6px 2px 2px;line-height:1}
-body.dark .nav-hamburger{color:#fff}
-#navbar .nav-logo{margin-left:14px}
-.nav-logo-img{height:46px;display:block;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(90,40,0,.4))}
-.nav-right{display:flex;align-items:center;gap:6px;margin-left:auto}
-.nav-menu{position:absolute;top:calc(100% + 6px);left:14px;background:var(--card,#fff);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.16);display:none;flex-direction:column;min-width:190px;padding:8px;z-index:1001}
-.nav-menu.open{display:flex}
-.nav-menu-item{text-align:left;padding:11px 14px;border-radius:9px;background:none;border:none;font-family:inherit;font-size:.95rem;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s}
-.nav-menu-item:hover{background:rgba(139,0,0,.08)}
-body.dark .nav-menu{background:#241c15;border-color:#5a4a30}
-.hero-logo-img{height:172px;max-width:90%;display:block;margin:0 auto;object-fit:contain;filter:drop-shadow(0 4px 22px rgba(0,0,0,.5))}
-body.dark .nav-logo-img{filter:drop-shadow(0 1px 3px rgba(0,0,0,.65))}
-@media(max-width:600px){ .nav-logo-img{height:34px} .nav-right{gap:3px} #nav-login-btn,#nav-user-btn{display:none} .hero-logo-img{height:120px} }
-/* About panel — richer/credible (Feedback round) */
-.about-logo-img{height:88px;max-width:90%;object-fit:contain;margin:0 auto;display:block;filter:drop-shadow(0 3px 14px rgba(0,0,0,.45))}
-.about-section-h{font-weight:700;font-size:.96rem;color:var(--primary);margin:22px 0 10px;border-top:1px solid var(--border);padding-top:16px}
-.about-trust{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;font-size:.82rem;color:var(--text)}
-.about-contact{font-size:.88rem;line-height:2;color:#3a2a1a;background:#f9f0e8;border-radius:10px;padding:12px 16px}
-.about-contact b{color:var(--primary)}
-@media(max-width:600px){ .about-trust{grid-template-columns:1fr} }
 .theme-toggle{width:40px;height:40px;border-radius:50%;background:none;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
-.nav-icon-btn{position:relative;width:40px;height:40px;border-radius:50%;background:none;font-size:1.05rem;display:flex;align-items:center;justify-content:center;transition:background .2s;cursor:pointer}
-.nav-icon-btn:hover{background:rgba(139,0,0,.08)}
-.fav-badge{position:absolute;top:-1px;right:-1px;background:var(--primary);color:#fff;font-size:.58rem;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1}
 .theme-toggle:hover{background:#f3e8d8}
 body.dark .theme-toggle:hover{background:#2c2218}
 
@@ -482,7 +443,7 @@ body.dark #bottom-nav{background:#241c15}
 #bottom-nav .bn-badge{position:absolute;top:-4px;right:-8px;background:var(--gold);color:var(--dark);font-size:.55rem;font-weight:700;min-width:15px;height:15px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px}
 
 /* ── For-you reco ── */
-#foryou{max-width:1280px;margin:0 auto;padding:36px 24px 48px;display:none}
+#foryou{max-width:1280px;margin:0 auto;padding:0 24px 48px;display:none}
 
 /* ── Policy modal lists ── */
 .policy-body{padding:28px 26px 32px}
@@ -493,8 +454,6 @@ body.dark #bottom-nav{background:#241c15}
 
 @media(max-width:600px){
   #bottom-nav{display:block}
-  .nav-hamburger{display:none}            /* mobile: bottom-nav replaces the menu */
-  #navbar .nav-logo{margin-left:0}
   #foryou,#recently{padding-bottom:80px}
   #footer{padding-bottom:74px}
   #chat-btn{bottom:72px}
@@ -528,33 +487,40 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
-  <span id="announce-text">🍯 ยินดีต้อนรับสู่ร้านลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
-  <span id="cd-wrap" style="display:none">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
+  <span id="announce-text">🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
+  <span id="cd-wrap">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
 
 <!-- NAVBAR -->
 <nav id="navbar">
-  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ลานทอง">
-    <img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="nav-logo-img">
+  <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ร้านลานทอง">
+    <span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span>
   </div>
-  <div class="nav-right">
+  <div class="nav-links">
+    <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
     <button class="nav-btn" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
-    <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
-    <button class="nav-icon-btn" id="nav-fav" onclick="openWishlist()" title="รายการที่ถูกใจ" aria-label="รายการที่ถูกใจ">❤️<span class="fav-badge" id="fav-badge" style="display:none">0</span></button>
-    <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()"><svg viewBox="0 0 9 6" width="22" height="15" style="border-radius:2px;display:block" aria-hidden="true"><rect width="9" height="6" fill="#A51931"/><rect y="1" width="9" height="4" fill="#fff"/><rect y="2" width="9" height="2" fill="#2D2A4A"/></svg></button>
+    <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')" data-i18n="navChat">CHAT ไพลิน</button>
+    <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🌐</button>
     <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
+    <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
     <button class="nav-btn solid" id="nav-login-btn" data-i18n="navLogin" onclick="openLogin()">เข้าสู่ระบบ</button>
     <button class="nav-btn outline" id="nav-user-btn" style="display:none" onclick="doMemberLogout()">👤 <span id="nav-user-name"></span></button>
-    <button class="cart-btn" onclick="openCart()" aria-label="เปิดตะกร้าสินค้า">🛒<span class="cart-badge" id="cart-badge">0</span></button>
+    <button class="cart-btn" onclick="openCart()" aria-label="เปิดตะกร้าสินค้า">
+      🛒<span class="cart-badge" id="cart-badge">0</span>
+    </button>
   </div>
 </nav>
 
-<!-- HERO (logo-focused) -->
+<!-- HERO -->
 <section id="hero">
   <div class="hero-badge" data-i18n="heroBadge">✦ ขนมไทยแท้คัดสรร ✦</div>
-  <div class="hero-logo"><img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="hero-logo-img"></div>
+  <div class="hero-logo"><span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span></div>
   <p class="hero-sub" data-i18n="heroSub">รสชาติต้นตำรับ ส่งตรงถึงบ้าน</p>
+  <div class="hero-cta">
+    <button class="hero-cta-primary" data-i18n="heroShop" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">ดูสินค้าทั้งหมด</button>
+    <button class="hero-cta-secondary" data-i18n="heroChat" onclick="document.getElementById('chat-panel').classList.add('open')">CHAT กับไพลิน</button>
+  </div>
   <div class="hero-stats">
     <span><b>1,200+</b><span data-i18n="heroStat1">ลูกค้าประจำ</span></span>
     <span><b>98%</b><span data-i18n="heroStat2">ความพึงพอใจ</span></span>
@@ -566,7 +532,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <section id="products">
   <div class="section-label" data-i18n="prodLabel">✦ สินค้าของเรา</div>
   <h2 class="section-title" data-i18n="prodTitle">ขนมไทยทุกชนิด</h2>
-  <div class="filter-bar" id="filterBar">
+  <div class="filter-bar">
     <button class="filter-btn active" data-i18n="fAll" onclick="filterProducts('all',this)">ทั้งหมด</button>
     <button class="filter-btn" data-i18n="fAncient" onclick="filterProducts('ขนมไทยโบราณ',this)">ขนมไทยโบราณ</button>
     <button class="filter-btn" data-i18n="fFruit" onclick="filterProducts('ผลไม้แปรรูป',this)">ผลไม้แปรรูป</button>
@@ -593,15 +559,15 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- FOR YOU (AI reco) -->
 <section id="foryou">
-  <div class="section-label" data-i18n="foryouLabel">✦ ไพลินเลือกให้</div>
-  <h2 class="section-title" id="foryou-title" data-i18n="foryouTitle">แนะนำสำหรับคุณ</h2>
+  <div class="section-label">✦ ไพลินเลือกให้</div>
+  <h2 class="section-title" id="foryou-title">แนะนำสำหรับคุณ</h2>
   <div class="products-grid" id="foryouGrid"></div>
 </section>
 
 <!-- RECENTLY VIEWED -->
 <section id="recently">
-  <div class="section-label" data-i18n="recentLabel">✦ ดูล่าสุด</div>
-  <h2 class="section-title" data-i18n="recentTitle">สินค้าที่คุณเพิ่งดู</h2>
+  <div class="section-label">✦ ดูล่าสุด</div>
+  <h2 class="section-title">สินค้าที่คุณเพิ่งดู</h2>
   <div class="recent-row" id="recentRow"></div>
 </section>
 
@@ -617,7 +583,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- STORY -->
 <section id="story">
-  <div class="section-label" style="text-align:center" data-i18n="storyLabel">✦ เรื่องราวของเรา</div>
+  <div class="section-label" style="text-align:center">✦ เรื่องราวของเรา</div>
   <h2 class="section-title" style="text-align:center" data-i18n="storyTitle">กว่าจะเป็นขนมลานทอง</h2>
   <div class="story-grid">
     <div class="story-card"><div class="sc-ic">🌾</div><h3 data-i18n="story1t">คัดวัตถุดิบเอง</h3><p data-i18n="story1p">เราเลือกถั่ว งา กล้วย และผลไม้จากแหล่งปลูกท้องถิ่นที่ไว้ใจได้ คัดทีละล็อตเพื่อรสชาติที่สม่ำเสมอ</p></div>
@@ -654,7 +620,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- FOOTER -->
 <footer id="footer">
-  <div class="footer-logo"><img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="brand-logo-img" style="height:56px"></div>
+  <div class="footer-logo">@ลานทอง</div>
   <p data-i18n="fTagline">ร้านขายขนมไทยคัดสรร · ขับเคลื่อนด้วย 5 AI Agents</p>
   <p style="margin-top:10px">
     <a onclick="openPolicy('faq')" style="cursor:pointer;color:var(--gold)" data-i18n="fFaq">คำถามพบบ่อย</a> ·
@@ -663,7 +629,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
     <a onclick="openPolicy('return')" style="cursor:pointer;color:var(--gold)" data-i18n="fReturn">การคืนสินค้า</a> ·
     <a onclick="openPolicy('shipping')" style="cursor:pointer;color:var(--gold)" data-i18n="fShip">การจัดส่ง</a>
   </p>
-  <p style="margin-top:8px">🤖 Powered by NEO-S AI Agent System · v1.0 · 2026</p>
+  <p style="margin-top:8px" data-i18n="fCredit">ผู้พัฒนาระบบ neos-css.com by Comtech Solution System Co., Ltd.</p>
 </footer>
 
 <!-- ABOUT PANEL -->
@@ -671,51 +637,39 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <div id="about-panel">
   <button class="panel-close" onclick="closeAbout()">✕</button>
   <div class="about-hero">
-    <img src="รูปสินค้า_web/lanthongpic.png" alt="ขนม ลานทอง" class="about-logo-img">
+    <span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span>
     <p class="about-tagline" data-i18n="aboutTagline" style="margin-top:14px">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
   </div>
   <div class="about-body">
-    <p class="about-text" data-i18n="aboutText">ร้านลานทองถือกำเนิดจากความตั้งใจที่อยากส่งต่อรสชาติขนมไทยแท้ ๆ ให้คนยุคใหม่ได้ลิ้มลอง เราคัดสรรขนมคุณภาพจากผู้ผลิตท้องถิ่นที่ไว้ใจได้ ใช้วัตถุดิบแท้ ไม่ใส่สีสังเคราะห์และสารกันบูด รักษาสูตรต้นตำรับ แล้วส่งมอบความหวานแบบไทยถึงมือคุณอย่างใส่ใจในทุกขั้นตอน</p>
-
-    <div class="about-section-h" data-i18n="aboutCareH">🧺 เราใส่ใจอย่างไร</div>
+    <p class="about-text" data-i18n="aboutText">ร้าน@ลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
     <div class="about-features">
-      <div class="about-feature"><div class="about-feature-icon">🌾</div><div class="about-feature-text" data-i18n-html="aboutCare1"><strong>คัดสรรวัตถุดิบ</strong><span>เลือกถั่ว งา กล้วย และผลไม้จากแหล่งที่ไว้ใจ คัดทีละล็อตเพื่อรสชาติที่คงที่</span></div></div>
-      <div class="about-feature"><div class="about-feature-icon">🍯</div><div class="about-feature-text" data-i18n-html="aboutCare2"><strong>สูตรต้นตำรับ</strong><span>รักษาสูตรไทยดั้งเดิม ทำสดใหม่ ไม่ใส่สีสังเคราะห์ ไม่ใส่สารกันบูด</span></div></div>
-      <div class="about-feature"><div class="about-feature-icon">📦</div><div class="about-feature-text" data-i18n-html="aboutCare3"><strong>ส่งมอบใส่ใจ</strong><span>แพ็กกันกระแทกอย่างดี เก็บความกรอบ ส่งทั่วไทย พร้อมเลขพัสดุทุกออเดอร์</span></div></div>
+      <div class="about-feature">
+        <div class="about-feature-icon">🍯</div>
+        <div class="about-feature-text"><strong data-i18n="aboutF1t">วัตถุดิบแท้ คัดสรร</strong><span data-i18n="aboutF1s">ไม่ใส่สีสังเคราะห์ ไม่ใส่สารกันบูด</span></div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon">🤖</div>
+        <div class="about-feature-text"><strong data-i18n="aboutF2t">ระบบ AI อัจฉริยะ</strong><span data-i18n="aboutF2s">ไพลินดูแลลูกค้า 24/7 อัตโนมัติ</span></div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon">🚚</div>
+        <div class="about-feature-text"><strong data-i18n="aboutF3t">จัดส่งรวดเร็ว</strong><span data-i18n="aboutF3s">บรรจุภัณฑ์แน่นหนา สินค้าถึงมือสด</span></div>
+      </div>
     </div>
-
-    <div class="about-section-h" data-i18n="aboutTrustH">✅ ทำไมลูกค้าวางใจ</div>
-    <div class="about-trust">
-      <div data-i18n="aboutTrust1">🔒 ตรวจสลิปอัตโนมัติ ปลอดภัย</div>
-      <div data-i18n="aboutTrust2">🚚 แจ้งเลขพัสดุทุกออเดอร์</div>
-      <div data-i18n="aboutTrust3">⭐ รีวิวจากลูกค้าจริง</div>
-      <div data-i18n="aboutTrust4">🧾 ระบุส่วนผสม/สารก่อภูมิแพ้ชัดเจน</div>
-      <div data-i18n="aboutTrust5">💬 ไพลิน AI ดูแล 24 ชม.</div>
-      <div data-i18n="aboutTrust6">🪪 ดูแลข้อมูลส่วนตัว (PDPA)</div>
-    </div>
-
     <div class="about-stats">
-      <div class="about-stat"><b>1,200+</b><span data-i18n="aboutStat1">ลูกค้าประจำ</span></div>
-      <div class="about-stat"><b>15</b><span data-i18n="aboutStat2">เมนูคัดสรร</span></div>
+      <div class="about-stat"><b>1,200+</b><span data-i18n="aboutStat1">ลูกค้า</span></div>
+      <div class="about-stat"><b>15</b><span data-i18n="aboutStat2">สินค้า</span></div>
       <div class="about-stat"><b>98%</b><span data-i18n="aboutStat3">พึงพอใจ</span></div>
     </div>
-
-    <div class="about-section-h" data-i18n="aboutContactH">📞 ติดต่อ & ช่องทางชำระเงิน</div>
-    <div class="about-contact">
-      <div>📱 PromptPay <b id="about-pp">0982695608</b></div>
-      <div>🏦 <span id="about-bank">กสิกรไทย</span> <b id="about-bankno">1443385696</b></div>
-      <div>👤 <span id="about-bankacc">นาย กฤตเมธ สุทีวรรณ</span></div>
-    </div>
-
-    <div class="about-quote" data-i18n="aboutQuote">"รสชาติต้นตำรับที่ส่งต่อความสุขถึงมือคุณ" 🍯</div>
-    <button class="about-cta" onclick="closeAbout();document.getElementById('products').scrollIntoView({behavior:'smooth'})" data-i18n="aboutCta">🛍️ เลือกซื้อขนม</button>
+    <div class="about-quote">“รสชาติต้นตำรับที่ส่งต่อความสุขถึงมือคุณ” 🍯</div>
+    <button class="about-cta" onclick="closeAbout();document.getElementById('chat-panel').classList.add('open')">💬 <span data-i18n="heroChat">CHAT กับไพลิน</span></button>
   </div>
 </div>
 
 <!-- PRODUCT MODAL -->
-<div class="modal-overlay" id="product-modal" onclick="if(event.target===this)closeProductModal()">
+<div class="modal-overlay" id="product-modal" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="modal-box">
-    <button class="modal-close-btn" onclick="closeProductModal()">✕</button>
+    <button class="modal-close-btn" onclick="document.getElementById('product-modal').classList.remove('show')">✕</button>
     <img class="product-modal-img" id="pm-img" src="" alt="">
     <div class="product-modal-body">
       <div class="product-modal-cat" id="pm-cat"></div>
@@ -729,9 +683,8 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <div class="product-modal-desc" id="pm-desc"></div>
       <div class="product-modal-highlights" id="pm-highlights"></div>
       <div id="pm-foodinfo" style="margin-bottom:16px"></div>
-      <div id="pm-variant-slot" style="margin-bottom:14px"></div>
       <div class="qty-row">
-        <span class="qty-label" data-i18n="qtyLabel">จำนวน</span>
+        <span class="qty-label">จำนวน</span>
         <div class="qty-ctrl">
           <button class="qty-btn" onclick="changeQty(-1)" aria-label="ลดจำนวน">−</button>
           <input class="qty-num" id="pm-qty" type="number" value="1" min="1" max="99" readonly>
@@ -752,11 +705,11 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <div id="cart-overlay" onclick="closeCart()"></div>
 <div id="cart-sidebar">
   <div class="cart-header">
-    <span class="cart-title" data-i18n="cartTitle">🛒 ตะกร้าสินค้า</span>
+    <span class="cart-title">🛒 ตะกร้าสินค้า</span>
     <button onclick="closeCart()" style="color:var(--muted);font-size:1.2rem;background:none">✕</button>
   </div>
   <div class="cart-items" id="cart-items-list">
-    <div class="cart-empty"><div class="cart-empty-icon">🛒</div><p data-i18n="emptyCart">ยังไม่มีสินค้าในตะกร้า</p></div>
+    <div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>ยังไม่มีสินค้าในตะกร้า</p></div>
   </div>
   <div class="cart-footer">
     <div class="freeship-bar" id="freeship-bar" style="display:none">
@@ -764,24 +717,16 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <div class="freeship-track"><div class="freeship-fill" id="freeship-fill"></div></div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
-      <input id="coupon-code" placeholder="โค้ดส่วนลด (เช่น LANTONG10)" data-i18n-ph="couponPh" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:inherit;text-transform:uppercase">
-      <button onclick="applyCoupon()" data-i18n="applyBtn" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
+      <input id="coupon-code" placeholder="โค้ดส่วนลด (เช่น LANTONG10)" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:inherit;text-transform:uppercase">
+      <button onclick="applyCoupon()" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
     </div>
     <div id="coupon-msg" style="font-size:.76rem;margin-bottom:8px;display:none"></div>
-    <div style="display:flex;gap:8px;margin-bottom:6px">
-      <input id="ref-code" placeholder="โค้ดชวนเพื่อน (ลูกค้าใหม่)" data-i18n-ph="refPh" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:inherit;text-transform:uppercase">
-      <button onclick="applyRefCode()" data-i18n="applyBtn" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
-    </div>
-    <div id="ref-msg" style="font-size:.76rem;margin-bottom:6px;display:none"></div>
-    <div id="ref-hint" style="font-size:.7rem;color:var(--muted);line-height:1.5;margin-bottom:8px"></div>
-    <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span data-i18n="discountLabel">ส่วนลด</span><span id="cart-discount">-฿0</span></div>
-    <div id="cart-shipping-row" class="cart-total-row" style="display:none;font-size:.86rem"><span data-i18n="shippingLabel">ค่าจัดส่ง</span><span id="cart-shipping">฿0</span></div>
+    <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span>ส่วนลด</span><span id="cart-discount">-฿0</span></div>
     <div class="cart-total-row">
-      <span data-i18n="totalLabel">ยอดรวม</span>
+      <span>ยอดรวม</span>
       <span class="cart-total-price" id="cart-total">฿0</span>
     </div>
-    <button class="checkout-btn" onclick="openOrderForm()" data-i18n="checkout">ชำระเงิน →</button>
-    <button onclick="subscribeCart()" style="width:100%;margin-top:8px;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--primary);color:var(--primary);font-weight:700;font-size:.82rem;cursor:pointer" data-i18n="subscribeBtn">🔁 สมัครรับประจำทุกเดือน</button>
+    <button class="checkout-btn" onclick="openOrderForm()">ชำระเงิน →</button>
   </div>
 </div>
 
@@ -791,19 +736,19 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
     <button class="modal-close-btn" onclick="document.getElementById('order-modal').classList.remove('show')">✕</button>
     <div class="order-modal-body">
       <div class="checkout-steps" style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;font-size:.72rem;font-weight:700">
-        <span style="color:var(--primary)" data-i18n="coStep1a">① กรอกข้อมูล</span>
-        <span style="color:var(--muted)" data-i18n="coStep2a">→ ② ชำระเงิน</span>
-        <span style="color:var(--muted)" data-i18n="coStep3a">→ ③ เสร็จสิ้น</span>
+        <span style="color:var(--primary)">① กรอกข้อมูล</span>
+        <span style="color:var(--muted)">→ ② ชำระเงิน</span>
+        <span style="color:var(--muted)">→ ③ เสร็จสิ้น</span>
       </div>
-      <div class="order-modal-title" data-i18n="coTitle1">ขั้นที่ 1 · กรอกข้อมูลผู้รับ</div>
-      <div class="order-modal-sub" data-i18n="coSub1">กรอกข้อมูลด้านล่าง จากนั้นกด "ไปชำระเงิน" เพื่อรับ QR และแจ้งสลิปค่ะ</div>
+      <div class="order-modal-title">ขั้นที่ 1 · กรอกข้อมูลผู้รับ</div>
+      <div class="order-modal-sub">กรอกข้อมูลด้านล่าง จากนั้นกด "ไปชำระเงิน" เพื่อรับ QR และแจ้งสลิปค่ะ</div>
       <div class="order-summary-mini" id="order-summary-mini"></div>
-      <label class="form-label" data-i18n="coName">ชื่อ-นามสกุล</label>
-      <input class="form-input" id="order-name" type="text" placeholder="เช่น นายสมชาย ใจดี" data-i18n-ph="coNamePh">
-      <label class="form-label" data-i18n="coPhone">เบอร์โทรศัพท์</label>
+      <label class="form-label">ชื่อ-นามสกุล</label>
+      <input class="form-input" id="order-name" type="text" placeholder="เช่น นายสมชาย ใจดี">
+      <label class="form-label">เบอร์โทรศัพท์</label>
       <input class="form-input" id="order-phone" type="tel" placeholder="0812345678">
-      <label class="form-label" data-i18n="coAddr">ที่อยู่จัดส่ง</label>
-      <textarea class="form-input" id="order-address" rows="3" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์" data-i18n-ph="coAddrPh"></textarea>
+      <label class="form-label">ที่อยู่จัดส่ง</label>
+      <textarea class="form-input" id="order-address" rows="3" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
       <label class="form-label" data-i18n="payMethod">วิธีชำระเงิน</label>
       <div style="display:flex;gap:10px;margin-bottom:14px">
         <label style="flex:1;display:flex;align-items:center;gap:8px;padding:11px;border:2px solid var(--primary);border-radius:10px;cursor:pointer;font-size:.85rem" id="pm-opt-transfer">
@@ -814,15 +759,15 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
         </label>
       </div>
       <div class="payment-info" id="payment-info-box">
-        <div class="payment-info-title" data-i18n="piTitle">💳 ข้อมูลชำระเงิน</div>
+        <div class="payment-info-title">💳 ข้อมูลชำระเงิน</div>
         <div class="payment-info-row"><span>PromptPay</span><span id="pi-promptpay">0982695608</span></div>
         <div class="payment-info-row"><span id="pi-bank-label">กสิกรไทย</span><span id="pi-bank-no">1443385696</span></div>
-        <div class="payment-info-row"><span data-i18n="piAccount">ชื่อบัญชี</span><span id="pi-account">ร้านลานทอง</span></div>
-        <div data-i18n-html="piSecure" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:.74rem;color:var(--muted);line-height:1.6">
+        <div class="payment-info-row"><span>ชื่อบัญชี</span><span id="pi-account">ร้านลานทอง</span></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:.74rem;color:var(--muted);line-height:1.6">
           🔒 <b>เพื่อความปลอดภัย:</b> โอนเข้าบัญชี/PromptPay ด้านบนของ <b>ร้านลานทอง</b> เท่านั้น · ร้านจะตรวจสลิปก่อนจัดส่ง · หลังโอนเสร็จจะได้รับเลขคำสั่งซื้อทันที
         </div>
       </div>
-      <button class="confirm-order-btn" onclick="submitOrder()" data-i18n="coGoPay">ไปชำระเงิน →</button>
+      <button class="confirm-order-btn" onclick="submitOrder()">ไปชำระเงิน →</button>
     </div>
   </div>
 </div>
@@ -832,24 +777,24 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="modal-box" style="max-width:480px">
     <div class="confirm-modal-body">
       <div class="checkout-steps" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px;font-size:.72rem;font-weight:700">
-        <span style="color:#1e8e4e" data-i18n="ccStep1">✓ กรอกข้อมูล</span>
-        <span style="color:var(--primary)" data-i18n="ccStep2">→ ② ชำระเงิน</span>
-        <span style="color:var(--muted)" data-i18n="ccStep3">→ ③ เสร็จสิ้น</span>
+        <span style="color:#1e8e4e">✓ กรอกข้อมูล</span>
+        <span style="color:var(--primary)">→ ② ชำระเงิน</span>
+        <span style="color:var(--muted)">→ ③ เสร็จสิ้น</span>
       </div>
       <div class="confirm-icon">✓</div>
-      <div class="confirm-title" data-i18n="ccTitle">บันทึกออเดอร์แล้ว!</div>
-      <div class="confirm-sub" data-i18n-html="ccSub">ขอบคุณที่สั่งซื้อกับร้านลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ไพลินค่ะ</div>
+      <div class="confirm-title">บันทึกออเดอร์แล้ว!</div>
+      <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับร้าน@ลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ไพลินค่ะ</div>
       <div class="confirm-order-num" id="confirm-order-num"></div>
       <div class="confirm-items" id="confirm-items-list"></div>
 
       <!-- COD notice -->
-      <div id="confirm-cod-block" data-i18n-html="ccCod" style="display:none;background:#eaf7ee;border:1px solid #a8e0bb;border-radius:14px;padding:16px;margin-bottom:16px;font-size:.86rem;color:#1e7a44">
+      <div id="confirm-cod-block" style="display:none;background:#eaf7ee;border:1px solid #a8e0bb;border-radius:14px;padding:16px;margin-bottom:16px;font-size:.86rem;color:#1e7a44">
         🚚 ออเดอร์นี้เลือก <b>เก็บเงินปลายทาง (COD)</b><br>ชำระกับพนักงานส่งเมื่อรับสินค้าค่ะ ไพลินจะยืนยันและจัดส่งให้เลยนะคะ
       </div>
 
       <!-- PromptPay QR -->
       <div id="confirm-qr-block" style="background:#fff8ee;border:1px solid #f0d890;border-radius:14px;padding:18px 16px;margin-bottom:16px">
-        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:10px" data-i18n="ccScanTitle">📲 สแกนจ่ายด้วย PromptPay</div>
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:10px">📲 สแกนจ่ายด้วย PromptPay</div>
         <div id="pp-qr" style="width:200px;height:200px;margin:0 auto;display:flex;align-items:center;justify-content:center"></div>
         <div style="font-size:.8rem;color:var(--muted);margin-top:8px">ร้านลานทอง · PromptPay 0982695608</div>
         <div style="font-size:.95rem;font-weight:700;color:var(--primary);margin-top:2px" id="pp-amount"></div>
@@ -857,13 +802,13 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
       <!-- Slip upload + verify -->
       <div id="confirm-slip-block" style="text-align:left;margin-bottom:8px">
-        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px" data-i18n="ccSlipTitle">📤 แจ้งชำระเงิน — อัปโหลดสลิป</div>
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px">📤 แจ้งชำระเงิน — อัปโหลดสลิป</div>
         <input type="file" id="slip-file" accept="image/*" style="display:none" onchange="uploadSlip(this)">
-        <button class="login-btn" style="background:var(--gold);color:var(--dark)" onclick="document.getElementById('slip-file').click()" data-i18n="ccSlipBtn">เลือกรูปสลิป แล้วตรวจอัตโนมัติ</button>
+        <button class="login-btn" style="background:var(--gold);color:var(--dark)" onclick="document.getElementById('slip-file').click()">เลือกรูปสลิป แล้วตรวจอัตโนมัติ</button>
         <div id="slip-status" style="font-size:.84rem;margin-top:10px;text-align:center"></div>
       </div>
 
-      <button class="confirm-close-btn" onclick="document.getElementById('confirm-modal').classList.remove('show')" data-i18n="ccDone">ตกลง ขอบคุณค่ะ</button>
+      <button class="confirm-close-btn" onclick="document.getElementById('confirm-modal').classList.remove('show')">ตกลง ขอบคุณค่ะ</button>
     </div>
   </div>
 </div>
@@ -878,17 +823,13 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <div id="login-error" style="display:none;color:var(--primary2);font-size:.82rem;margin-bottom:10px"></div>
       <button class="login-google-btn" onclick="doMemberGoogle()">
         <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.259c-.806.54-1.837.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-        <span data-i18n="loginGoogle">เข้าสู่ระบบด้วย Google</span>
+        เข้าสู่ระบบด้วย Google
       </button>
-      <div class="login-divider" data-i18n="loginOr">หรือ</div>
-      <label class="form-label" data-i18n="loginEmail">อีเมล</label>
+      <div class="login-divider">หรือ</div>
+      <label class="form-label">อีเมล</label>
       <input class="form-input" id="login-email" type="email" placeholder="your@email.com">
-      <label class="form-label" data-i18n="loginPassword">รหัสผ่าน</label>
+      <label class="form-label">รหัสผ่าน</label>
       <input class="form-input" id="login-password" type="password" placeholder="••••••••">
-      <div id="login-username-wrap" style="display:none">
-        <label class="form-label" data-i18n-html="loginUsername">ชื่อที่ใช้แสดง <span style="color:var(--muted);font-weight:400">(ไม่บังคับ)</span></label>
-        <input class="form-input" id="login-username" type="text" placeholder="เช่น คุณนัท · ชื่อนี้ใช้ระบุตัวตนกับทางร้าน" maxlength="60" data-i18n-ph="loginUsernamePh">
-      </div>
       <button class="login-btn" id="login-submit" onclick="doMemberAuth()">เข้าสู่ระบบ</button>
       <div style="text-align:center;font-size:.82rem;color:var(--muted);margin-top:14px">
         <span id="login-toggle-text">ยังไม่มีบัญชี?</span>
@@ -915,7 +856,8 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="bn-row">
     <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="bn-ic">🏠</span><span data-i18n="bnHome">หน้าแรก</span></button>
     <button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})"><span class="bn-ic">🛍️</span><span data-i18n="bnShop">สินค้า</span></button>
-    <button onclick="openAbout()"><span class="bn-ic">📖</span><span data-i18n="bnAbout">เกี่ยวกับเรา</span></button>
+    <button onclick="toggleChat()"><span class="bn-ic">💬</span><span data-i18n="bnChat">ไพลิน</span></button>
+    <button onclick="openCart()"><span class="bn-ic">🛒<span class="bn-badge" id="bn-cart-badge">0</span></span><span data-i18n="bnCart">ตะกร้า</span></button>
     <button onclick="bottomNavAccount()"><span class="bn-ic">👤</span><span data-i18n="bnMe">ฉัน</span></button>
   </div>
 </nav>
@@ -941,8 +883,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- CHAT BUTTON -->
 <button id="chat-btn" onclick="toggleChat()" aria-label="เปิดแชตกับไพลิน AI">
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.9-5.4A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>
-  <span class="chat-badge">AI</span>
+  💬<span class="chat-badge">AI</span>
 </button>
 
 <!-- CHAT PANEL -->
@@ -1025,8 +966,6 @@ let WISHLIST = JSON.parse(localStorage.getItem('lt_wishlist')||'[]');
 let REVIEWS = {};      // product_id -> [{stars,text,...}]
 let COUPON = null, DISCOUNT = 0;
 function isWished(slug){ return WISHLIST.includes(slug); }
-// image source: admin-uploaded image_url (bundles / new products) overrides the local seed file
-function imgSrc(p){ return p && p.img ? p.img : `รูปสินค้า_web/${p&&p.slug}.jpg`; }
 function reviewStarsHTML(pid){
   const r=REVIEWS[pid]; if(!r||!r.length) return '<div class="review-stars"><span class="rc">ยังไม่มีรีวิว</span></div>';
   const avg=r.reduce((s,x)=>s+x.stars,0)/r.length, full=Math.round(avg);
@@ -1043,14 +982,13 @@ function renderProducts(arr) {
       else if(av<=5){ stockBadge=`<span class="stock-badge low">ใกล้หมด</span>`; } }
     return `<div class="product-card${soldout}">
       <div class="product-card-img-wrap">
-        <img class="product-card-img" src="${imgSrc(p)}" alt="${p.name_th}" loading="lazy" width="300" height="225" decoding="async">
-        ${p.is_bundle ? `<span class="discount-badge" style="background:var(--gold);color:var(--dark);left:10px;right:auto">🎁 ชุด</span>` : ''}
+        <img class="product-card-img" src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
         ${disc ? `<span class="discount-badge">-${disc}%</span>` : ''}
         ${stockBadge}
         <button class="wish-btn${isWished(p.slug)?' on':''}" title="ถูกใจ" aria-label="เพิ่ม/เอาออกจากรายการที่ถูกใจ" onclick="toggleWish(event,'${p.slug}')">${isWished(p.slug)?'❤️':'🤍'}</button>
       </div>
       <div class="product-card-body">
-        <div class="product-cat">${catLabel(p.cat)}</div>
+        <div class="product-cat">${p.cat}</div>
         <div class="product-name">${p.name_th}</div>
         <div class="product-name-en">${p.name_en}</div>
         ${reviewStarsHTML(p.id)}
@@ -1083,21 +1021,6 @@ function filterProducts(cat, btn) {
   applyProductView();
 }
 
-// Build category chips dynamically from the live catalog (admin adds a category → chip appears).
-const CAT_EN={'ขนมไทยโบราณ':'Traditional Thai','ผลไม้แปรรูป':'Dried fruit','คุกกี้/แครกเกอร์':'Cookies/Crackers','ถั่วอบ/ทอด':'Roasted nuts','ขนมนึ่ง':'Steamed','ขนมอบ':'Baked','ชุดของฝาก':'Gift sets'};
-function catLabel(c){ return (localStorage.getItem('lt_lang')==='en'&&CAT_EN[c])?CAT_EN[c]:(c||''); }
-window.catLabel=catLabel;
-function renderCategoryChips(){
-  const host=document.getElementById('filterBar'); if(!host) return;
-  const en=localStorage.getItem('lt_lang')==='en';
-  const esc=s=>String(s).replace(/[<>"']/g,'');
-  const cats=[...new Set(PRODUCTS.map(p=>p.cat).filter(Boolean))];
-  host.innerHTML = `<button class="filter-btn${CURRENT_CAT==='all'?' active':''}" onclick="filterProducts('all',this)">${en?'All':'ทั้งหมด'}</button>`
-    + cats.map(c=>`<button class="filter-btn${CURRENT_CAT===c?' active':''}" data-cat="${esc(c)}" onclick="filterProducts(this.dataset.cat,this)">${esc(en&&CAT_EN[c]?CAT_EN[c]:c)}</button>`).join('')
-    + `<button class="filter-btn${CURRENT_CAT==='__wish__'?' active':''}" onclick="filterProducts('__wish__',this)">❤️ ${en?'Favourites':'ที่ถูกใจ'}</button>`;
-}
-window.renderCategoryChips=renderCategoryChips;
-
 renderProducts(PRODUCTS);
 
 // ── Sync live commerce data (price/promo/name/category) from Supabase ──────────
@@ -1108,7 +1031,7 @@ const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
 async function syncProductsFromSupabase() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,category,image_url,is_bundle,bundle_items,deleted_at,ingredients,allergens,shelf_life,storage,pack_size,suitable_for&order=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,price,orig_price,category,ingredients,allergens,shelf_life,storage,pack_size,suitable_for&order=id`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
     if (!res.ok) return;
@@ -1122,24 +1045,13 @@ async function syncProductsFromSupabase() {
       const sres = await fetch(`${SUPA_URL}/rest/v1/stock?select=product_id,available`, { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } });
       if (sres.ok) (await sres.json()).forEach(s => { stockById[s.product_id] = s.available; });
     } catch (e) {}
-    // product variants (Sprint 4C) — public-readable; grouped per product
-    const variantsByPid = {};
-    try {
-      const vres = await fetch(`${SUPA_URL}/rest/v1/product_variants?select=id,product_id,label,price,available,orig_price&order=sort`, { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } });
-      if (vres.ok) (await vres.json()).forEach(v => { (variantsByPid[v.product_id] = variantsByPid[v.product_id] || []).push({ id: String(v.id), label: v.label, price: Number(v.price) || 0, available: v.available, orig: v.orig_price != null ? Number(v.orig_price) : null }); });
-    } catch (e) {}
-    const HARD = PRODUCTS.slice();
-    const known = new Set(HARD.map(p => p.id));
-    PRODUCTS = HARD.filter(p => byId[p.id] && !byId[p.id].deleted_at).map(p => ({
+    PRODUCTS = PRODUCTS.filter(p => byId[p.id]).map(p => ({
       ...p,
       name_th: byId[p.id].name || p.name_th,
-      name_en: byId[p.id].name_en || p.name_en,        // EN from DB (admin-editable) → fallback to seed
-      img:     byId[p.id].image_url || null,            // admin-uploaded image overrides local file
       price:   byId[p.id].price != null ? Number(byId[p.id].price) : p.price,
       orig:    byId[p.id].orig_price != null ? Number(byId[p.id].orig_price) : null,
       cat:     byId[p.id].category || p.cat,
       available: stockById[p.id] != null ? Number(stockById[p.id]) : null,
-      variants: variantsByPid[p.id] || null,
       ingredients:  byId[p.id].ingredients  || '',
       allergens:    byId[p.id].allergens    || '',
       shelf_life:   byId[p.id].shelf_life   || '',
@@ -1147,26 +1059,7 @@ async function syncProductsFromSupabase() {
       pack_size:    byId[p.id].pack_size    || '',
       suitable_for: byId[p.id].suitable_for || '',
     }));
-    // Append DB-only bundles (gift sets created in admin · is_bundle). A bundle is a normal
-    // product row (own price/stock/image) so the worker validates it like any product.
-    rows.filter(r => r.is_bundle && !known.has(r.id) && !r.deleted_at).forEach(r => {
-      const items = Array.isArray(r.bundle_items) ? r.bundle_items : [];
-      const lines = items.map(it => `${it.name || it.product_id}${(it.qty > 1) ? (' ×' + it.qty) : ''}`);
-      PRODUCTS.push({
-        id: r.id, slug: 'bundle-' + r.id, name_th: r.name, name_en: r.name_en || '',
-        cat: r.category || 'ชุดของฝาก', price: Number(r.price) || 0,
-        orig: r.orig_price != null ? Number(r.orig_price) : null,
-        weight: r.pack_size || '', img: r.image_url || null, is_bundle: true, bundle_items: items,
-        available: stockById[r.id] != null ? Number(stockById[r.id]) : null, variants: null,
-        desc: lines.length ? ('ชุดนี้ประกอบด้วย: ' + lines.join(' · ')) : (r.suitable_for || ''),
-        hl: lines.length ? lines : ['ชุดของฝากคัดสรร'],
-        ingredients: r.ingredients || '', allergens: r.allergens || '', shelf_life: r.shelf_life || '',
-        storage: r.storage || '', pack_size: r.pack_size || '', suitable_for: r.suitable_for || '',
-      });
-    });
-    renderCategoryChips();   // rebuild chips from the live categories
     applyProductView();
-    if(typeof openFromHash==='function') openFromHash();   // deep-link: open shared product once catalog is live
   } catch (e) {
     /* keep static fallback */
   }
@@ -1177,9 +1070,9 @@ function openProductModal(slug) {
   const p = PRODUCTS.find(x => x.slug === slug);
   if (!p) return;
   currentProduct = p;
-  document.getElementById('pm-img').src = imgSrc(p);
+  document.getElementById('pm-img').src = `รูปสินค้า_web/${p.slug}.jpg`;
   document.getElementById('pm-img').alt = p.name_th;
-  document.getElementById('pm-cat').textContent = catLabel(p.cat);
+  document.getElementById('pm-cat').textContent = p.cat;
   document.getElementById('pm-name').textContent = p.name_th;
   document.getElementById('pm-name-en').textContent = p.name_en;
   document.getElementById('pm-price').textContent = `฿${p.price}`;
@@ -1195,77 +1088,23 @@ function openProductModal(slug) {
   document.getElementById('pm-desc').textContent = p.desc;
   document.getElementById('pm-highlights').innerHTML = p.hl.map(h => `<span class="highlight-chip">✓ ${h}</span>`).join('');
   renderFoodInfo(p);
-  renderVariantSelector(p);
   renderProductReviews(p.id);
   document.getElementById('product-modal').classList.add('show');
-  applyProductSEO(p);   // deep-link + <title>/og + per-product JSON-LD
-}
-// ── Per-product deep-link + SEO ──
-const _BASE_TITLE = document.title;
-function setMeta(prop, val){ let m=document.querySelector(`meta[property="${prop}"]`); if(!m){ m=document.createElement('meta'); m.setAttribute('property',prop); document.head.appendChild(m); } m.setAttribute('content', val); }
-function applyProductSEO(p){
-  try{
-    if(location.hash !== '#p='+p.slug) history.replaceState(null,'','#p='+p.slug);
-    const en=localStorage.getItem('lt_lang')==='en';
-    const nm=(en&&p.name_en)?p.name_en:p.name_th;
-    document.title = `${nm} · ร้านลานทอง`;
-    setMeta('og:title', `${nm} · ร้านลานทอง`);
-    setMeta('og:description', `${nm} ฿${p.price} · ${p.cat||''} · ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน`);
-    let s=document.getElementById('ld-product'); if(!s){ s=document.createElement('script'); s.type='application/ld+json'; s.id='ld-product'; document.head.appendChild(s); }
-    s.textContent=JSON.stringify({"@context":"https://schema.org","@type":"Product",name:p.name_th,alternateName:p.name_en||undefined,category:p.cat,
-      image:imgSrc(p).startsWith('http')?imgSrc(p):(location.origin+location.pathname.replace(/[^/]*$/,'')+imgSrc(p)),
-      offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}});
-  }catch(e){}
-}
-function closeProductModal(){
-  document.getElementById('product-modal').classList.remove('show');
-  if(location.hash.startsWith('#p=')) history.replaceState(null,'',location.pathname+location.search);
-  document.title=_BASE_TITLE;
-  const s=document.getElementById('ld-product'); if(s) s.remove();
-}
-window.closeProductModal=closeProductModal;
-// open a product directly from a shared link (#p=<slug>) once the catalog is ready
-function openFromHash(){ const m=(location.hash||'').match(/^#p=(.+)$/); if(m){ const slug=decodeURIComponent(m[1]); if(PRODUCTS.find(x=>x.slug===slug)) openProductModal(slug); } }
-window.addEventListener('hashchange',()=>{ if((location.hash||'').startsWith('#p=')) openFromHash(); });
-
-// Variant selector (Sprint 4C) — shown only when a product has variants in product_variants.
-let currentVariant = null;
-function renderVariantSelector(p){
-  const slot=document.getElementById('pm-variant-slot'); if(!slot) return;
-  currentVariant=null;
-  if(!p.variants || !p.variants.length){ slot.innerHTML=''; return; }
-  const en=localStorage.getItem('lt_lang')==='en';
-  slot.innerHTML=`<div style="font-size:.84rem;font-weight:700;margin-bottom:6px">${en?'Choose an option':'เลือกตัวเลือก'}</div>
-    <select id="pm-variant" onchange="selectVariant()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:.9rem;background:var(--card,#fff);color:var(--text)">
-      ${p.variants.map((v,i)=>`<option value="${i}" ${v.available!=null&&v.available<=0?'disabled':''}>${v.label} — ฿${v.price}${v.orig&&v.orig>v.price?(en?` (was ฿${v.orig})`:` (ปกติ ฿${v.orig})`):''}${v.available!=null&&v.available<=0?(en?' (out of stock)':' (หมด)'):''}</option>`).join('')}
-    </select>`;
-  selectVariant();
-}
-function selectVariant(){
-  if(!currentProduct||!currentProduct.variants) return;
-  const sel=document.getElementById('pm-variant'); const i=sel?parseInt(sel.value,10):0;
-  currentVariant=currentProduct.variants[i]||null;
-  if(currentVariant){
-    document.getElementById('pm-price').textContent='฿'+currentVariant.price;
-    document.getElementById('pm-orig').style.display='none';
-    document.getElementById('pm-save').style.display='none';
-  }
 }
 
 function renderFoodInfo(p){
   const host=document.getElementById('pm-foodinfo'); if(!host) return;
   const esc=s=>String(s||'').replace(/[<>]/g,'');
-  const en=localStorage.getItem('lt_lang')==='en';
   const rows=[
-    ['🧾',en?'Ingredients':'ส่วนประกอบ',p.ingredients],
-    ['⚠️',en?'Allergens':'สารก่อภูมิแพ้',p.allergens],
-    ['📦',en?'Pack size':'ขนาด/จำนวน',p.pack_size],
-    ['⏳',en?'Shelf life':'อายุการเก็บ',p.shelf_life],
-    ['🧊',en?'Storage':'วิธีเก็บรักษา',p.storage],
-    ['🎁',en?'Suitable for':'เหมาะสำหรับ',p.suitable_for],
+    ['🧾','ส่วนประกอบ',p.ingredients],
+    ['⚠️','สารก่อภูมิแพ้',p.allergens],
+    ['📦','ขนาด/จำนวน',p.pack_size],
+    ['⏳','อายุการเก็บ',p.shelf_life],
+    ['🧊','วิธีเก็บรักษา',p.storage],
+    ['🎁','เหมาะสำหรับ',p.suitable_for],
   ].filter(r=>r[2]&&String(r[2]).trim());
   if(!rows.length){ host.innerHTML=''; return; }
-  host.innerHTML=`<div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--text)">${en?'📋 Product info':'📋 ข้อมูลสินค้า'}</div>`+
+  host.innerHTML='<div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--text)">📋 ข้อมูลสินค้า</div>'+
     '<div style="display:grid;gap:6px">'+rows.map(r=>`<div style="display:flex;gap:8px;font-size:.82rem;line-height:1.5"><span style="flex-shrink:0">${r[0]} <b style="color:var(--text)">${r[1]}:</b></span><span style="color:var(--muted)">${esc(r[2])}</span></div>`).join('')+'</div>';
 }
 function changeQty(d) {
@@ -1277,27 +1116,13 @@ function changeQty(d) {
 function addCurrentToCart() {
   if (!currentProduct) return;
   const qty = parseInt(document.getElementById('pm-qty').value);
-  const v = (currentProduct.variants && currentProduct.variants.length) ? currentVariant : null;
-  const vid = v ? v.id : '';
-  // cart identity = slug + variant (so different sizes of the same product are separate lines)
-  const ex = cart.find(i => i.slug === currentProduct.slug && (i.variant_id || '') === vid);
-  if (ex) ex.qty += qty;
-  else {
-    const item = { ...currentProduct, qty, variant_id: vid };
-    delete item.variants;                                  // don't carry the array into the cart line
-    if (v) { item.price = v.price; item.name_th = currentProduct.name_th + ' (' + v.label + ')'; }
-    cart.push(item);
-  }
+  const ex = cart.find(i => i.slug === currentProduct.slug);
+  if (ex) ex.qty += qty; else cart.push({...currentProduct, qty});
   updateCartUI();
   document.getElementById('product-modal').classList.remove('show');
-  showToast(TT(`เพิ่ม "${currentProduct.name_th}${v ? ' ('+v.label+')' : ''}" ในตะกร้าแล้วค่ะ 🛒`,`Added "${currentProduct.name_th}${v ? ' ('+v.label+')' : ''}" to cart 🛒`));
+  showToast(`เพิ่ม "${currentProduct.name_th}" ในตะกร้าแล้วค่ะ 🛒`);
 }
 
-// shipping fee for display (server is authoritative) — config from app_config via SHOP_CFG.
-function shopShipping(prodAfterDiscount){
-  const cfg=window.SHOP_CFG||{}; const fee=Math.max(0,Number(cfg.shipping_fee)||0); const th=Number(cfg.free_threshold)||0;
-  return (fee>0 && !(th>0 && prodAfterDiscount>=th)) ? fee : 0;
-}
 function updateCartUI() {
   localStorage.setItem('lt_cart', JSON.stringify(cart));
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -1306,29 +1131,24 @@ function updateCartUI() {
   if (COUPON && subtotal >= (COUPON.min_total||0)) {
     DISCOUNT = COUPON.discount_type==='percent' ? Math.round(subtotal*COUPON.value/100) : Math.min(COUPON.value, subtotal);
   }
-  const prodTotal = Math.max(0, subtotal - DISCOUNT);
-  const shipping = cart.length ? shopShipping(prodTotal) : 0;   // no shipping on an empty cart
-  const total = prodTotal + shipping;
+  const total = Math.max(0, subtotal - DISCOUNT);
   const count = cart.reduce((s, i) => s + i.qty, 0);
   const badge = document.getElementById('cart-badge');
   badge.textContent = count;
   badge.style.display = count > 0 ? 'flex' : 'none';
   const dr=document.getElementById('cart-discount-row');
   if(dr){ if(DISCOUNT>0){ dr.style.display='flex'; document.getElementById('cart-discount').textContent='-฿'+DISCOUNT; } else dr.style.display='none'; }
-  const sr=document.getElementById('cart-shipping-row');
-  const en0=localStorage.getItem('lt_lang')==='en';
-  if(sr){ if(cart.length){ sr.style.display='flex'; document.getElementById('cart-shipping').textContent = shipping>0 ? '฿'+shipping : (en0?'FREE':'ฟรี'); } else sr.style.display='none'; }
   document.getElementById('cart-total').textContent = `฿${total}`;
   const listEl = document.getElementById('cart-items-list');
   if (cart.length === 0) {
-    listEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>${en0?'Your cart is empty':'ยังไม่มีสินค้าในตะกร้า'}</p></div>`;
+    listEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>ยังไม่มีสินค้าในตะกร้า</p></div>`;
   } else {
     listEl.innerHTML = cart.map((item, idx) => `
       <div class="cart-item">
-        <img class="cart-item-img" src="${imgSrc(item)}" alt="${item.name_th}">
+        <img class="cart-item-img" src="รูปสินค้า_web/${item.slug}.jpg" alt="${item.name_th}">
         <div class="cart-item-info">
           <div class="cart-item-name">${item.name_th}</div>
-          <div class="cart-item-price">${en0?`฿${item.price} / ea · total ฿${item.price*item.qty}`:`฿${item.price} / ชิ้น · รวม ฿${item.price*item.qty}`}</div>
+          <div class="cart-item-price">฿${item.price} / ชิ้น · รวม ฿${item.price * item.qty}</div>
           <div class="cart-item-qty">
             <button class="cart-qty-btn" onclick="changeCartQty(${idx},-1)" aria-label="ลดจำนวน">−</button>
             <span class="cart-qty-num">${item.qty}</span>
@@ -1338,26 +1158,6 @@ function updateCartUI() {
         <button class="cart-item-remove" onclick="removeFromCart(${idx})">✕</button>
       </div>`).join('');
   }
-  saveCartBeacon();   // abandoned-cart follow-up (Sprint 4C) — debounced, best-effort
-}
-
-// Persist a cart snapshot to the worker so the daily cron can flag abandoned carts.
-// Debounced; never blocks the UI. Members are keyed by token, guests by a local session id.
-let _cartBeaconTimer = null;
-function saveCartBeacon() {
-  clearTimeout(_cartBeaconTimer);
-  _cartBeaconTimer = setTimeout(async () => {
-    try {
-      let sid = localStorage.getItem('lt_sid');
-      if (!sid) { sid = 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); localStorage.setItem('lt_sid', sid); }
-      let memberToken = '';
-      try { const s = await sbAuth.auth.getSession(); memberToken = (s.data && s.data.session && s.data.session.access_token) || ''; } catch (e) {}
-      await fetch(WEB_API + '/web-cart-save', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session: sid, member_token: memberToken, items: cart.map(i => ({ product_id: i.id, qty: i.qty })) }),
-      });
-    } catch (e) {}
-  }, 2500);
 }
 
 function changeCartQty(idx, d) {
@@ -1375,110 +1175,17 @@ function closeCart() {
   document.getElementById('cart-overlay').classList.remove('show');
 }
 
-async function openOrderForm() {
-  if (cart.length === 0) { showToast(TT('ยังไม่มีสินค้าในตะกร้าค่ะ','Your cart is empty')); return; }
+function openOrderForm() {
+  if (cart.length === 0) { showToast('ยังไม่มีสินค้าในตะกร้าค่ะ'); return; }
   // fresh idempotency key per checkout attempt (guards double-submit on the worker)
   window.CHECKOUT_REF = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  window.REDEEM_PTS = 0;                                  // reset redeem each checkout
   closeCart();
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const enOF = localStorage.getItem('lt_lang') === 'en';
   document.getElementById('order-summary-mini').innerHTML = `
-    <div class="order-summary-mini-title">${enOF?'Your order':'รายการสั่งซื้อ'}</div>
+    <div class="order-summary-mini-title">รายการสั่งซื้อ</div>
     ${cart.map(i => `<div class="order-summary-item"><span>${i.name_th} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('')}
-    <div id="order-redeem-slot"></div>
-    <div class="order-summary-item" id="order-ship-line"><span>${enOF?'Shipping':'ค่าจัดส่ง'}</span><span id="order-ship-amt"></span></div>
-    <div class="order-summary-total"><span>${enOF?'Total':'รวมทั้งหมด'}</span><span id="order-mini-total">฿${total}</span></div>`;
+    <div class="order-summary-total"><span>รวมทั้งหมด</span><span>฿${total}</span></div>`;
   document.getElementById('order-modal').classList.add('show');
-  // Loyalty redeem (Sprint 4C): members can spend points (1 แต้ม = ฿1) — server is authoritative
-  if (window.MEMBER) {
-    const bal = await fetchLoyaltyBalance();
-    const slot = document.getElementById('order-redeem-slot');
-    if (bal > 0 && slot) {
-      const en = localStorage.getItem('lt_lang') === 'en';
-      const maxUse = Math.min(bal, Math.max(0, total - 1));   // keep ≥ ฿1 payable
-      slot.innerHTML = `<div style="background:#f9f0e8;border-radius:10px;padding:10px 12px;margin:8px 0;color:#3a2a1a">
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem">
-          <span>⭐ ${en ? 'You have' : 'คุณมี'} <b>${bal}</b> ${en ? 'points' : 'แต้ม'}</span>
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
-            <input type="checkbox" id="redeem-toggle" onchange="toggleRedeem(${maxUse})">
-            <span>${en ? 'Use points' : 'ใช้แลกส่วนลด'}</span>
-          </label>
-        </div>
-        <div id="redeem-detail" style="display:none;margin-top:8px">
-          <input type="range" id="redeem-range" min="0" max="${maxUse}" value="${maxUse}" step="1" oninput="onRedeemInput()" style="width:100%">
-          <div style="display:flex;justify-content:space-between;font-size:.8rem;font-weight:700;color:var(--primary)">
-            <span id="redeem-pts-label">${maxUse} ${en ? 'pts' : 'แต้ม'}</span>
-            <span id="redeem-amt-label">-฿${maxUse}</span>
-          </div>
-        </div>
-      </div>`;
-    }
-  } else {
-    const slot0=document.getElementById('order-redeem-slot');
-    const en0=localStorage.getItem('lt_lang')==='en';
-    if(slot0) slot0.innerHTML=`<div style="background:#f9f0e8;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.78rem;text-align:center;color:#3a2a1a">🔒 <a onclick="document.getElementById('order-modal').classList.remove('show');openLogin()" style="color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline">${en0?'Sign in':'เข้าสู่ระบบ'}</a> ${en0?'to collect & use points':'เพื่อสะสม & ใช้แต้ม'}</div>`;
-  }
-  onRedeemInput();   // set shipping line + grand total (works with or without the redeem slider)
-}
-
-// Cache + fetch the member's authoritative loyalty balance (from /web-orders).
-async function fetchLoyaltyBalance() {
-  if (!window.MEMBER) return 0;
-  if (window._loyalty && typeof window._loyalty.balance === 'number') return window._loyalty.balance;
-  try {
-    const { data: { session } } = await sbAuth.auth.getSession();
-    if (!session) return 0;
-    const res = await fetch(WEB_API + '/web-orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: session.access_token }) });
-    const j = await res.json();
-    if (j.ok && j.loyalty) { window._loyalty = j.loyalty; return j.loyalty.balance || 0; }
-  } catch (e) {}
-  return 0;
-}
-function toggleRedeem(maxUse) {
-  const on = document.getElementById('redeem-toggle').checked;
-  document.getElementById('redeem-detail').style.display = on ? 'block' : 'none';
-  window.REDEEM_PTS = on ? maxUse : 0;
-  onRedeemInput();
-}
-// Recompute the checkout mini-summary: redeem labels + shipping line + grand total.
-// Shipping is added on top of the product total (after redeem) and is never discounted.
-function onRedeemInput() {
-  const on = document.getElementById('redeem-toggle') && document.getElementById('redeem-toggle').checked;
-  const r = document.getElementById('redeem-range');
-  const pts = on && r ? (parseInt(r.value, 10) || 0) : 0;
-  window.REDEEM_PTS = pts;
-  const en = localStorage.getItem('lt_lang') === 'en';
-  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const prodAfter = Math.max(0, subtotal - pts);
-  const shipping = shopShipping(prodAfter);
-  const grand = prodAfter + shipping;
-  const ptsLbl = document.getElementById('redeem-pts-label'), amtLbl = document.getElementById('redeem-amt-label');
-  if (ptsLbl) ptsLbl.textContent = pts + ' ' + (en ? 'pts' : 'แต้ม');
-  if (amtLbl) amtLbl.textContent = '-฿' + pts;
-  const shipAmt = document.getElementById('order-ship-amt');
-  if (shipAmt) shipAmt.textContent = shipping > 0 ? '฿' + shipping : (en ? 'FREE' : 'ฟรี');
-  const miniTot = document.getElementById('order-mini-total');
-  if (miniTot) miniTot.textContent = '฿' + grand;
-}
-
-// Subscription (Sprint 4C): a member subscribes to the current cart; the worker cron
-// creates a new order every month and notifies them. Members only (needs a stable id).
-async function subscribeCart() {
-  if (cart.length === 0) { showToast(TT('ยังไม่มีสินค้าในตะกร้าค่ะ','Your cart is empty')); return; }
-  if (!window.MEMBER) { showToast(TT('กรุณาเข้าสู่ระบบก่อนสมัครรับประจำค่ะ 🙏','Please sign in before subscribing 🙏')); try { openLogin(); } catch (e) {} return; }
-  const en = localStorage.getItem('lt_lang') === 'en';
-  const d = new Date(); d.setMonth(d.getMonth() + 1);
-  const next_run = d.toISOString().slice(0, 10);
-  try {
-    await sbInsertAnon('subscriptions', {
-      customer_id: 'USER-' + window.MEMBER.id,
-      items: cart.map(i => ({ product_id: i.id, qty: i.qty })),
-      frequency: 'monthly', next_run, status: 'active',
-    });
-    showToast(en ? '✅ Subscribed! We will prepare this every month.' : '✅ สมัครรับประจำแล้วค่ะ! ไพลินจะจัดส่งให้ทุกเดือน 💛');
-    track('subscribe', { items: cart.length });
-  } catch (e) { showToast(TT('สมัครไม่สำเร็จค่ะ 🙏 ลองใหม่นะคะ','Subscription failed 🙏 please try again')); }
 }
 
 // Insert a row into Supabase via the anon key (RLS allows anon INSERT on
@@ -1503,22 +1210,11 @@ async function sbInsertAnon(table, row) {
   }
 }
 
-// Log a visit once per session (admin "ช่องทางการเข้าชม" reads the visits table)
-(function(){ try{
-  if(sessionStorage.getItem('lt_visited')) return; sessionStorage.setItem('lt_visited','1');
-  const p=new URLSearchParams(location.search); let src=p.get('utm_source')||p.get('ref')||'';
-  if(!src && document.referrer){ try{ const h=new URL(document.referrer).hostname.replace(/^www\./,'').toLowerCase();
-    if(h && !h.includes(location.hostname)){ src = /google/.test(h)?'google':/facebook|fb\.com|fb\.me/.test(h)?'facebook':/instagram/.test(h)?'instagram':/line/.test(h)?'line':/t\.co|twitter|x\.com/.test(h)?'twitter':/tiktok/.test(h)?'tiktok':h; }
-  }catch(e){} }
-  if(!src) src='direct';
-  sbInsertAnon('visits',{ source:String(src).slice(0,40) });
-}catch(e){} })();
-
 async function submitOrder() {
   const name = document.getElementById('order-name').value.trim();
   const phone = document.getElementById('order-phone').value.trim();
   const address = document.getElementById('order-address').value.trim();
-  if (!name || !phone || !address) { showToast(TT('กรุณากรอกข้อมูลให้ครบถ้วนค่ะ','Please fill in all fields')); return; }
+  if (!name || !phone || !address) { showToast('กรุณากรอกข้อมูลให้ครบถ้วนค่ะ'); return; }
   if (window._submitting) return;                       // guard against double-submit
   window._submitting = true;
   const btn = document.querySelector('#order-modal .confirm-order-btn');
@@ -1535,19 +1231,16 @@ async function submitOrder() {
     const res = await fetch(WEB_API + '/web-order-create', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        items: cart.map(i => ({ product_id: i.id, qty: i.qty, variant_id: i.variant_id || '' })),
+        items: cart.map(i => ({ product_id: i.id, qty: i.qty })),
         name, phone, address, payMethod,
         coupon: (COUPON && COUPON.code) || '',
         client_ref: window.CHECKOUT_REF || '',
         member_token: memberToken,
         source: localStorage.getItem('lt_source') || LT_SOURCE,
-        ref_from: localStorage.getItem('lt_ref_from') || '',   // referral discount (members, first order)
-        redeem_points: Number(window.REDEEM_PTS) || 0,          // loyalty points the member chose to spend
       }),
     });
     const j = await res.json();
-    if (!j.ok) { showToast(j.message || TT('สั่งซื้อไม่สำเร็จค่ะ 🙏 ลองใหม่นะคะ','Order failed 🙏 please try again')); return; }
-    window.REDEEM_PTS = 0;                                      // consumed for this order
+    if (!j.ok) { showToast(j.message || 'สั่งซื้อไม่สำเร็จค่ะ 🙏 ลองใหม่นะคะ'); return; }
 
     const orderNum = j.order_id, total = j.total, items = j.items || [];
 
@@ -1556,16 +1249,14 @@ async function submitOrder() {
       const mine = JSON.parse(localStorage.getItem('lt_myorders') || '[]');
       mine.unshift({ order_id: orderNum, total, items, at: new Date().toISOString() });
       localStorage.setItem('lt_myorders', JSON.stringify(mine.slice(0, 50)));
-      if (typeof updateAuthUI==='function') updateAuthUI();   // reveal "ออเดอร์ของฉัน" for guests
     } catch (e) {}
 
     // ── Confirmation UX (step 2) ──
     document.getElementById('order-modal').classList.remove('show');
-    const enCF = localStorage.getItem('lt_lang')==='en';
-    document.getElementById('confirm-order-num').textContent = `${enCF?'Order no.':'เลขออเดอร์'}: ${orderNum}`;
+    document.getElementById('confirm-order-num').textContent = `เลขออเดอร์: ${orderNum}`;
     document.getElementById('confirm-items-list').innerHTML =
       items.map(i => `<div class="confirm-item-row"><span>${i.name} ×${i.qty}</span><span>฿${i.price * i.qty}</span></div>`).join('') +
-      `<div class="confirm-total-row"><span>${enCF?'Total':'รวม'}</span><span>฿${total}</span></div>`;
+      `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
     window.LAST_ORDER = { orderNum, total, payMethod };
     const cod = payMethod === 'cod';
     const qb=document.getElementById('confirm-qr-block'), sb=document.getElementById('confirm-slip-block'), cb=document.getElementById('confirm-cod-block');
@@ -1578,7 +1269,7 @@ async function submitOrder() {
     updateCartUI();
     window.CHECKOUT_REF = '';                            // consumed; next checkout makes a fresh ref
   } catch (e) {
-    showToast(TT('เชื่อมต่อไม่ได้ค่ะ 🙏 ลองใหม่อีกครั้งนะคะ','Connection failed 🙏 please try again'));
+    showToast('เชื่อมต่อไม่ได้ค่ะ 🙏 ลองใหม่อีกครั้งนะคะ');
   } finally {
     window._submitting = false;
     if (btn) { btn.disabled = false; btn.textContent = btnLabel || 'ไปชำระเงิน →'; }
@@ -1604,7 +1295,7 @@ function showToast(msg) {
 }
 
 const LISA = {
-  'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ร้านลานทอง ดิฉันไพลินค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
+  'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ร้าน@ลานทอง ดิฉันไพลินค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
   'ว่าไง':'สวัสดีค่ะ ยินดีต้อนรับ มีอะไรให้ช่วยบอกได้เลยนะคะ',
   'ราคา':'ราคาสินค้าเริ่มต้น ฿45 ถึง ฿99 ค่ะ กด VIEW DETAILS ที่การ์ดสินค้าเพื่อดูราคาได้เลยค่ะ 🏷️',
   'เท่าไร':'ราคาเริ่มต้น ฿45 ค่ะ กด VIEW DETAILS ที่สินค้าที่สนใจเพื่อดูราคาและรายละเอียดได้เลยค่ะ',
@@ -1660,12 +1351,12 @@ async function askLisa(txt) {
   const box = document.getElementById('chat-messages');
   const typing = document.createElement('div');
   typing.className = 'chat-msg bot';
-  typing.innerHTML = `<div class="chat-msg-bubble">${TT('ไพลินกำลังพิมพ์… ✍️','Pailin is typing… ✍️')}</div>`;
+  typing.innerHTML = '<div class="chat-msg-bubble">ไพลินกำลังพิมพ์… ✍️</div>';
   box.appendChild(typing); box.scrollTop = box.scrollHeight;
   try {
     const res = await fetch(WEB_API + '/web-chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: txt, sessionId: CHAT_SID, lang: (localStorage.getItem('lt_lang')==='en'?'en':'th') }),
+      body: JSON.stringify({ message: txt, sessionId: CHAT_SID }),
     });
     const j = await res.json();
     typing.remove();
@@ -1696,7 +1387,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-setTimeout(() => addChatMsg(TT('สวัสดีค่ะ ดิฉันไพลิน AI Sale ของร้านลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?','Hello! I\'m Pailin, the AI assistant at Lanthong 🍯<br>How can I help you?'), 'bot'), 300);
+setTimeout(() => addChatMsg('สวัสดีค่ะ ดิฉันไพลิน AI Sale ของร้าน@ลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?', 'bot'), 300);
 </script>
 
 <script>
@@ -1716,21 +1407,8 @@ try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ c
   const { data } = await sbAuth.from('app_config').select('*').eq('id',1).maybeSingle();
   if (!data) return; window.SHOP_CFG = data;
   const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.textContent=v; };
-  // announce bar: owner's promo_banner shown verbatim; if empty, auto welcome + real shipping config
-  // (avoids duplicating/contradicting shipping text the owner may type into the banner)
-  const th=Number(data.free_threshold)||0, fee=Number(data.shipping_fee)||0;
-  const shipMsg = th>0 ? TT(`🚚 ส่งฟรีเมื่อซื้อครบ ฿${th}`,`🚚 Free shipping over ฿${th}`) : (fee>0 ? TT(`🚚 ค่าส่ง ฿${fee}`,`🚚 Shipping ฿${fee}`) : TT('🚚 จัดส่งทั่วไทย','🚚 Nationwide delivery'));
-  const aiSuffix = TT('💬 ไพลิน AI ดูแล 24 ชม.','💬 Pailin AI · 24 hrs');
-  const a=document.getElementById('announce-text');
-  if(a) a.innerHTML = data.promo_banner
-    ? ('🍯 ' + data.promo_banner + ' &nbsp;·&nbsp; ' + aiSuffix)
-    : ('🍯 ' + TT('ยินดีต้อนรับสู่ร้านลานทอง','Welcome to Lanthong') + ' &nbsp;·&nbsp; ' + shipMsg + ' &nbsp;·&nbsp; ' + aiSuffix);
+  if (data.promo_banner) { const a=document.getElementById('announce-text'); if(a) a.innerHTML='🍯 '+data.promo_banner+' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.'; }
   set('pi-promptpay', data.promptpay); set('pi-bank-label', data.bank_name); set('pi-bank-no', data.bank_no); set('pi-account', data.bank_account);
-  set('about-pp', data.promptpay); set('about-bank', data.bank_name); set('about-bankno', data.bank_no); set('about-bankacc', data.bank_account);
-  // editable "เกี่ยวกับเรา" content (overrides static text; drop data-i18n so it isn't reverted on lang toggle)
-  if (data.about_tagline) document.querySelectorAll('.about-tagline').forEach(e=>{ e.removeAttribute('data-i18n'); e.textContent=data.about_tagline; });
-  if (data.about_text)    document.querySelectorAll('.about-text').forEach(e=>{ e.removeAttribute('data-i18n'); e.textContent=data.about_text; });
-  if (typeof updateCartUI==='function') updateCartUI();   // refresh cart/free-shipping with real config now
 } catch (e) {} })();
 
 // Live two-way chat: receive admin replies in real time (Supabase Realtime broadcast)
@@ -1749,26 +1427,25 @@ let AUTH_MODE = 'login';
 
 function showLoginError(msg){ const e=document.getElementById('login-error'); e.textContent=msg||''; e.style.display=msg?'block':'none'; }
 
-const _LANG=()=>localStorage.getItem('lt_lang')==='en';
-function renderAuthMode(){
-  const s = AUTH_MODE==='signup', en=_LANG();
-  document.getElementById('login-title').textContent = s?(en?'Create account':'สมัครสมาชิก'):(en?'Sign in':'เข้าสู่ระบบ');
-  document.getElementById('login-sub').textContent = s?(en?'Sign up to earn points and track your orders':'สมัครเพื่อสะสมแต้มและติดตามออเดอร์ค่ะ'):(en?'Sign in to track orders and member perks':'เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก');
-  document.getElementById('login-submit').textContent = s?(en?'Create account':'สมัครสมาชิก'):(en?'Sign in':'เข้าสู่ระบบ');
-  document.getElementById('login-toggle-text').textContent = s?(en?'Already have an account?':'มีบัญชีอยู่แล้ว?'):(en?"Don't have an account?":'ยังไม่มีบัญชี?');
-  document.getElementById('login-toggle-link').textContent = s?(en?'Sign in':'เข้าสู่ระบบ'):(en?'Create account':'สมัครสมาชิก');
-  document.getElementById('login-username-wrap').style.display = s?'block':'none';
-}
 function openLogin(){
   AUTH_MODE='login';
-  renderAuthMode();
+  document.getElementById('login-title').textContent='เข้าสู่ระบบ';
+  document.getElementById('login-sub').textContent='เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก';
+  document.getElementById('login-submit').textContent='เข้าสู่ระบบ';
+  document.getElementById('login-toggle-text').textContent='ยังไม่มีบัญชี?';
+  document.getElementById('login-toggle-link').textContent='สมัครสมาชิก';
   showLoginError('');
   document.getElementById('login-modal').classList.add('show');
 }
 function toggleAuthMode(ev){
   if(ev) ev.preventDefault();
   AUTH_MODE = AUTH_MODE==='login' ? 'signup' : 'login';
-  renderAuthMode();
+  const s = AUTH_MODE==='signup';
+  document.getElementById('login-title').textContent = s?'สมัครสมาชิก':'เข้าสู่ระบบ';
+  document.getElementById('login-sub').textContent = s?'สมัครเพื่อสะสมแต้มและติดตามออเดอร์ค่ะ':'เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก';
+  document.getElementById('login-submit').textContent = s?'สมัครสมาชิก':'เข้าสู่ระบบ';
+  document.getElementById('login-toggle-text').textContent = s?'มีบัญชีอยู่แล้ว?':'ยังไม่มีบัญชี?';
+  document.getElementById('login-toggle-link').textContent = s?'เข้าสู่ระบบ':'สมัครสมาชิก';
   showLoginError('');
 }
 async function doMemberAuth(){
@@ -1777,29 +1454,26 @@ async function doMemberAuth(){
   if(!email||!password){ showLoginError('กรอกอีเมลและรหัสผ่านค่ะ'); return; }
   showLoginError('');
   if(AUTH_MODE==='signup'){
-    const username=(document.getElementById('login-username').value||'').trim().slice(0,60);
-    const {error}=await sbAuth.auth.signUp({email,password,options:username?{data:{username}}:undefined});
+    const {error}=await sbAuth.auth.signUp({email,password});
     if(error){ showLoginError(error.message); return; }
-    showToast(TT('สมัครสมาชิกสำเร็จค่ะ 🎉','Account created 🎉'));
+    showToast('สมัครสมาชิกสำเร็จค่ะ 🎉');
   } else {
     const {error}=await sbAuth.auth.signInWithPassword({email,password});
     if(error){ showLoginError('อีเมลหรือรหัสผ่านไม่ถูกต้องค่ะ'); return; }
-    showToast(TT('เข้าสู่ระบบแล้วค่ะ ✨','Signed in ✨'));
+    showToast('เข้าสู่ระบบแล้วค่ะ ✨');
   }
   document.getElementById('login-modal').classList.remove('show');
 }
 async function doMemberGoogle(){
   await sbAuth.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: window.location.origin+window.location.pathname } });
 }
-async function doMemberLogout(){ await sbAuth.auth.signOut(); showToast(TT('ออกจากระบบแล้วค่ะ','Signed out')); }
+async function doMemberLogout(){ await sbAuth.auth.signOut(); showToast('ออกจากระบบแล้วค่ะ'); }
 
 function updateAuthUI(){
   const u=window.MEMBER;
   document.getElementById('nav-login-btn').style.display = u?'none':'';
   document.getElementById('nav-user-btn').style.display = u?'':'none';
-  // show "ออเดอร์ของฉัน" to guests too if they placed an order on this device (localStorage)
-  let hasLocal=false; try{ hasLocal=(JSON.parse(localStorage.getItem('lt_myorders')||'[]')).length>0; }catch(e){}
-  document.getElementById('nav-myorders').style.display = (u||hasLocal)?'':'none';
+  document.getElementById('nav-myorders').style.display = u?'':'none';
   if(u) document.getElementById('nav-user-name').textContent = (u.email||'').split('@')[0];
 }
 sbAuth.auth.onAuthStateChange((_e,session)=>{ window.MEMBER = session?session.user:null; updateAuthUI(); });
@@ -1807,26 +1481,23 @@ sbAuth.auth.getSession().then(({data:{session}})=>{ window.MEMBER = session?sess
 
 // ===== My Orders (tracked on this device) =====
 const ORDER_STEPS=['PENDING','SLIP_RECEIVED','PAID','SHIPPED','DONE'];
-const ORDER_TH={PENDING:'รอชำระ',SLIP_RECEIVED:'ตรวจสลิป',PAID:'ชำระแล้ว',SHIPPED:'กำลังจัดส่ง',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
-const ORDER_EN={PENDING:'Awaiting payment',SLIP_RECEIVED:'Checking slip',PAID:'Paid',SHIPPED:'Shipping',DONE:'Completed',CANCELLED:'Cancelled'};
-const orderLabel=(s)=> (localStorage.getItem('lt_lang')==='en'?ORDER_EN:ORDER_TH)[s]||s;
-function orderTrack(status){ const i=ORDER_STEPS.indexOf(status); return `<div style="display:flex;gap:3px;margin-top:8px">${ORDER_STEPS.map((s,idx)=>`<div style="flex:1;height:5px;border-radius:3px;background:${i>=0&&idx<=i?'var(--primary)':'#e8d5b5'}"></div>`).join('')}</div><div style="font-size:.72rem;color:var(--primary);margin-top:4px;font-weight:600">${orderLabel(status)}</div>`; }
+const ORDER_TH={PENDING:'รอชำระ',SLIP_RECEIVED:'ตรวจสลิป',PAID:'ชำระแล้ว',SHIPPED:'จัดส่งแล้ว',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
+function orderTrack(status){ const i=ORDER_STEPS.indexOf(status); return `<div style="display:flex;gap:3px;margin-top:8px">${ORDER_STEPS.map((s,idx)=>`<div style="flex:1;height:5px;border-radius:3px;background:${i>=0&&idx<=i?'var(--primary)':'#e8d5b5'}"></div>`).join('')}</div><div style="font-size:.72rem;color:var(--primary);margin-top:4px;font-weight:600">${ORDER_TH[status]||status}</div>`; }
 async function openMyOrders(){
   let modal=document.getElementById('myorders-modal');
   if(!modal){ modal=document.createElement('div'); modal.id='myorders-modal'; modal.className='modal-overlay';
     modal.onclick=(e)=>{ if(e.target===modal) modal.classList.remove('show'); }; document.body.appendChild(modal); }
-  const enMO=localStorage.getItem('lt_lang')==='en';
   const shell=(body)=>`<div class="modal-box" style="max-width:480px"><button class="modal-close-btn" onclick="document.getElementById('myorders-modal').classList.remove('show')">✕</button>
-    <div style="padding:28px 26px"><div class="order-modal-title">${enMO?'📦 My orders':'📦 ออเดอร์ของฉัน'}</div>${body}</div></div>`;
-  modal.innerHTML=shell(`<div style="text-align:center;color:var(--muted);padding:30px">${enMO?'Loading…':'กำลังโหลด…'}</div>`);
+    <div style="padding:28px 26px"><div class="order-modal-title">📦 ออเดอร์ของฉัน</div>${body}</div></div>`;
+  modal.innerHTML=shell('<div style="text-align:center;color:var(--muted);padding:30px">กำลังโหลด…</div>');
   modal.classList.add('show');
   let live=null;
   if(window.MEMBER){ try{ const { data:{ session } }=await sbAuth.auth.getSession();
     const res=await fetch(WEB_API+'/web-orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:session.access_token})});
-    const j=await res.json(); if(j.ok){ live=j.orders; window._loyalty=j.loyalty||null; window._referral=j.referral||null; } }catch(e){} }
+    const j=await res.json(); if(j.ok) live=j.orders; }catch(e){} }
   const rows = live!=null ? live.map(o=>({order_id:o.order_id,total:o.total_amount,items:o.items,status:o.status,tracking:o.tracking_number,carrier:o.carrier,at:o.created_at}))
                           : JSON.parse(localStorage.getItem('lt_myorders')||'[]');
-  const sub = live!=null ? (enMO?'Real-time status (member)':'อัปเดตสถานะแบบเรียลไทม์ (สมาชิก)') : (enMO?'Orders from this device · sign in for live status':'รายการที่สั่งจากอุปกรณ์นี้ · ล็อกอินเพื่อดูสถานะสด');
+  const sub = live!=null ? 'อัปเดตสถานะแบบเรียลไทม์ (สมาชิก)' : 'รายการที่สั่งจากอุปกรณ์นี้ · ล็อกอินเพื่อดูสถานะสด';
   window._myOrderMap={}; rows.forEach(o=>{ window._myOrderMap[o.order_id]={total:o.total,items:o.items||[]}; });
   const _payable=(o)=> !o.status || o.status==='PENDING' || o.status==='SLIP_RECEIVED';   // ยังไม่จ่าย → ให้กลับมาชำระได้
   modal.innerHTML=shell(`<div class="order-modal-sub">${sub}</div>
@@ -1835,8 +1506,8 @@ async function openMyOrders(){
       <div style="font-size:.8rem;color:var(--muted);margin-top:4px">${(o.items||[]).map(i=>i.name+' ×'+i.qty).join(', ')}</div>
       ${o.status?orderTrack(o.status):''}
       ${o.tracking?`<div style="font-size:.74rem;margin-top:5px">🚚 ${o.carrier||''} <b>${o.tracking}</b></div>`:''}
-      ${_payable(o)?`<button style="margin-top:8px;padding:7px 16px;border-radius:8px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.8rem;border:none;cursor:pointer" onclick="payAgain('${o.order_id}')">${enMO?'💳 Pay / view QR':'💳 ชำระเงิน / ดู QR'}</button>`:''}
-    </div>`).join('') : `<div style="text-align:center;color:var(--muted);padding:30px">${enMO?'No orders yet':'ยังไม่มีออเดอร์ค่ะ'}</div>`}`);
+      ${_payable(o)?`<button style="margin-top:8px;padding:7px 16px;border-radius:8px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.8rem;border:none;cursor:pointer" onclick="payAgain('${o.order_id}')">💳 ชำระเงิน / ดู QR</button>`:''}
+    </div>`).join('') : '<div style="text-align:center;color:var(--muted);padding:30px">ยังไม่มีออเดอร์ค่ะ</div>'}`);
 }
 // F3: เปิดหน้าชำระเงิน (QR + อัปโหลดสลิป) ของออเดอร์ที่ยังไม่จ่ายขึ้นมาใหม่
 function payAgain(orderId){
@@ -1844,11 +1515,10 @@ function payAgain(orderId){
   const total=Number(o.total)||0;
   const mm=document.getElementById('myorders-modal'); if(mm) mm.classList.remove('show');
   window.LAST_ORDER={ orderNum:orderId, total, payMethod:'transfer' };
-  const enPA=localStorage.getItem('lt_lang')==='en';
-  document.getElementById('confirm-order-num').textContent=`${enPA?'Order no.':'เลขออเดอร์'}: ${orderId}`;
+  document.getElementById('confirm-order-num').textContent=`เลขออเดอร์: ${orderId}`;
   document.getElementById('confirm-items-list').innerHTML=
     (o.items||[]).map(i=>`<div class="confirm-item-row"><span>${(i.name||'')} ×${i.qty}</span><span>฿${(i.price||0)*(i.qty||1)}</span></div>`).join('')+
-    `<div class="confirm-total-row"><span>${enPA?'Total':'รวม'}</span><span>฿${total}</span></div>`;
+    `<div class="confirm-total-row"><span>รวม</span><span>฿${total}</span></div>`;
   const qb=document.getElementById('confirm-qr-block'), sb=document.getElementById('confirm-slip-block'), cb=document.getElementById('confirm-cod-block');
   if(qb) qb.style.display='block'; if(sb) sb.style.display='block'; if(cb) cb.style.display='none';
   showPromptPayQR(total); document.getElementById('slip-status').textContent='';
@@ -1867,7 +1537,7 @@ function promptPayPayload(phone, amount){
   return p + ppCRC16(p);
 }
 function showPromptPayQR(amount){
-  document.getElementById('pp-amount').textContent = (localStorage.getItem('lt_lang')==='en'?'Amount ฿':'ยอดชำระ ฿')+amount;
+  document.getElementById('pp-amount').textContent = 'ยอดชำระ ฿'+amount;
   try {
     const qr = qrcode(0, 'M');
     qr.addData(promptPayPayload('0982695608', amount));
@@ -1881,10 +1551,9 @@ async function uploadSlip(input){
   const file=input.files&&input.files[0]; if(!file) return;
   const status=document.getElementById('slip-status');
   // validate file before upload (S2.5)
-  const enSL=localStorage.getItem('lt_lang')==='en';
-  if(!/^image\//.test(file.type||'')){ status.style.color='var(--primary2)'; status.textContent=enSL?'⚠️ Image files only (.jpg .png)':'⚠️ ต้องเป็นไฟล์รูปภาพเท่านั้นค่ะ (เช่น .jpg .png)'; input.value=''; return; }
-  if(file.size>6*1024*1024){ status.style.color='var(--primary2)'; status.textContent=enSL?'⚠️ File too large (over 6MB) — please resize it':'⚠️ ไฟล์ใหญ่เกินไปค่ะ (เกิน 6MB) รบกวนย่อรูปก่อนนะคะ'; input.value=''; return; }
-  status.style.color='var(--muted)'; status.textContent=enSL?'⏳ Verifying slip…':'⏳ กำลังตรวจสลิป...';
+  if(!/^image\//.test(file.type||'')){ status.style.color='var(--primary2)'; status.textContent='⚠️ ต้องเป็นไฟล์รูปภาพเท่านั้นค่ะ (เช่น .jpg .png)'; input.value=''; return; }
+  if(file.size>6*1024*1024){ status.style.color='var(--primary2)'; status.textContent='⚠️ ไฟล์ใหญ่เกินไปค่ะ (เกิน 6MB) รบกวนย่อรูปก่อนนะคะ'; input.value=''; return; }
+  status.style.color='var(--muted)'; status.textContent='⏳ กำลังตรวจสลิป...';
   const order=window.LAST_ORDER||{};
   const reader=new FileReader();
   reader.onload=async()=>{
@@ -1894,7 +1563,7 @@ async function uploadSlip(input){
       const j=await res.json();
       status.style.color = j.ok? '#1e8e4e' : 'var(--primary2)';
       status.textContent = (j.ok?'✅ ':'⚠️ ') + (j.message||'');
-    }catch(e){ status.style.color='var(--primary2)'; status.textContent=enSL?'⚠️ Upload failed, please try again':'⚠️ อัปโหลดไม่สำเร็จ ลองใหม่นะคะ'; }
+    }catch(e){ status.style.color='var(--primary2)'; status.textContent='⚠️ อัปโหลดไม่สำเร็จ ลองใหม่นะคะ'; }
   };
   reader.readAsDataURL(file);
   input.value='';
@@ -1904,23 +1573,7 @@ async function uploadSlip(input){
 updateCartUI();
 
 // ===== W6 wishlist · W3 reviews · W8 coupon =====
-function toggleWish(ev, slug){ ev.stopPropagation(); const i=WISHLIST.indexOf(slug); if(i>=0)WISHLIST.splice(i,1); else WISHLIST.push(slug); localStorage.setItem('lt_wishlist',JSON.stringify(WISHLIST)); applyProductView(); updateFavBadge(); }
-// Wishlist as a first-class action (navbar ❤️) — opens the favourites view in the catalog.
-function updateFavBadge(){ const b=document.getElementById('fav-badge'); if(!b) return; const n=WISHLIST.length; b.textContent=n; b.style.display=n>0?'flex':'none'; }
-function openWishlist(){
-  CURRENT_CAT='__wish__';
-  if(window.renderCategoryChips) renderCategoryChips();
-  applyProductView();
-  const p=document.getElementById('products'); if(p) p.scrollIntoView({behavior:'smooth'});
-  if(!WISHLIST.length) showToast(localStorage.getItem('lt_lang')==='en'?'No favourites yet — tap 🤍 on products you like':'ยังไม่มีรายการที่ถูกใจ — กด 🤍 ที่สินค้าที่ชอบได้เลยค่ะ');
-}
-window.openWishlist=openWishlist; window.updateFavBadge=updateFavBadge;
-updateFavBadge();
-// Hamburger nav menu (links live inside; icons stay outside)
-function toggleNavMenu(){ const m=document.getElementById('navMenu'); if(m) m.classList.toggle('open'); const h=document.querySelector('.nav-hamburger'); if(h) h.setAttribute('aria-expanded', m&&m.classList.contains('open')?'true':'false'); }
-function closeNavMenu(){ const m=document.getElementById('navMenu'); if(m) m.classList.remove('open'); }
-window.toggleNavMenu=toggleNavMenu; window.closeNavMenu=closeNavMenu;
-document.addEventListener('click',e=>{ const m=document.getElementById('navMenu'); if(m&&m.classList.contains('open')&&!e.target.closest('#navMenu')&&!e.target.closest('.nav-hamburger')) m.classList.remove('open'); });
+function toggleWish(ev, slug){ ev.stopPropagation(); const i=WISHLIST.indexOf(slug); if(i>=0)WISHLIST.splice(i,1); else WISHLIST.push(slug); localStorage.setItem('lt_wishlist',JSON.stringify(WISHLIST)); applyProductView(); }
 
 async function loadReviews(){
   try{ const res=await fetch(SUPA_URL+'/rest/v1/reviews?select=product_id,customer_name,stars,text&order=created_at.desc',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}});
@@ -1963,44 +1616,6 @@ async function applyCoupon(){
     updateCartUI();
   }catch(e){ msg.style.color='var(--primary2)'; msg.textContent='ตรวจโค้ดไม่ได้ค่ะ'; }
 }
-
-/* ── Referral code (new-customer promo) ──
-   Conditions live in the worker (single-use forever, member-only, min total).
-   Anon can't read the referrals table (RLS), so the client only stores the code,
-   shows the conditions, and reminds non-members to sign in. The worker validates. */
-function refConditionText(){
-  const cfg=window.SHOP_CFG||{}; const en=localStorage.getItem('lt_lang')==='en';
-  const m=Number(cfg.referral_min)||200, d=Number(cfg.referral_discount)||10;
-  return en
-    ? `🎁 New-customer code · ฿${d} off when total reaches ฿${m} · must be signed in first.`
-    : `🎁 โค้ดสำหรับลูกค้าใหม่ · ลด ฿${d} เมื่อยอดถึง ฿${m} · ต้องเข้าสู่ระบบก่อน`;
-}
-function applyRefCode(){
-  const inp=document.getElementById('ref-code'), msg=document.getElementById('ref-msg'); if(!inp||!msg) return;
-  const en=localStorage.getItem('lt_lang')==='en';
-  const code=(inp.value||'').trim().toUpperCase().slice(0,40);
-  msg.style.display='block';
-  if(!code){ localStorage.removeItem('lt_ref_from'); msg.style.display='none'; return; }
-  localStorage.setItem('lt_ref_from', code);
-  if(!window.MEMBER){
-    msg.style.color='#b8860b';
-    msg.innerHTML=(en?'⚠️ Code saved — please sign in before ordering to receive the discount. ':'⚠️ บันทึกโค้ดแล้ว · กรุณาเข้าสู่ระบบก่อนสั่งซื้อเพื่อรับส่วนลด ')
-      +`<a onclick="document.getElementById('cart-sidebar').classList.remove('open');document.getElementById('cart-overlay').classList.remove('show');openLogin()" style="color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline">${en?'Sign in':'เข้าสู่ระบบ'}</a>`;
-  } else {
-    msg.style.color='#1e8a4f';
-    msg.textContent=en?`✓ Code ${code} saved — applied at checkout if eligible.`:`✓ บันทึกโค้ด ${code} แล้ว · ระบบจะใส่ส่วนลดให้ตอนสั่งซื้อหากเข้าเงื่อนไข`;
-  }
-}
-window.applyRefCode=applyRefCode;
-// refresh referral UI (prefill stored code + show conditions + status) — call when the cart opens
-function initRefUI(){
-  const inp=document.getElementById('ref-code'); const hint=document.getElementById('ref-hint');
-  if(hint) hint.textContent=refConditionText();
-  if(inp){ const saved=localStorage.getItem('lt_ref_from'); if(saved && !inp.value){ inp.value=saved; applyRefCode(); } }
-}
-window.initRefUI=initRefUI;
-const _openCartRef=window.openCart;
-window.openCart=function(){ if(_openCartRef)_openCartRef(); setTimeout(initRefUI,0); };
 </script>
 
 <script>
@@ -2036,42 +1651,12 @@ const I18N={ en:{
   story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
   story2t:'Original recipes',story2p:'We keep traditional Thai recipes, freshly made, no synthetic colors or preservatives.',
   story3t:'Delivered with care',story3p:'Sturdy packaging keeps the crunch, shipped nationwide with Pailin AI helping every step.',
-  promoFlash:"ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',bnAbout:'About',
+  promoFlash:"Today's deal ends in", bnHome:'Home',bnShop:'Shop',bnChat:'Pailin',bnCart:'Cart',bnMe:'Me',
   cookieMsg:'🍪 We use cookies to improve your experience and analytics, per our',
   cookieLink:'Privacy Policy',cookieAccept:'Accept',cookieDeny:'Decline',
-  fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you', foryouLabel:'✦ Pailin picks for you', storyLabel:'✦ Our story',
-  recentLabel:'✦ Recently viewed', recentTitle:'Things you just looked at',
-  /* checkout step 1 */
-  coStep1a:'① Details', coStep2a:'→ ② Payment', coStep3a:'→ ③ Done',
-  coTitle1:'Step 1 · Recipient details', coSub1:'Fill in the details below, then tap "Go to payment" to get the QR and upload your slip.',
-  coName:'Full name', coNamePh:'e.g. Somchai Jaidee', coPhone:'Phone number',
-  coAddr:'Delivery address', coAddrPh:'House no., road, sub-district, district, province, postcode',
-  piTitle:'💳 Payment details', piAccount:'Account name',
-  piSecure:'🔒 <b>For your safety:</b> transfer only to the <b>Lanthong</b> account / PromptPay above · we verify your slip before shipping · you get your order number right after transferring',
-  coGoPay:'Go to payment →',
-  /* confirm / payment */
-  ccStep1:'✓ Details', ccStep2:'→ ② Payment', ccStep3:'→ ③ Done', ccTitle:'Order saved!',
-  ccSub:'Thank you for ordering with Lanthong.<br>Please transfer and send your slip to Pailin.',
-  ccCod:'🚚 This order is <b>Cash on Delivery (COD)</b><br>Pay the courier when your parcel arrives · Pailin will confirm and ship it right away',
-  ccScanTitle:'📲 Scan to pay with PromptPay', ccSlipTitle:'📤 Notify payment — upload your slip',
-  ccSlipBtn:'Choose slip image — auto-verify', ccDone:'OK, thank you',
-  /* login */
-  loginGoogle:'Sign in with Google', loginOr:'or', loginEmail:'Email', loginPassword:'Password',
-  loginUsername:'Display name <span style="color:var(--muted);font-weight:400">(optional)</span>',
-  loginUsernamePh:'e.g. Nutt · used to identify you with the shop',
-  /* product modal + cart */
-  qtyLabel:'Quantity', couponPh:'Discount code (e.g. LANTONG10)', applyBtn:'Apply', refPh:'Friend code (new customers)',
-  discountLabel:'Discount', totalLabel:'Total',
-  /* about panel */
-  aboutCareH:'🧺 How we care', aboutTrustH:'✅ Why customers trust us', aboutContactH:'📞 Contact & payment',
-  aboutCare1:'<strong>Hand-picked ingredients</strong><span>Peanuts, sesame, banana and fruit from trusted sources, selected batch by batch for consistent taste</span>',
-  aboutCare2:'<strong>Original recipes</strong><span>Traditional Thai recipes, freshly made, no synthetic colours, no preservatives</span>',
-  aboutCare3:'<strong>Delivered with care</strong><span>Well-packed to keep the crunch, shipped nationwide with a tracking number on every order</span>',
-  aboutTrust1:'🔒 Secure auto slip verification', aboutTrust2:'🚚 Tracking number on every order', aboutTrust3:'⭐ Reviews from real customers',
-  aboutTrust4:'🧾 Clear ingredients / allergens', aboutTrust5:'💬 Pailin AI · 24 hrs', aboutTrust6:'🪪 We protect your data (PDPA)',
-  aboutQuote:'"Authentic taste that delivers happiness to you" 🍯', aboutCta:'🛍️ Shop sweets',
+  fPrivacy:'Privacy Policy',fReturn:'Returns',fShip:'Shipping', foryouTitle:'Picked for you',
   payMethod:'Payment method', payTransfer:'📲 Transfer/PromptPay', payCod:'🚚 Cash on delivery',
-  /* nav */ navHome:'Home', navProducts:'Products', navAbout:'About us', navMyOrders:'📦 My orders', navLogin:'Sign in',
+  /* nav */ navProducts:'Products', navAbout:'About us', navMyOrders:'📦 My orders', navLogin:'Sign in',
   /* hero */ heroBadge:'✦ Authentic Thai sweets ✦', heroSub:'Khanom Lanthong — original taste, delivered to your door',
   heroSub:'Original taste, delivered to your door', heroShop:'Shop all sweets', heroChat:'CHAT with Pailin',
   heroStat1:'Loyal customers', heroStat2:'Satisfaction', heroStat3:'Curated items',
@@ -2079,31 +1664,20 @@ const I18N={ en:{
   fAll:'All', fAncient:'Traditional Thai', fFruit:'Dried fruit', fCookie:'Cookies/Crackers', fNuts:'Roasted nuts', fSteam:'Steamed', fBaked:'Baked', fWish:'❤️ Favourites',
   searchPh:'🔍 Search sweets...', sortDefault:'Recommended', sortPriceAsc:'Price: low→high', sortPriceDesc:'Price: high→low', sortName:'Name A–Z',
   /* testimonials */ tLabel:'✦ Voices from customers', tTitle:'Reviews from real customers',
-  /* footer */ fTagline:'Curated Thai sweet shop · powered by 5 AI Agents',
+  /* footer */ fTagline:'Curated Thai sweet shop · powered by 5 AI Agents', fCredit:'Developed by neos-css.com · Comtech Solution System Co., Ltd.',
   /* about panel */ aboutTagline:'Authentic Thai sweets, delivered to your door',
   aboutText:'Lanthong hand-picks quality products from trusted local makers — real ingredients, no synthetic colours, no preservatives, original recipes — bringing the sweetness of Thailand to your door.',
   aboutF1t:'Real, selected ingredients', aboutF1s:'No synthetic colours, no preservatives',
   aboutF2t:'Smart AI system', aboutF2s:'Pailin cares for customers 24/7',
   aboutF3t:'Fast delivery', aboutF3s:'Sturdy packaging, fresh on arrival',
   aboutStat1:'Customers', aboutStat2:'Products', aboutStat3:'Satisfied',
-  noProducts:'😔 No products found', emptyCart:'Your cart is empty', cartTitle:'🛒 Cart', cartTotal:'Total', checkout:'Checkout →',
-  subscribeBtn:'🔁 Subscribe monthly', shippingLabel:'Shipping'
+  noProducts:'😔 No products found', emptyCart:'Your cart is empty', cartTitle:'🛒 Cart', cartTotal:'Total', checkout:'Checkout →'
 }};
-window.LT_EN = (localStorage.getItem('lt_lang')==='en');
-// tiny runtime translator for dynamic strings (toasts etc.): TT(thai, english)
-window.TT = function(th,en){ return localStorage.getItem('lt_lang')==='en' ? en : th; };
 function applyLang(lang){
-  window.LT_EN = (lang==='en');
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k=el.getAttribute('data-i18n');
     if(lang==='en'&&I18N.en[k]){ if(el.dataset.th==null)el.dataset.th=el.textContent; el.textContent=I18N.en[k]; }
     else if(el.dataset.th!=null){ el.textContent=el.dataset.th; }
-  });
-  // data-i18n-html → translate elements that contain inline markup (<b>, <br>) via innerHTML
-  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
-    const k=el.getAttribute('data-i18n-html');
-    if(lang==='en'&&I18N.en[k]){ if(el.dataset.thHtml==null)el.dataset.thHtml=el.innerHTML; el.innerHTML=I18N.en[k]; }
-    else if(el.dataset.thHtml!=null){ el.innerHTML=el.dataset.thHtml; }
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
     const k=el.getAttribute('data-i18n-ph');
@@ -2111,16 +1685,8 @@ function applyLang(lang){
     else if(el.dataset.thPh!=null){ el.placeholder=el.dataset.thPh; }
   });
   document.documentElement.lang=lang;
-  // TH → inline Thai-flag SVG (Windows desktop can't render the 🇹🇭 emoji), EN → globe 🌐
-  const FLAG_TH_SVG='<svg viewBox="0 0 9 6" width="22" height="15" style="border-radius:2px;display:block" aria-hidden="true"><rect width="9" height="6" fill="#A51931"/><rect y="1" width="9" height="4" fill="#fff"/><rect y="2" width="9" height="2" fill="#2D2A4A"/></svg>';
-  const lt=$('lang-toggle'); if(lt)lt.innerHTML=lang==='en'?'🌐':FLAG_TH_SVG;   // show current language
+  const lt=$('lang-toggle'); if(lt)lt.textContent=lang==='en'?'🇹🇭':'🌐';
   localStorage.setItem('lt_lang',lang);
-  if(window.renderCategoryChips) window.renderCategoryChips();   // re-translate All/Favourites on dynamic chips
-  // re-render dynamic views so JS-built content (cards, categories, cart, for-you) follows the language
-  try{ if(window.applyProductView) applyProductView(); }catch(e){}
-  try{ if(window.renderForYou) renderForYou(); }catch(e){}
-  try{ if(window.updateCartUI) updateCartUI(); }catch(e){}
-  try{ if(window.initRefUI) initRefUI(); }catch(e){}
 }
 function toggleLang(){ applyLang((localStorage.getItem('lt_lang')==='en')?'th':'en'); track('toggle_lang'); }
 window.toggleLang=toggleLang;
@@ -2205,7 +1771,7 @@ function quickAdd(slug,ev){
   updateCartUI();
   const img=ev&&ev.target.closest('.product-card')&&ev.target.closest('.product-card').querySelector('img');
   flyToCart(`รูปสินค้า_web/${slug}.jpg`, img);
-  showToast(TT(`เพิ่ม "${p.name_th}" แล้วค่ะ 🛒`,`Added "${p.name_th}" 🛒`));
+  showToast(`เพิ่ม "${p.name_th}" แล้วค่ะ 🛒`);
   pushRecent(slug); track('add_to_cart',{item_id:p.id,value:p.price});
 }
 window.quickAdd=quickAdd;
@@ -2213,10 +1779,15 @@ window.quickAdd=quickAdd;
 /* ════════ RECENTLY VIEWED — Phase 1 ════════ */
 let RECENT=JSON.parse(localStorage.getItem('lt_recent')||'[]');
 function pushRecent(slug){ RECENT=[slug,...RECENT.filter(s=>s!==slug)].slice(0,10); localStorage.setItem('lt_recent',JSON.stringify(RECENT)); renderRecent(); renderForYou(); }
-// "ดูสินค้าล่าสุด" ถูกนำออกจากหน้าเว็บ (ลดความรก) — ยังเก็บ RECENT ไว้ใช้คำนวณ "แนะนำสำหรับคุณ"
-function renderRecent(){ const sec=$('recently'); if(sec) sec.style.display='none'; }
-/* Phase 2 reorder: ย้าย "แนะนำสำหรับคุณ" ขึ้นเหนือแคตตาล็อกสินค้า */
-(function(){ const fy=$('foryou'), pr=$('products'); if(fy&&pr&&pr.parentNode) pr.parentNode.insertBefore(fy,pr); })();
+function renderRecent(){
+  const sec=$('recently'), row=$('recentRow'); if(!sec) return;
+  const items=RECENT.map(s=>PRODUCTS.find(p=>p.slug===s)).filter(Boolean).slice(0,8);
+  if(items.length<2){ sec.style.display='none'; return; }
+  sec.style.display='block';
+  row.innerHTML=items.map(p=>`<div class="recent-card" onclick="openProductModal('${p.slug}')">
+    <img src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+    <div class="rc-b"><div class="rc-n">${p.name_th}</div><div class="rc-p">฿${p.price}</div></div></div>`).join('');
+}
 
 /* ════════ CROSS-SELL (buy together) — Phase 1 ════════ */
 function crossSellFor(p){
@@ -2286,7 +1857,7 @@ function showStickyBuy(p){ STICKY_P=p; const en=localStorage.getItem('lt_lang')=
   $('sb-name').textContent=p.name_th; $('sb-price').textContent='฿'+p.price;
   if(window.innerWidth<=600) $('sticky-buy').classList.add('show'); }
 function stickyAdd(){ if(!STICKY_P)return; const ex=cart.find(i=>i.slug===STICKY_P.slug); if(ex)ex.qty++; else cart.push({...STICKY_P,qty:1});
-  updateCartUI(); flyToCart(`รูปสินค้า_web/${STICKY_P.slug}.jpg`,$('pm-img')); showToast(TT(`เพิ่ม "${STICKY_P.name_th}" แล้วค่ะ 🛒`,`Added "${STICKY_P.name_th}" 🛒`)); track('add_to_cart',{item_id:STICKY_P.id}); }
+  updateCartUI(); flyToCart(`รูปสินค้า_web/${STICKY_P.slug}.jpg`,$('pm-img')); showToast(`เพิ่ม "${STICKY_P.name_th}" แล้วค่ะ 🛒`); track('add_to_cart',{item_id:STICKY_P.id}); }
 window.stickyAdd=stickyAdd;
 /* hide sticky when product modal closes */
 (function(){ const m=$('product-modal'); if(m){ new MutationObserver(()=>{ if(!m.classList.contains('show')) $('sticky-buy').classList.remove('show'); }).observe(m,{attributes:true,attributeFilter:['class']}); } })();
@@ -2306,19 +1877,8 @@ window.stickyAdd=stickyAdd;
 /* ════════ PROMO COUNTDOWN (folded into the announce bar) — Phase 1 ════════ */
 (function(){
   const el=$('cd-time'); if(!el) return;
-  const wrap=$('cd-wrap');
-  // countdown shows ONLY when there's an actual promo (promo_banner) AND an end time set.
-  // No promo / no end / expired → hidden (no "โปรวันนี้" filler).
-  function tick(){
-    const cfg=window.SHOP_CFG||{};
-    const hasPromo = cfg.promo_banner && String(cfg.promo_banner).trim();
-    const cfgEnd = cfg.promo_countdown_end;
-    if(!hasPromo || !cfgEnd){ if(wrap) wrap.style.display='none'; return; }
-    const d=new Date(cfgEnd);
-    if(isNaN(d.getTime())){ if(wrap) wrap.style.display='none'; return; }
-    let s=Math.floor((d-new Date())/1000);
-    if(s<=0){ if(wrap) wrap.style.display='none'; return; }   // promo ended → hide
-    if(wrap) wrap.style.display='';
+  function tick(){ const now=new Date(); const end=new Date(now); end.setHours(23,59,59,999);
+    let s=Math.floor((end-now)/1000); if(s<0)s=0;
     const h=String(Math.floor(s/3600)).padStart(2,'0'), m=String(Math.floor(s%3600/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
     el.textContent=`${h}:${m}:${ss}`; }
   tick(); setInterval(tick,1000);
@@ -2341,7 +1901,7 @@ window.onPayMethodChange=onPayMethodChange;
 /* ════════ POLICY MODAL (PDPA/return/shipping) — Phase 7 ════════ */
 const POLICIES={
   privacy:{th:`<h2>นโยบายความเป็นส่วนตัว</h2>
-    <p>ร้านลานทอง เก็บข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร ที่อยู่ อีเมล) เพื่อจัดส่งสินค้าและให้บริการเท่านั้น ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
+    <p>ร้าน@ลานทอง เก็บข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร ที่อยู่ อีเมล) เพื่อจัดส่งสินค้าและให้บริการเท่านั้น ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
     <h3>ข้อมูลที่เก็บ</h3><ul><li>ข้อมูลคำสั่งซื้อและการจัดส่ง</li><li>ประวัติการแชตกับไพลิน AI เพื่อปรับปรุงบริการ</li><li>คุกกี้/สถิติการใช้งานเว็บ (เมื่อคุณยอมรับ)</li></ul>
     <h3>สิทธิของคุณ</h3><p>คุณขอดู แก้ไข หรือลบข้อมูลได้ทุกเมื่อ ผ่านแชตไพลินหรือ LINE OA ของร้าน เราไม่ขายข้อมูลให้บุคคลที่สาม</p>`,
     en:`<h2>Privacy Policy</h2><p>Lanthong collects personal data (name, phone, address, email) only to fulfill orders and provide service, in line with Thailand's PDPA.</p>
@@ -2371,10 +1931,10 @@ const POLICIES={
     <h3>💳 How to pay?</h3><p>Bank transfer / PromptPay (details on checkout) then upload the slip for auto-verification, or Cash on Delivery (COD).</p>
     <h3>📦 Damaged / wrong item?</h3><p>Photograph the item and parcel, tell Pailin within 3 days — we reship or fully refund.</p>
     <h3>🥜 Allergen info?</h3><p>Shown on each product page (ingredients/allergens). If you have allergies, ask Pailin before ordering.</p>`},
-  contact:{th:`<h2>ติดต่อร้านลานทอง</h2>
+  contact:{th:`<h2>ติดต่อร้าน@ลานทอง</h2>
     <p>เรายินดีตอบทุกคำถามค่ะ 💛</p>
     <ul><li>💬 <b>แชตไพลิน AI</b> บนเว็บนี้ — ตอบอัตโนมัติ 24 ชม. (ปุ่มแชตมุมขวาล่าง)</li>
-    <li>📱 <b>LINE OA:</b> ลานทอง (แอดมินตอบกลับในเวลาทำการ)</li>
+    <li>📱 <b>LINE OA:</b> @ลานทอง (แอดมินตอบกลับในเวลาทำการ)</li>
     <li>🏪 <b>ร้านลานทอง</b> — ขนมไทยคัดสรร ส่งตรงถึงบ้าน</li></ul>
     <p style="margin-top:10px">ชำระเงิน: PromptPay 0982695608 / กสิกรไทย 1443385696 (ชื่อบัญชี ร้านลานทอง) — โปรดโอนเข้าบัญชีนี้เท่านั้น</p>`,
     en:`<h2>Contact Lanthong</h2>
@@ -2452,8 +2012,8 @@ function reorder(items){
   let added=0;
   (items||[]).forEach(it=>{ const p=PRODUCTS.find(x=>x.id===it.product_id||x.name_th===it.name); if(p){ const ex=cart.find(i=>i.slug===p.slug); if(ex)ex.qty+=(it.qty||1); else cart.push({...p,qty:it.qty||1}); added++; } });
   updateCartUI();
-  if(added){ document.getElementById('myorders-modal')&&document.getElementById('myorders-modal').classList.remove('show'); openCart(); showToast(TT('เพิ่มรายการเดิมลงตะกร้าแล้วค่ะ 🛒','Re-added those items to your cart 🛒')); track('reorder',{items:added}); }
-  else showToast(TT('ไม่พบสินค้าเดิมในแคตตาล็อกค่ะ','Those items are no longer in the catalog'));
+  if(added){ document.getElementById('myorders-modal')&&document.getElementById('myorders-modal').classList.remove('show'); openCart(); showToast('เพิ่มรายการเดิมลงตะกร้าแล้วค่ะ 🛒'); track('reorder',{items:added}); }
+  else showToast('ไม่พบสินค้าเดิมในแคตตาล็อกค่ะ');
 }
 window.reorder=reorder;
 function myReferralCode(){
@@ -2462,18 +2022,11 @@ function myReferralCode(){
   c=(base.slice(0,4).toUpperCase().replace(/[^A-Z0-9]/g,'')||'LT')+String(Math.floor(1000+Math.random()*9000));
   localStorage.setItem('lt_ref',c); return c;
 }
-function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ร้านลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
+function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ร้าน@ลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
   window.open('https://line.me/R/msg/text/?'+t,'_blank'); track('share',{method:'line'}); }
 window.shareLine=shareLine; window.myReferralCode=myReferralCode;
-/* capture inbound ?ref= — store the friend's code and nudge guests to sign in (discount is member-only) */
-(function(){ const ref=new URLSearchParams(location.search).get('ref'); if(!ref) return;
-  localStorage.setItem('lt_ref_from',ref.slice(0,20));
-  setTimeout(()=>{ try{
-    const en=localStorage.getItem('lt_lang')==='en';
-    if(window.MEMBER){ showToast(en?`🎁 New-customer code ${ref} ready — applied at checkout if eligible`:`🎁 รับโค้ดลูกค้าใหม่ ${ref} แล้ว · ใส่ส่วนลดให้ตอนสั่งซื้อหากเข้าเงื่อนไข`); }
-    else{ showToast(en?`🎁 You have a new-customer code — sign in before ordering to use it`:`🎁 คุณได้รับโค้ดลูกค้าใหม่ · เข้าสู่ระบบก่อนสั่งซื้อเพื่อรับส่วนลดนะคะ`); }
-  }catch(e){} }, 1400);
-})();
+/* capture inbound ?ref= */
+(function(){ const ref=new URLSearchParams(location.search).get('ref'); if(ref){ localStorage.setItem('lt_ref_from',ref.slice(0,20)); } })();
 
 /* enrich My Orders modal with re-order + referral + share (hook openMyOrders) */
 const _openMyOrders=typeof openMyOrders==='function'?openMyOrders:null;
@@ -2491,47 +2044,31 @@ if(_openMyOrders){
         b.textContent=en?'🔁 Order again':'🔁 สั่งซ้ำ'; b.setAttribute('onclick',`reorder(${"'"}${encodeURIComponent(JSON.stringify(o.items))}${"'"})`);
         card.appendChild(b);
       });
-      // Loyalty + referral (Phase 1). Members only — rates/tiers come from admin config (/web-orders).
-      const lo = window._loyalty || {};
-      const earnBaht=Number(lo.earnBaht)||100, redeemValue=Number(lo.redeemValue)||1, tg=Number(lo.tierGold)||20, tp=Number(lo.tierPlat)||50;
-      const tierMap={ platinum:{n:en?'Platinum':'แพลทินัม',ic:'💎'}, gold:{n:en?'Gold':'ทอง',ic:'🥇'}, silver:{n:en?'Silver':'เงิน',ic:'🥈'} };
+      const ref=myReferralCode();
+      // register this member's code as an owner row (best-effort; code is unique so dupes 409 harmlessly)
+      if(window.MEMBER && typeof sbInsertAnon==='function') sbInsertAnon('referrals',{ code:ref, owner_id:'USER-'+window.MEMBER.id });
+      // Phase 4 — loyalty points + tier (1 point / ฿100 spent)
+      // sum the totals actually shown (live /web-orders for members, localStorage for guests)
+      let spent=0; cards.forEach(c=>{ const mm=c.textContent.match(/฿([\d,]+)/); if(mm) spent+=parseInt(mm[1].replace(/,/g,'')); });
+      if(!spent) spent=mine.reduce((s,o)=>s+(Number(o.total)||0),0);
+      const pts=Math.floor(spent/100);
+      const tier = spent>=5000?{n:en?'Platinum':'แพลทินัม',ic:'💎'}:spent>=2000?{n:en?'Gold':'ทอง',ic:'🥇'}:{n:en?'Silver':'เงิน',ic:'🥈'};
       const extra=document.createElement('div'); extra.className='lt-extra';
       extra.style.cssText='margin-top:16px;border-top:1px solid var(--border);padding-top:14px';
-      const isMem = window.MEMBER && window._loyalty && typeof window._loyalty.balance==='number';
-      if(!isMem){
-        // points are member-only → encourage sign-in instead of showing fake points
-        extra.innerHTML=`<div style="background:#f9f0e8;border-radius:14px;padding:16px;text-align:center;color:#3a2a1a">
-          <div style="font-size:1.4rem">🔒⭐</div>
-          <div style="font-weight:700;margin:6px 0">${en?'Sign in to collect & use points':'เข้าสู่ระบบเพื่อสะสม & ใช้แต้ม'}</div>
-          <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px">${en?`Earn 1 point per ฿${earnBaht} · 1 point = ฿${redeemValue} off · invite friends for discounts`:`ทุก ฿${earnBaht} = 1 แต้ม · 1 แต้ม = ส่วนลด ฿${redeemValue} · ชวนเพื่อนรับส่วนลด`}</div>
-          <button onclick="document.getElementById('myorders-modal').classList.remove('show');openLogin()" style="padding:9px 22px;border-radius:10px;background:var(--primary);color:#fff;font-weight:700;border:none;cursor:pointer">${en?'Sign in':'เข้าสู่ระบบ'}</button>
-        </div>`;
-        box.appendChild(extra);
-      } else {
-        const pts=window._loyalty.balance;
-        const tier=tierMap[window._loyalty.tier]||tierMap.silver;
-        const ref=myReferralCode();
-        if(typeof sbInsertAnon==='function') sbInsertAnon('referrals',{ code:ref, owner_id:'USER-'+window.MEMBER.id });
-        const rf=window._referral||{invited:0,earned:0};
-        const _rcfg=window.SHOP_CFG||{};
-        const refMin=Number(_rcfg.referral_min)||200, refDisc=Number(_rcfg.referral_discount)||10, refOwnerPts=Number(_rcfg.referral_owner_points)||5;
-        const nextTier = pts<tg ? (en?`${tg-pts} pts to Gold 🥇`:`อีก ${tg-pts} แต้มเป็นทอง 🥇`) : pts<tp ? (en?`${tp-pts} pts to Platinum 💎`:`อีก ${tp-pts} แต้มเป็นแพลทินัม 💎`) : (en?'Top tier 💎':'ระดับสูงสุดแล้ว 💎');
-        extra.innerHTML=`<div style="background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div><div style="font-size:.74rem;opacity:.85">${en?'My points':'แต้มสะสม'}</div><div style="font-family:'Charm','Sarabun',cursive;font-size:1.8rem;font-weight:700">${pts} <span style="font-size:.9rem">${en?'pts':'แต้ม'}</span></div></div>
-              <div style="text-align:right"><div style="font-size:.74rem;opacity:.85">${en?'Tier':'ระดับ'}</div><div style="font-size:1.05rem;font-weight:700">${tier.ic} ${tier.n}</div></div>
-            </div>
-            <div style="font-size:.72rem;opacity:.85;margin-top:6px">${en?`฿${earnBaht} = 1 pt · 1 pt = ฿${redeemValue} off · ${nextTier}`:`ทุก ฿${earnBaht} = 1 แต้ม · 1 แต้ม = ฿${redeemValue} · ${nextTier}`}</div>
+      extra.innerHTML=`<div style="background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:.74rem;opacity:.85">${en?'My points':'แต้มสะสม'}</div><div style="font-family:'Charm','Sarabun',cursive;font-size:1.8rem;font-weight:700">${pts} <span style="font-size:.9rem">${en?'pts':'แต้ม'}</span></div></div>
+            <div style="text-align:right"><div style="font-size:.74rem;opacity:.85">${en?'Tier':'ระดับ'}</div><div style="font-size:1.05rem;font-weight:700">${tier.ic} ${tier.n}</div></div>
           </div>
-          <div style="font-size:.84rem;font-weight:700;margin-bottom:4px">🎁 ${en?'Invite a friend (new-customer code)':'ชวนเพื่อน รับส่วนลด (โค้ดลูกค้าใหม่)'}</div>
-          <div style="font-size:.76rem;color:var(--muted);margin-bottom:6px">${en?`Share your link — your friend gets a discount on their order, you get points when they pay. <b>Invited ${rf.invited} · earned ${rf.earned} pts</b>`:`แชร์ลิงก์ของคุณ · เพื่อนได้ส่วนลด คุณได้แต้มเมื่อเพื่อนจ่ายเงินจริง · <b>ชวนแล้ว ${rf.invited} คน · ได้ ${rf.earned} แต้ม</b>`}</div>
-          <div style="font-size:.7rem;color:var(--muted);background:#f9f0e8;border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.55">${en?`<b>Conditions:</b> friend must sign in · min total ฿${refMin} · ฿${refDisc} off · you get ${refOwnerPts} pts when they pay`:`<b>เงื่อนไข:</b> เพื่อนต้องเข้าสู่ระบบ · ยอดขั้นต่ำ ฿${refMin} · ลด ฿${refDisc} · คุณได้ ${refOwnerPts} แต้มเมื่อเพื่อนจ่ายเงิน`}</div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
-            <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้านลานทอง — โค้ดลูกค้าใหม่ (เข้าสู่ระบบก่อนสั่งซื้อเพื่อรับส่วนลด) ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">${en?'Share':'แชร์'} LINE</button>
-          </div>`;
-        box.appendChild(extra);
-      }
+          <div style="font-size:.72rem;opacity:.8;margin-top:6px">${en?'Earn 1 point per ฿100 spent':'ทุกการใช้จ่าย ฿100 = 1 แต้ม'}</div>
+        </div>
+        <div style="font-size:.84rem;font-weight:700;margin-bottom:6px">🎁 ${en?'Invite friends':'ชวนเพื่อน รับส่วนลด'}</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${en?'Share your code — you both get a discount.':'แชร์โค้ดของคุณ ทั้งคุณและเพื่อนรับส่วนลด'}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
+          <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้าน@ลานทอง ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">LINE</button>
+        </div>`;
+      box.appendChild(extra);
     },120);
   };
   window.openMyOrders=openMyOrders;
@@ -2545,7 +2082,7 @@ function injectSchema(){
       image:`https://neos-css.github.io/lantong/รูปสินค้า_web/${p.slug}.jpg`,
       offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}
     }));
-    const ld={"@context":"https://schema.org","@type":"Store",name:"ร้านลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
+    const ld={"@context":"https://schema.org","@type":"Store",name:"ร้าน@ลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
       url:"https://neos-css.github.io/lantong/",image:"https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg",
       aggregateRating:{"@type":"AggregateRating",ratingValue:"4.9",reviewCount:"1200"},
       hasOfferCatalog:{"@type":"OfferCatalog",name:"ขนมไทย",itemListElement:items}};
