@@ -45,6 +45,8 @@ body { font-family:'Segoe UI',Tahoma,sans-serif; background:var(--bg); color:var
 .logo-flash::after{ content:""; position:absolute; top:0; left:-60%; width:45%; height:100%; pointer-events:none;
   background:linear-gradient(100deg,transparent,rgba(255,255,255,.72),transparent); transform:skewX(-18deg); animation:logoFlash 3.2s ease-in-out infinite; }
 @keyframes logoFlash{ 0%{left:-60%} 55%,100%{left:135%} }
+.login-logo-plaque{ display:inline-flex; background:linear-gradient(135deg,#7a1a12,#4a0f08); border-radius:14px; padding:12px 20px; box-shadow:0 4px 14px rgba(0,0,0,.3); margin-bottom:8px; }
+.login-logo-img{ width:200px; max-width:74vw; height:auto; display:block; }
 .login-btn { width:100%; padding:12px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:.2s; }
 .login-btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
 .login-google { width:100%; padding:11px; border:1px solid #ece2d2; border-radius:11px; background:#fff; color:var(--text); font-size:.88rem; font-weight:600; cursor:pointer; margin-top:10px; font-family:inherit; }
@@ -281,8 +283,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 <!-- ═══ LOGIN ═══ -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="logo">🍮</div>
-    <h2>ขนมลานทอง</h2>
+    <div class="login-logo-plaque"><img src="logo.png" class="login-logo-img" alt="ขนมลานทอง"></div>
     <p class="sub">เข้าสู่ระบบหลังบ้าน</p>
     <div class="login-error" id="login-error"></div>
     <input id="login-email" placeholder="ชื่อผู้ใช้ หรืออีเมล" autocomplete="username" aria-label="ชื่อผู้ใช้ หรืออีเมล">
