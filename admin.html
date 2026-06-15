@@ -548,7 +548,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
           <input id="advisorInput" placeholder="เช่น สินค้าไหนขายดี / ควรเติมสต็อกอะไร / ยอดเดือนนี้" style="flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:.88rem;background:var(--card);color:var(--text)" onkeydown="if(event.key==='Enter')askAdvisor()">
           <button class="btn btn-primary btn-sm" onclick="askAdvisor()">ถาม ➤</button>
         </div>
-        <div class="usage-foot" style="text-align:left;margin-top:8px">🧠 วิเคราะห์จากข้อมูลจริงใน Supabase (ไม่มีค่าใช้จ่าย) · อัปเกรดเป็น Claude จริงได้ภายหลังถ้าต้องการ</div>
+        <div class="usage-foot" style="text-align:left;margin-top:8px">🧠 พลอยวิเคราะห์ด้วย <b>Claude (sonnet)</b> จากข้อมูลจริงใน Supabase · มีค่าใช้จ่ายตามการใช้จริง (หักถัง manager ดูได้ที่แท็บ 🔋 พลัง AI)</div>
       </div>
     </div>
 
@@ -1784,8 +1784,8 @@ async function askAdvisor(preset){
   try{
     const r=await workerPost('/admin/ai-advisor',{ question:q, context:advisorContext() });
     typing.remove();
-    if(r.ok && r.answer){ advBubble('bot', esc(r.answer).replace(/\n/g,'<br>')); }
-    else { advBubble('bot', advisorAnswer(q)); }      // ไม่มีคีย์ / AI ล่ม -> ใช้สมองกล heuristic
+    if(r.ok && r.answer){ advBubble('bot', esc(r.answer).replace(/\n/g,'<br>')+`<div style="font-size:.68rem;color:var(--muted);margin-top:6px;border-top:1px dashed var(--border);padding-top:4px">🤖 Claude (พลอย·sonnet)${r.cost?` · ~฿${Number(r.cost).toFixed(4)}`:''}</div>`); }
+    else { advBubble('bot', advisorAnswer(q)+`<div style="font-size:.68rem;color:var(--muted);margin-top:6px;border-top:1px dashed var(--border);padding-top:4px">📝 ตอบจากสมองกล (ยังไม่ได้ต่อ Claude / AI ไม่ว่าง)</div>`); }      // ไม่มีคีย์ / AI ล่ม -> ใช้สมองกล heuristic
   }catch(e){ typing.remove(); advBubble('bot', advisorAnswer(q)); }
   chat.scrollTop=chat.scrollHeight;
 }
