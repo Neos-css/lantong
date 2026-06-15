@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ร้าน@ลานทอง — ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</title>
-<meta name="description" content="ร้าน@ลานทอง ขนมไทยแท้คัดสรร 15 รายการ ถั่วตัด ขนมเปี๊ยะ กล้วยตาก สั่งง่ายผ่านเว็บ/LINE ส่งฟรีเมื่อครบ ฿600 มี AI ไพลินดูแล 24 ชม.">
+<title>ขนมลานทอง — ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</title>
+<meta name="description" content="ขนมลานทอง ขนมไทยแท้คัดสรร 15 รายการ ถั่วตัด ขนมเปี๊ยะ กล้วยตาก สั่งง่ายผ่านเว็บ/LINE ส่งฟรีเมื่อครบ ฿600 มี AI ไพลินดูแล 24 ชม.">
 <meta name="theme-color" content="#8B0000">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍯%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="ร้าน@ลานทอง — ขนมไทยแท้คัดสรร">
+<meta property="og:title" content="ขนมลานทอง — ขนมไทยแท้คัดสรร">
 <meta property="og:description" content="ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน · ส่งฟรีเมื่อครบ ฿600 · AI ไพลินดูแล 24 ชม.">
 <meta property="og:image" content="https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg">
 <meta property="og:url" content="https://neos-css.github.io/lantong/">
@@ -225,6 +225,11 @@ input,textarea{font-family:inherit}
 /* LOGIN */
 #login-modal .modal-box{max-width:420px}
 .login-modal-body{padding:32px 28px 36px}
+.login-logo{text-align:center;margin-bottom:14px;font-size:2.3rem}
+.logo-flash{position:relative;display:inline-block;overflow:hidden;padding:4px 12px;border-radius:12px}
+.logo-flash::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.78),transparent);transform:skewX(-18deg);animation:logoFlash 3.2s ease-in-out infinite}
+@keyframes logoFlash{0%{left:-60%}55%,100%{left:135%}}
 .login-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--primary);margin-bottom:4px}
 .login-sub{font-size:.85rem;color:var(--muted);margin-bottom:22px}
 .login-google-btn{width:100%;padding:11px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s;cursor:pointer}
@@ -487,7 +492,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
-  <span id="announce-text">🍯 ยินดีต้อนรับสู่ร้าน@ลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
+  <span id="announce-text">🍯 ยินดีต้อนรับสู่ขนมลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
   <span id="cd-wrap">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
@@ -641,7 +646,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
     <p class="about-tagline" data-i18n="aboutTagline" style="margin-top:14px">ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</p>
   </div>
   <div class="about-body">
-    <p class="about-text" data-i18n="aboutText">ร้าน@ลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
+    <p class="about-text" data-i18n="aboutText">ขนมลานทอง คัดสรรสินค้าคุณภาพจากผู้ผลิตท้องถิ่น ใช้วัตถุดิบแท้ ไม่ใส่สีและสารกันบูด รักษาสูตรต้นตำรับ ส่งมอบรสชาติความหวานของไทยถึงมือคุณ</p>
     <div class="about-features">
       <div class="about-feature">
         <div class="about-feature-icon">🍯</div>
@@ -783,7 +788,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       </div>
       <div class="confirm-icon">✓</div>
       <div class="confirm-title">บันทึกออเดอร์แล้ว!</div>
-      <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับร้าน@ลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ไพลินค่ะ</div>
+      <div class="confirm-sub">ขอบคุณที่สั่งซื้อกับขนมลานทองค่ะ<br>กรุณาโอนเงินแล้วแจ้งสลิปให้ไพลินค่ะ</div>
       <div class="confirm-order-num" id="confirm-order-num"></div>
       <div class="confirm-items" id="confirm-items-list"></div>
 
@@ -818,6 +823,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="modal-box" style="max-width:420px">
     <button class="modal-close-btn" onclick="document.getElementById('login-modal').classList.remove('show')">✕</button>
     <div class="login-modal-body">
+      <div class="login-logo"><span class="logo-flash"><span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span></span></div>
       <div class="login-title" id="login-title">เข้าสู่ระบบ</div>
       <div class="login-sub" id="login-sub">เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก</div>
       <div id="login-error" style="display:none;color:var(--primary2);font-size:.82rem;margin-bottom:10px"></div>
@@ -1295,7 +1301,7 @@ function showToast(msg) {
 }
 
 const LISA = {
-  'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ร้าน@ลานทอง ดิฉันไพลินค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
+  'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ขนมลานทอง ดิฉันไพลินค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
   'ว่าไง':'สวัสดีค่ะ ยินดีต้อนรับ มีอะไรให้ช่วยบอกได้เลยนะคะ',
   'ราคา':'ราคาสินค้าเริ่มต้น ฿45 ถึง ฿99 ค่ะ กด VIEW DETAILS ที่การ์ดสินค้าเพื่อดูราคาได้เลยค่ะ 🏷️',
   'เท่าไร':'ราคาเริ่มต้น ฿45 ค่ะ กด VIEW DETAILS ที่สินค้าที่สนใจเพื่อดูราคาและรายละเอียดได้เลยค่ะ',
@@ -1387,7 +1393,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-setTimeout(() => addChatMsg('สวัสดีค่ะ ดิฉันไพลิน AI Sale ของร้าน@ลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?', 'bot'), 300);
+setTimeout(() => addChatMsg('สวัสดีค่ะ ดิฉันไพลิน AI Sale ของขนมลานทองค่ะ 🍯<br>มีอะไรให้ช่วยไหมคะ?', 'bot'), 300);
 </script>
 
 <script>
@@ -1901,7 +1907,7 @@ window.onPayMethodChange=onPayMethodChange;
 /* ════════ POLICY MODAL (PDPA/return/shipping) — Phase 7 ════════ */
 const POLICIES={
   privacy:{th:`<h2>นโยบายความเป็นส่วนตัว</h2>
-    <p>ร้าน@ลานทอง เก็บข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร ที่อยู่ อีเมล) เพื่อจัดส่งสินค้าและให้บริการเท่านั้น ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
+    <p>ขนมลานทอง เก็บข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร ที่อยู่ อีเมล) เพื่อจัดส่งสินค้าและให้บริการเท่านั้น ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
     <h3>ข้อมูลที่เก็บ</h3><ul><li>ข้อมูลคำสั่งซื้อและการจัดส่ง</li><li>ประวัติการแชตกับไพลิน AI เพื่อปรับปรุงบริการ</li><li>คุกกี้/สถิติการใช้งานเว็บ (เมื่อคุณยอมรับ)</li></ul>
     <h3>สิทธิของคุณ</h3><p>คุณขอดู แก้ไข หรือลบข้อมูลได้ทุกเมื่อ ผ่านแชตไพลินหรือ LINE OA ของร้าน เราไม่ขายข้อมูลให้บุคคลที่สาม</p>`,
     en:`<h2>Privacy Policy</h2><p>Lanthong collects personal data (name, phone, address, email) only to fulfill orders and provide service, in line with Thailand's PDPA.</p>
@@ -1931,7 +1937,7 @@ const POLICIES={
     <h3>💳 How to pay?</h3><p>Bank transfer / PromptPay (details on checkout) then upload the slip for auto-verification, or Cash on Delivery (COD).</p>
     <h3>📦 Damaged / wrong item?</h3><p>Photograph the item and parcel, tell Pailin within 3 days — we reship or fully refund.</p>
     <h3>🥜 Allergen info?</h3><p>Shown on each product page (ingredients/allergens). If you have allergies, ask Pailin before ordering.</p>`},
-  contact:{th:`<h2>ติดต่อร้าน@ลานทอง</h2>
+  contact:{th:`<h2>ติดต่อขนมลานทอง</h2>
     <p>เรายินดีตอบทุกคำถามค่ะ 💛</p>
     <ul><li>💬 <b>แชตไพลิน AI</b> บนเว็บนี้ — ตอบอัตโนมัติ 24 ชม. (ปุ่มแชตมุมขวาล่าง)</li>
     <li>📱 <b>LINE OA:</b> @ลานทอง (แอดมินตอบกลับในเวลาทำการ)</li>
@@ -2022,7 +2028,7 @@ function myReferralCode(){
   c=(base.slice(0,4).toUpperCase().replace(/[^A-Z0-9]/g,'')||'LT')+String(Math.floor(1000+Math.random()*9000));
   localStorage.setItem('lt_ref',c); return c;
 }
-function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ร้าน@ลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
+function shareLine(text,url){ const u=url||location.href; const t=encodeURIComponent((text||'ขนมลานทอง ขนมไทยอร่อย แนะนำเลย! ')+u);
   window.open('https://line.me/R/msg/text/?'+t,'_blank'); track('share',{method:'line'}); }
 window.shareLine=shareLine; window.myReferralCode=myReferralCode;
 /* capture inbound ?ref= */
@@ -2066,7 +2072,7 @@ if(_openMyOrders){
         <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${en?'Share your code — you both get a discount.':'แชร์โค้ดของคุณ ทั้งคุณและเพื่อนรับส่วนลด'}</div>
         <div style="display:flex;gap:8px;align-items:center">
           <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
-          <button onclick="shareLine('ใช้โค้ด ${ref} ที่ร้าน@ลานทอง ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">LINE</button>
+          <button onclick="shareLine('ใช้โค้ด ${ref} ที่ขนมลานทอง ',location.origin+location.pathname+'?ref=${ref}')" style="padding:8px 14px;border-radius:8px;background:#06c755;color:#fff;font-weight:700;font-size:.78rem;border:none;cursor:pointer">LINE</button>
         </div>`;
       box.appendChild(extra);
     },120);
@@ -2082,7 +2088,7 @@ function injectSchema(){
       image:`https://neos-css.github.io/lantong/รูปสินค้า_web/${p.slug}.jpg`,
       offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}
     }));
-    const ld={"@context":"https://schema.org","@type":"Store",name:"ร้าน@ลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
+    const ld={"@context":"https://schema.org","@type":"Store",name:"ขนมลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
       url:"https://neos-css.github.io/lantong/",image:"https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg",
       aggregateRating:{"@type":"AggregateRating",ratingValue:"4.9",reviewCount:"1200"},
       hasOfferCatalog:{"@type":"OfferCatalog",name:"ขนมไทย",itemListElement:items}};

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ร้าน@ลานทอง — Admin Dashboard</title>
+<title>ขนมลานทอง — Admin Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -35,6 +35,16 @@ body { font-family:'Segoe UI',Tahoma,sans-serif; background:var(--bg); color:var
 .login-card p.sub { color:#9a8676; font-size:.82rem; margin-bottom:22px; }
 .login-card input { width:100%; padding:12px 14px; border:1px solid #ece2d2; border-radius:11px; font-size:.92rem; font-family:inherit; margin-bottom:12px; }
 .login-card input:focus { outline:none; border-color:var(--red2); box-shadow:0 0 0 3px rgba(192,57,43,.12); }
+/* brand wordmark + flash on login */
+.brand-wm{ font-family:'Charm','Sarabun',cursive; font-weight:700; font-size:2.3rem; letter-spacing:.5px; line-height:1.1; display:inline-block;
+  background:linear-gradient(180deg,#fbe9a4 0%,#e6b22f 55%,#c8901a 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 4px rgba(212,160,23,.4)); }
+.brand-wm .wm-at{ font-family:'Cormorant Garamond',serif; font-size:1.4em; font-weight:600; vertical-align:-.1em; margin:0 -.03em; }
+.brand-wm .wm-en{ display:block; font-family:'Cormorant Garamond',serif; font-size:.26em; letter-spacing:.26em; color:#c8901a; -webkit-text-fill-color:#c8901a; margin-top:.2em; }
+.logo-flash{ position:relative; display:inline-block; overflow:hidden; padding:4px 12px; border-radius:12px; margin-bottom:8px; }
+.logo-flash::after{ content:""; position:absolute; top:0; left:-60%; width:45%; height:100%; pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.72),transparent); transform:skewX(-18deg); animation:logoFlash 3.2s ease-in-out infinite; }
+@keyframes logoFlash{ 0%{left:-60%} 55%,100%{left:135%} }
 .login-btn { width:100%; padding:12px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--red),var(--red2)); color:#fff; font-size:.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:.2s; }
 .login-btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
 .login-google { width:100%; padding:11px; border:1px solid #ece2d2; border-radius:11px; background:#fff; color:var(--text); font-size:.88rem; font-weight:600; cursor:pointer; margin-top:10px; font-family:inherit; }
@@ -271,8 +281,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 <!-- ═══ LOGIN ═══ -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="logo">🍮</div>
-    <h2>ร้าน@ลานทอง</h2>
+    <div class="logo-flash"><span class="brand-wm">ขนม<span class="wm-at">@</span>านทอง<span class="wm-en">KHANOM LANTHONG</span></span></div>
     <p class="sub">เข้าสู่ระบบหลังบ้าน</p>
     <div class="login-error" id="login-error"></div>
     <input id="login-email" placeholder="ชื่อผู้ใช้ หรืออีเมล" autocomplete="username" aria-label="ชื่อผู้ใช้ หรืออีเมล">
@@ -307,7 +316,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
       <div class="nav-item nav-ai" data-tab="marketing" onclick="navTo('marketing')"><span class="ic">📣</span> การตลาด AI</div>
       <div class="nav-item nav-ai" data-tab="aipower" onclick="navTo('aipower')"><span class="ic">🔋</span> พลัง AI</div>
     </nav>
-    <div class="sb-foot">ขับเคลื่อนโดย <b>ไพลิน</b> &amp; <b>พลอย</b> · Neo-S AI<br>ร้าน@ลานทอง © 2026</div>
+    <div class="sb-foot">ขับเคลื่อนโดย <b>ไพลิน</b> &amp; <b>พลอย</b> · Neo-S AI<br>ขนมลานทอง © 2026</div>
   </aside>
   <div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar(false)"></div>
 
@@ -1360,7 +1369,7 @@ function makeDemoImage(name){
   x.fillStyle='rgba(255,255,255,.92)'; x.beginPath(); x.arc(320,290,150,0,Math.PI*2); x.fill();
   x.textAlign='center'; x.font='110px serif'; x.fillText('🍮',320,330);
   x.fillStyle='#fff'; x.font='700 42px Segoe UI,sans-serif'; x.fillText(String(name).slice(0,18),320,520);
-  x.font='500 22px Segoe UI,sans-serif'; x.fillStyle='rgba(255,255,255,.9)'; x.fillText('ร้าน@ลานทอง · ตัวอย่าง AI (สาธิต)',320,560);
+  x.font='500 22px Segoe UI,sans-serif'; x.fillStyle='rgba(255,255,255,.9)'; x.fillText('ขนมลานทอง · ตัวอย่าง AI (สาธิต)',320,560);
   return c.toDataURL('image/jpeg',0.9);
 }
 async function genAiImage(){
@@ -1587,7 +1596,7 @@ function printInvoice(oid){
     body{font-family:'Segoe UI',Tahoma,sans-serif;padding:26px;color:#222}h1{color:#8B0000;font-size:20px;margin:0}
     table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}td,th{padding:7px 6px;border-bottom:1px solid #eee;text-align:left}
     .tot{text-align:right;font-weight:800;font-size:18px;margin-top:12px}.muted{color:#777;font-size:13px}hr{border:none;border-top:1px solid #eee;margin:12px 0}</style></head><body>
-    <h1>🍯 ${esc(CONFIG.shop_name||'ร้าน@ลานทอง')}</h1>
+    <h1>🍯 ${esc(CONFIG.shop_name||'ขนมลานทอง')}</h1>
     <div class="muted">ใบเสร็จ/ใบส่งของ · ${esc(oid)} · ${o.created_at?new Date(o.created_at).toLocaleString('th-TH'):''}</div><hr>
     <div><b>ลูกค้า:</b> ${esc(o.customer_name)} ${c.phone?'· '+esc(c.phone):''}</div>
     <div><b>ที่อยู่:</b> ${esc(o.shipping_address||c.address||'-')}</div>
@@ -1747,7 +1756,7 @@ async function makeClip(){
   if(!requireEdit()) return;
   if(typeof MediaRecorder==='undefined'){ toast('เบราว์เซอร์นี้อัดคลิปไม่ได้ ลองใช้ Chrome ค่ะ',true); return; }
   const btn=document.getElementById('clipGo');
-  const headline=(document.getElementById('clipHeadline').value||'').trim()||'ขนมไทยแท้ ร้าน@ลานทอง';
+  const headline=(document.getElementById('clipHeadline').value||'').trim()||'ขนมไทยแท้ ขนมลานทอง';
   const items=_clipItems();
   if(!items.length){ toast('ยังไม่มีรูปสินค้าให้ทำคลิปค่ะ',true); return; }
   btn.disabled=true; btn.textContent='⏳ โหลดรูป...';
@@ -2359,7 +2368,7 @@ async function sendFinanceLine(){
 }
 function printFinance(){
   const f=finCalc(); const label={month:'เดือนนี้','30':'30 วันล่าสุด',all:'ทั้งหมด'}[finRange()];
-  const shop=(typeof CONFIG!=='undefined'&&CONFIG&&CONFIG.shop_name)||'ร้าน@ลานทอง';
+  const shop=(typeof CONFIG!=='undefined'&&CONFIG&&CONFIG.shop_name)||'ขนมลานทอง';
   const w=window.open('','_blank'); if(!w) return;
   const catRows=EXP_CATS.map(c=>{ const s=f.exp.filter(e=>e.category===c).reduce((a,e)=>a+Number(e.amount||0),0); return s>0?`<tr><td>${c}</td><td class="r">฿${fmt(Math.round(s))}</td></tr>`:''; }).join('')||'<tr><td colspan="2" style="color:#888">ไม่มีรายจ่าย</td></tr>';
   w.document.write(`<html><head><title>งบกำไรขาดทุน ${label}</title><meta charset="utf8">
