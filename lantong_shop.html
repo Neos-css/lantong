@@ -301,6 +301,11 @@ input,textarea{font-family:inherit}
   color:#c99a36;-webkit-text-fill-color:#c99a36;text-transform:uppercase;filter:none}
 /* nav sits on light cream → brand red wordmark with a gold @ for contrast */
 .nav-logo{display:flex;align-items:center;cursor:pointer}
+/* logo image on dark plaque (works on light nav/modal) */
+.logo-plaque{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#5e1712,#3a0e08);border-radius:12px;padding:5px 13px;box-shadow:0 3px 10px rgba(0,0,0,.28)}
+.nav-logo-img{height:34px;width:auto;display:block}
+.login-logo-img{width:80%;max-width:230px;height:auto;display:block}
+@media(max-width:600px){ .nav-logo-img{height:28px} .logo-plaque{padding:4px 10px} }
 .nav-logo .lt-logo-th{background:none;-webkit-text-fill-color:var(--primary);color:var(--primary);filter:none}
 .nav-logo .lt-logo-at{-webkit-text-fill-color:var(--gold);color:var(--gold)}
 .nav-logo .lt-logo-en{color:var(--gold);-webkit-text-fill-color:var(--gold)}
@@ -502,7 +507,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="ร้านลานทอง">
-    <span class="lt-logo"><span class="lt-logo-th"><span class="lt-logo-pre">ขนม</span><span class="lt-logo-at">@</span>านทอง</span><span class="lt-logo-en">Khanom Lanthong</span></span>
+    <span class="logo-plaque"><img src="logo.png" class="nav-logo-img" alt="ขนมลานทอง"></span>
   </div>
   <div class="nav-links">
     <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
@@ -825,6 +830,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="modal-box" style="max-width:420px">
     <button class="modal-close-btn" onclick="document.getElementById('login-modal').classList.remove('show')">✕</button>
     <div class="login-modal-body">
+      <div style="text-align:center;margin-bottom:14px"><span class="logo-plaque" style="padding:11px 18px"><img src="logo.png" class="login-logo-img" alt="ขนมลานทอง"></span></div>
       <div class="login-title" id="login-title">เข้าสู่ระบบ</div>
       <div class="login-sub" id="login-sub">เข้าสู่ระบบเพื่อติดตามออเดอร์และสิทธิพิเศษสมาชิก</div>
       <div id="login-error" style="display:none;color:var(--primary2);font-size:.82rem;margin-bottom:10px"></div>
