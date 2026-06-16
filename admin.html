@@ -444,10 +444,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
               <span class="ch-name" id="chatHeaderName"></span>
               <span id="chatHeaderIp" style="font-size:.7rem;color:var(--muted);display:none"></span>
               <button id="chatBlockBtn" class="needs-edit" style="display:none;background:var(--danger);color:#fff;border:none;border-radius:8px;padding:3px 9px;font-size:.7rem;cursor:pointer" onclick="blockChatIp()" title="บล็อก IP นี้ไม่ให้แชตเว็บ">🚫 บล็อก IP</button>
-              <label class="ai-toggle" title="ปิด AI เพื่อคุยเอง(โหมดแอดมิน)">
-                <input type="checkbox" id="aiToggle" onchange="toggleTakeover(this.checked)">
-                <span id="aiToggleLabel">🤖 AI ตอบอัตโนมัติ</span>
-              </label>
             </div>
             <div class="chat-thread" id="chatThread"><div class="empty-state"><span>💬</span>เลือกลูกค้าเพื่อดูบทสนทนา</div></div>
             <div class="chat-reply" id="chatReply" style="display:none">
@@ -2064,7 +2060,6 @@ function openThread(key,liEl){
   const ipEl=document.getElementById('chatHeaderIp'), blkBtn=document.getElementById('chatBlockBtn');
   if(c.ip && String(key).startsWith('web:')){ ipEl.textContent='· IP '+c.ip; ipEl.style.display=''; blkBtn.style.display=''; blkBtn.dataset.ip=c.ip; }
   else { ipEl.style.display='none'; blkBtn.style.display='none'; blkBtn.dataset.ip=''; }
-  loadTakeoverState(key);
 }
 async function blockChatIp(){
   if(!requireEdit()) return;
