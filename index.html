@@ -1466,8 +1466,19 @@ async function doMemberAuth(){
   if(!email||!password){ showLoginError('กรอกอีเมลและรหัสผ่านค่ะ'); return; }
   showLoginError('');
   if(AUTH_MODE==='signup'){
-    const {error}=await sbAuth.auth.signUp({email,password});
+    const {data,error}=await sbAuth.auth.signUp({email,password});
     if(error){ showLoginError(error.message); return; }
+    // ถ้าเปิด "ยืนยันอีเมล" → signUp คืน user แต่ session=null ต้องยืนยันก่อน login
+    if(data && data.user && !data.session){
+      showLoginError('');
+      showToast('📧 สมัครสำเร็จ! เช็คอีเมลเพื่อยืนยันก่อนนะคะ');
+      document.getElementById('login-sub').innerHTML='📧 <b>ส่งลิงก์ยืนยันไปที่อีเมลของคุณแล้วค่ะ</b><br>เปิดอีเมล (เช็คกล่อง Spam ด้วย) → กดยืนยัน → แล้วกลับมาเข้าสู่ระบบได้เลยค่ะ';
+      AUTH_MODE='login';
+      document.getElementById('login-title').textContent='เข้าสู่ระบบ';
+      document.getElementById('login-submit').textContent='เข้าสู่ระบบ';
+      document.getElementById('login-toggle-link').textContent='สมัครสมาชิก';
+      return;   // คา modal ไว้ที่หน้า login (ไม่ปิด ไม่ล็อกอินจนกว่าจะยืนยัน)
+    }
     showToast('สมัครสมาชิกสำเร็จค่ะ 🎉');
   } else {
     const {error}=await sbAuth.auth.signInWithPassword({email,password});
