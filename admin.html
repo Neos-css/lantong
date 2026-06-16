@@ -442,6 +442,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
           <div class="chat-right">
             <div class="chat-header" id="chatHeader" style="display:none">
               <span class="ch-name" id="chatHeaderName"></span>
+              <span id="chatHeaderIp" style="font-size:.7rem;color:var(--muted);display:none"></span>
+              <button id="chatBlockBtn" class="needs-edit" style="display:none;background:var(--danger);color:#fff;border:none;border-radius:8px;padding:3px 9px;font-size:.7rem;cursor:pointer" onclick="blockChatIp()" title="บล็อก IP นี้ไม่ให้แชตเว็บ">🚫 บล็อก IP</button>
               <label class="ai-toggle" title="ปิด AI เพื่อคุยเอง(โหมดแอดมิน)">
                 <input type="checkbox" id="aiToggle" onchange="toggleTakeover(this.checked)">
                 <span id="aiToggleLabel">🤖 AI ตอบอัตโนมัติ</span>
@@ -1695,7 +1697,8 @@ function renderContent(variants, note){
   document.getElementById('ct-out').innerHTML=variants.map((text,i)=>`
     <div style="margin-bottom:10px"><div style="font-size:.7rem;color:var(--muted);margin-bottom:3px">เวอร์ชัน ${i+1}</div>
     <textarea readonly rows="4" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:.86rem;background:var(--bg2);color:var(--text)">${esc(text)}</textarea>
-    <button class="btn btn-gold btn-sm" style="margin-top:6px" onclick="copyContent(this)">📋 คัดลอก</button></div>`).join('')
+    <button class="btn btn-gold btn-sm" style="margin-top:6px" onclick="copyContent(this)">📋 คัดลอก</button>
+    <button class="btn btn-sm needs-edit" style="margin-top:6px;background:#1877f2;color:#fff;border-color:#1877f2" onclick="postContentFb(this)">📘 โพสต์ขึ้น FB</button></div>`).join('')
     +`<span style="font-size:.72rem;color:var(--muted)">${esc(note||'')}</span>`;
 }
 function genContentFallback(p,type,tone,n){
@@ -1729,6 +1732,18 @@ function genHashtags(){
     <button class="btn btn-gold btn-sm" style="margin-top:6px" onclick="copyContent(this)">📋 คัดลอก</button>`;
 }
 function useLastContent(){ if(!LAST_CONTENT){ toast('สร้างคอนเทนต์ก่อนค่ะ',true); return; } document.getElementById('bc-msg').value=LAST_CONTENT; toast('ดึงคอนเทนต์ล่าสุดมาแล้วค่ะ'); }
+// โพสต์คอนเทนต์เวอร์ชันนี้ขึ้นเพจ Facebook โดยตรง (worker /admin/fb-post → Graph /me/feed)
+async function postContentFb(btn){
+  if(!requireEdit()) return;
+  const ta=btn.parentElement.querySelector('textarea'); const message=((ta&&ta.value)||'').trim();
+  if(!message){ toast('ไม่มีข้อความให้โพสต์ค่ะ',true); return; }
+  const old=btn.textContent; btn.disabled=true; btn.textContent='⏳ กำลังโพสต์...';
+  try{ const r=await workerPost('/admin/fb-post',{ message });
+    if(r.ok){ toast('📘 โพสต์ขึ้นเพจ Facebook แล้วค่ะ!'); if(r.permalink) window.open(r.permalink,'_blank'); }
+    else toast(r.message||'โพสต์ไม่สำเร็จ — เช็ค FB_PAGE_TOKEN ใน worker ค่ะ',true);
+  }catch(e){ toast('โพสต์ไม่สำเร็จ (route /admin/fb-post)',true); }
+  btn.disabled=false; btn.textContent=old;
+}
 
 /* ===== 🎬 ทำคลิปสินค้า (canvas → MediaRecorder · ฟรี · แบรนด์ลานทอง) ===== */
 let CLIP_SEL=[];
@@ -2011,10 +2026,10 @@ function advisorAnswer(q){
 // ── Chat history (A1) ──
 async function loadChats(manual){
   document.getElementById('chatList').innerHTML='<div class="loading">กำลังโหลด…</div>';
-  const { data, error } = await sb.from('chat_logs').select('customer_key,customer_name,role,message,created_at,channel').order('created_at',{ascending:true}).limit(2000);
+  const { data, error } = await sb.from('chat_logs').select('customer_key,customer_name,role,message,created_at,channel,ip').order('created_at',{ascending:true}).limit(2000);
   if(error){ document.getElementById('chatList').innerHTML='<div class="empty-state"><span>⚠️</span>โหลดไม่ได้: '+esc(error.message)+'</div>'; return; }
   const byKey={};
-  (data||[]).forEach(m=>{ if(!byKey[m.customer_key]) byKey[m.customer_key]={key:m.customer_key,name:m.customer_name||'',channel:m.channel||'line',msgs:[]}; byKey[m.customer_key].msgs.push(m); if(m.customer_name) byKey[m.customer_key].name=m.customer_name; });
+  (data||[]).forEach(m=>{ if(!byKey[m.customer_key]) byKey[m.customer_key]={key:m.customer_key,name:m.customer_name||'',channel:m.channel||'line',ip:'',msgs:[]}; byKey[m.customer_key].msgs.push(m); if(m.customer_name) byKey[m.customer_key].name=m.customer_name; if(m.ip) byKey[m.customer_key].ip=m.ip; });
   CHATS=Object.values(byKey).sort((a,b)=>(b.msgs[b.msgs.length-1].created_at||'').localeCompare(a.msgs[a.msgs.length-1].created_at||''));
   renderChatList(); if(manual) toast('โหลดประวัติแชตแล้วค่ะ');
 }
@@ -2044,8 +2059,19 @@ function openThread(key,liEl){
   // header + AI takeover toggle
   const hd=document.getElementById('chatHeader');
   hd.style.display='flex';
-  document.getElementById('chatHeaderName').textContent=(c.name||key.slice(0,16))+(isLine?' · LINE':' · เว็บ');
+  document.getElementById('chatHeaderName').textContent=(c.name||key.slice(0,16))+(isLine?' · LINE':(String(key).startsWith('fb:')?' · FB':' · เว็บ'));
+  // IP + ปุ่มบล็อก (เฉพาะเว็บ — LINE/FB เป็น IP แพลตฟอร์ม บล็อกไม่ได้)
+  const ipEl=document.getElementById('chatHeaderIp'), blkBtn=document.getElementById('chatBlockBtn');
+  if(c.ip && String(key).startsWith('web:')){ ipEl.textContent='· IP '+c.ip; ipEl.style.display=''; blkBtn.style.display=''; blkBtn.dataset.ip=c.ip; }
+  else { ipEl.style.display='none'; blkBtn.style.display='none'; blkBtn.dataset.ip=''; }
   loadTakeoverState(key);
+}
+async function blockChatIp(){
+  if(!requireEdit()) return;
+  const ip=(document.getElementById('chatBlockBtn').dataset.ip||'').trim(); if(!ip) return;
+  if(!confirm('บล็อก IP '+ip+' ?\nลูกค้าที่ใช้ IP นี้จะแชตเว็บไม่ได้อีก (ปลดบล็อกได้ทีหลังในตาราง blocked_ips)')) return;
+  const r=await workerPost('/admin/block-ip',{ ip });
+  if(r.ok) toast('🚫 บล็อก IP '+ip+' แล้วค่ะ'); else toast(r.message||r.error||'บล็อกไม่สำเร็จ',true);
 }
 async function loadTakeoverState(key){
   const tog=document.getElementById('aiToggle');
