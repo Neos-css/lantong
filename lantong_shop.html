@@ -1364,9 +1364,11 @@ async function askLisa(txt) {
   typing.innerHTML = '<div class="chat-msg-bubble">ไพลินกำลังพิมพ์… ✍️</div>';
   box.appendChild(typing); box.scrollTop = box.scrollHeight;
   try {
+    let memberToken = '';
+    try { if (window.MEMBER) { const s = await sbAuth.auth.getSession(); memberToken = (s.data && s.data.session && s.data.session.access_token) || ''; } } catch (e) {}
     const res = await fetch(WEB_API + '/web-chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: txt, sessionId: CHAT_SID }),
+      body: JSON.stringify({ message: txt, sessionId: CHAT_SID, member_token: memberToken }),
     });
     const j = await res.json();
     typing.remove();
