@@ -2175,14 +2175,15 @@ async function renderAiPower(){
 
   // FX rate bar
   const fxEl = document.getElementById('aiFxBar');
-  if(AI_FX && AI_FX.rate_thb_per_usd){
-    const base = AI_FX.rate_thb_per_usd;
-    const withVat = AI_FX.rate_with_vat || (base*1.07);
-    const updDate = AI_FX.updated_at ? new Date(AI_FX.updated_at).toLocaleDateString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+  if(AI_FX && AI_FX.usd_thb){
+    const base = Number(AI_FX.usd_thb);
+    const fee = AI_FX.fee_pct!=null ? Number(AI_FX.fee_pct) : 7;
+    const withVat = AI_FX.rate!=null ? Number(AI_FX.rate) : base*(1+fee/100);
+    const updDate = AI_FX.fetched_at ? new Date(AI_FX.fetched_at).toLocaleDateString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
     fxEl.innerHTML = `<div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:12px;flex-wrap:wrap">
       <span style="font-size:1.1rem">💱</span>
       <span style="font-weight:600;color:var(--text)">เรตวันนี้ <span style="color:#2471a3">${base.toFixed(2)} ฿/$</span></span>
-      <span style="color:var(--muted);font-size:.82rem">+ VAT 7% →</span>
+      <span style="color:var(--muted);font-size:.82rem">+ ค่าธรรมเนียม ${fee}% →</span>
       <span style="font-weight:700;color:#1a5276">${withVat.toFixed(2)} ฿/$</span>
       ${updDate?`<span style="color:var(--muted);font-size:.78rem;margin-left:auto">อัปเดต ${updDate} น.</span>`:''}
     </div>`;
