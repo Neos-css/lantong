@@ -472,6 +472,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
           <p style="margin:0">🖼️ <b>Gemini Image:</b> ไว้สร้างรูปสินค้า AI — ตอนนี้สร้างผ่าน <b>Google Gemini</b> (ฟรี ในเบราว์เซอร์) ยังไม่มีปุ่มสร้างในแอดมิน · ถ้าอยากได้ปุ่มสร้างในแอดมินต้องผูก Gemini API key (มีค่าใช้จ่ายต่อรูป) — บอกพลอยได้ค่ะ</p>
         </div>
       </details>
+      <div id="aiFxBar"></div>
       <div id="aiAlert"></div>
       <div class="ai-grid" id="aiGrid"></div>
       <div class="card">
@@ -2120,7 +2121,7 @@ const AI_META={
   'logistic' :{name:'AI Logistic'        ,role:'แจ้งสถานะการส่ง (add-on)'             ,dot:'#7f8c8d'},
 };
 const AI_ORDER=['sale','marketing','manager','inventory','finance','graphic','logistic'];
-let AI_NEOS_DATA=null, AI_USAGE=null;
+let AI_NEOS_DATA=null, AI_USAGE=null, AI_FX=null;
 
 function aiColor(pct){
   if(pct===null) return '#888780';
@@ -2144,6 +2145,7 @@ async function loadAiPower(){
       sb.from('ai_usage').select('agent,model,task,cost,created_at,customer_key').order('created_at',{ascending:false}).limit(200),
     ]);
     AI_NEOS_DATA = neosRes.ok ? neosRes.agents : null;
+    AI_FX = neosRes.fx || null;
     AI_USAGE = usageRes.data || [];
   }catch(e){ AI_NEOS_DATA=null; AI_USAGE=AI_USAGE||[]; }
 }
@@ -2171,6 +2173,23 @@ async function renderAiPower(){
   const lows=AI_ORDER.filter(k=>{ const d=neosMap[k]; return d && d.pct!==null && d.pct<=29; }).map(k=>AI_META[k].name);
   const allOk=AI_NEOS_DATA && lows.length===0;
 
+  // FX rate bar
+  const fxEl = document.getElementById('aiFxBar');
+  if(AI_FX && AI_FX.rate_thb_per_usd){
+    const base = AI_FX.rate_thb_per_usd;
+    const withVat = AI_FX.rate_with_vat || (base*1.07);
+    const updDate = AI_FX.updated_at ? new Date(AI_FX.updated_at).toLocaleDateString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    fxEl.innerHTML = `<div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:12px;flex-wrap:wrap">
+      <span style="font-size:1.1rem">💱</span>
+      <span style="font-weight:600;color:var(--text)">เรตวันนี้ <span style="color:#2471a3">${base.toFixed(2)} ฿/$</span></span>
+      <span style="color:var(--muted);font-size:.82rem">+ VAT 7% →</span>
+      <span style="font-weight:700;color:#1a5276">${withVat.toFixed(2)} ฿/$</span>
+      ${updDate?`<span style="color:var(--muted);font-size:.78rem;margin-left:auto">อัปเดต ${updDate} น.</span>`:''}
+    </div>`;
+  } else {
+    fxEl.innerHTML = '';
+  }
+
   document.getElementById('aiAlert').innerHTML = !AI_NEOS_DATA
     ? `<div class="ai-alert"><div class="aic">⚠️</div><div class="at"><b>ไม่สามารถดึงข้อมูลพลัง AI ได้</b><br>ระบบกลาง NEOS ไม่ตอบสนอง กรุณาลองรีเฟรชอีกครั้งค่ะ</div></div>`
     : lows.length
@@ -2181,6 +2200,18 @@ async function renderAiPower(){
     const meta=AI_META[k];
     const d=neosMap[k]||{ok:true,remaining_usd:null,pct:null};
     const a=agg[k]||{today:0,todayCost:0,wkCost:0,total:0};
+    const closed = (d.remaining_usd===0 && (d.pct===0||d.pct===null));
+    if(closed){
+      return `<div class="ai-card" style="opacity:.55;filter:grayscale(1)">
+        <div class="ai-head"><span class="ai-dot" style="background:#aaa"></span>
+          <div><div class="ai-name">${esc(meta.name)}</div><div class="ai-role">${esc(meta.role)}</div></div>
+          <span class="ai-pill pill-low">ปิดอยู่</span></div>
+        <div class="ai-pct" style="color:#aaa">—<small> ยังไม่เปิด</small></div>
+        <div class="ai-bar-wrap"><div class="ai-bar" style="width:0%;background:#ccc"></div></div>
+        <div class="ai-used" style="color:#aaa">ยังไม่ได้เปิดใช้งาน · ติดต่อ NEOS เพื่อเติมพลัง</div>
+        <div class="ai-stat-row"><span></span><span></span></div>
+      </div>`;
+    }
     const pct=d.pct!==null?Math.round(d.pct):null;
     const rawPct=d.pct||0;
     const color=aiColor(pct);
