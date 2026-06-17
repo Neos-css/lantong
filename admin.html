@@ -2109,97 +2109,106 @@ async function sendChatReply(){
   toast(isWeb?'ส่งถึงลูกค้าเว็บแล้วค่ะ':'ส่งข้อความเข้า LINE แล้วค่ะ');
 }
 
-// ── พลัง AI (A10) — ข้อมูลจริงจาก Supabase (ai_credits + ai_usage, worker บันทึกอัตโนมัติ) ──
+// ── พลัง AI (A10) — ข้อมูลจาก NEOS Control Plane (แม่) ──
 const AI_META={
-  'sale':{name:'AI Sale · ไพลิน',role:'ตอบแชต/ปิดการขาย (Claude·Dify)',dot:'#c0392b'},
+  'sale'     :{name:'AI Sale · ไพลิน'   ,role:'ตอบแชต/ปิดการขาย (Claude·Dify)'    ,dot:'#c0392b'},
   'marketing':{name:'AI Marketing · พลอย',role:'เขียนคอนเทนต์/แคปชั่น (Claude haiku)',dot:'#8e44ad'},
-  'manager':{name:'AI Manager · พลอย',role:'ที่ปรึกษา/วิเคราะห์ (Claude sonnet)',dot:'#2c3e50'},
-  'finance':{name:'AI Finance',role:'ตรวจสลิปอัตโนมัติ (SlipOK)',dot:'#27ae60'},
-  'graphic':{name:'AI Graphic',role:'สร้างรูปสินค้า AI (Gemini)',dot:'#2980b9'},
+  'manager'  :{name:'AI Manager · พลอย' ,role:'ที่ปรึกษา/วิเคราะห์ (Claude sonnet)' ,dot:'#2c3e50'},
+  'inventory':{name:'AI Inventory'       ,role:'ตัดสต็อก/เตือนสินค้าต่ำ (rule-based)',dot:'#e67e22'},
+  'finance'  :{name:'AI Finance'         ,role:'ตรวจสลิปอัตโนมัติ (SlipOK)'          ,dot:'#27ae60'},
+  'graphic'  :{name:'AI Graphic'         ,role:'สร้างรูปสินค้า AI (Gemini)'           ,dot:'#2980b9'},
+  'logistic' :{name:'AI Logistic'        ,role:'แจ้งสถานะการส่ง (add-on)'             ,dot:'#7f8c8d'},
 };
-const AI_ORDER=['sale','marketing','manager','finance','graphic'];
-let AI_CREDITS=null, AI_USAGE=null;
-function aiStatus(pct){ if(pct>50) return {cls:'pill-ok',txt:'ปกติ',bar:'var(--green)'}; if(pct>20) return {cls:'pill-mid',txt:'ครึ่งทาง',bar:'var(--yellow)'}; return {cls:'pill-low',txt:'ใกล้หมด',bar:'var(--danger)'}; }
+const AI_ORDER=['sale','marketing','manager','inventory','finance','graphic','logistic'];
+let AI_NEOS_DATA=null, AI_USAGE=null;
+
+function aiColor(pct){
+  if(pct===null) return '#888780';
+  if(pct>=70) return '#639922';
+  if(pct>=30) return '#EF9F27';
+  if(pct>0)   return '#E24B4A';
+  return '#888780';
+}
+function aiStatus(pct){
+  if(pct===null) return {cls:'pill-mid',txt:'ไม่ทราบ'};
+  if(pct>=70) return {cls:'pill-ok' ,txt:'ปกติ'};
+  if(pct>=30) return {cls:'pill-mid',txt:'ครึ่งทาง'};
+  if(pct>0)   return {cls:'pill-low',txt:'ใกล้หมด'};
+  return {cls:'pill-low',txt:'หมดพลัง'};
+}
+
 async function loadAiPower(){
   try{
-    const [c,u]=await Promise.all([
-      sb.from('ai_agent_budgets').select('agent,budget'),
-      sb.from('ai_usage').select('agent,model,task,cost,created_at,customer_key').order('created_at',{ascending:false}).limit(1000),
+    const [neosRes, usageRes]=await Promise.all([
+      workerPost('/admin/neos-power',{}),
+      sb.from('ai_usage').select('agent,model,task,cost,created_at,customer_key').order('created_at',{ascending:false}).limit(200),
     ]);
-    AI_CREDITS=c.data||[]; AI_USAGE=u.data||[];
-  }catch(e){ AI_CREDITS=AI_CREDITS||[]; AI_USAGE=AI_USAGE||[]; }
+    AI_NEOS_DATA = neosRes.ok ? neosRes.agents : null;
+    AI_USAGE = usageRes.data || [];
+  }catch(e){ AI_NEOS_DATA=null; AI_USAGE=AI_USAGE||[]; }
 }
-function aiAgg(){
-  const cm={}; (AI_CREDITS||[]).forEach(r=>cm[r.agent]=r);
+
+function aiUsageAgg(){
   const today=new Date().toISOString().slice(0,10);
   const wk=new Date(Date.now()-7*864e5).toISOString();
-  const agg={}; (AI_USAGE||[]).forEach(r=>{ const m=r.agent||'อื่นๆ'; (agg[m]=agg[m]||{today:0,todayCost:0,wkCost:0,total:0,cost:0});
-    agg[m].total++; agg[m].cost+=Number(r.cost||0);
+  const agg={};
+  (AI_USAGE||[]).forEach(r=>{
+    const m=r.agent||'อื่นๆ';
+    agg[m]=agg[m]||{today:0,todayCost:0,wkCost:0,total:0};
+    agg[m].total++;
     if((r.created_at||'')>=wk) agg[m].wkCost+=Number(r.cost||0);
-    if((r.created_at||'').slice(0,10)===today){ agg[m].today++; agg[m].todayCost+=Number(r.cost||0); } });
-  return {cm,agg};
+    if((r.created_at||'').slice(0,10)===today){ agg[m].today++; agg[m].todayCost+=Number(r.cost||0); }
+  });
+  return agg;
 }
+
 async function renderAiPower(){
   await loadAiPower();
-  const {cm,agg}=aiAgg();
-  const hasData=(AI_CREDITS&&AI_CREDITS.length)||(AI_USAGE&&AI_USAGE.length);
-  const lows=AI_ORDER.filter(k=>{ const c=cm[k]; if(!c||!c.budget) return false; return (c.budget-c.used)/c.budget*100<=20; }).map(k=>AI_META[k].name);
-  document.getElementById('aiAlert').innerHTML = !hasData
-    ? `<div class="ai-alert"><div class="aic">ℹ️</div><div class="at"><b>ยังไม่มีการใช้พลัง AI</b><br>เมื่อไพลินตอบลูกค้า หรือ SlipOK ตรวจสลิป ระบบจะบันทึกการใช้จริงให้อัตโนมัติ แล้วมาโชว์ตรงนี้ค่ะ 🔋</div></div>`
+  const agg=aiUsageAgg();
+  const neosMap={};
+  (AI_NEOS_DATA||[]).forEach(d=>neosMap[d.pool]=d);
+
+  const lows=AI_ORDER.filter(k=>{ const d=neosMap[k]; return d && d.pct!==null && d.pct<=29; }).map(k=>AI_META[k].name);
+  const allOk=AI_NEOS_DATA && lows.length===0;
+
+  document.getElementById('aiAlert').innerHTML = !AI_NEOS_DATA
+    ? `<div class="ai-alert"><div class="aic">⚠️</div><div class="at"><b>ไม่สามารถดึงข้อมูลพลัง AI ได้</b><br>ระบบกลาง NEOS ไม่ตอบสนอง กรุณาลองรีเฟรชอีกครั้งค่ะ</div></div>`
     : lows.length
-    ? `<div class="ai-alert"><div class="aic">⚠️</div><div class="at"><b>พลอยแจ้งเตือน · พลัง AI</b><br>หมึก AI ของ <b>${lows.map(esc).join(', ')}</b> เหลือน้อยแล้วค่ะ 🖋 แนะนำเติมพลังก่อนงานสะดุดนะคะ</div></div>`
+    ? `<div class="ai-alert"><div class="aic">⚠️</div><div class="at"><b>พลอยแจ้งเตือน · พลัง AI</b><br>พลัง <b>${lows.map(esc).join(', ')}</b> เหลือน้อยแล้วค่ะ 🖋 แนะนำเติมพลังก่อนงานสะดุดนะคะ</div></div>`
     : `<div class="ai-alert" style="background:linear-gradient(135deg,#eafaf1,#d6f5e3);border-color:#aee6c6"><div class="aic" style="background:var(--green)">✓</div><div class="at" style="color:#1b5e20"><b style="color:#145a32">พลัง AI เพียงพอ</b><br>ทุกโมเดลยังมีพลังเหลือใช้งานปกติค่ะ 🔋</div></div>`;
+
   document.getElementById('aiGrid').innerHTML = AI_ORDER.map(k=>{
-    const meta=AI_META[k]; const c=cm[k]||{budget:0,used:0}; const a=agg[k]||{today:0,todayCost:0,wkCost:0,total:0};
-    const budget=Number(c.budget||0), used=Number(a.cost||0);   // used = ผลรวมจริงจาก ai_usage (ตรงกับประวัติด้านล่างเสมอ)
-    const remain=Math.max(0,budget-used), rawPct=budget?remain/budget*100:0, pct=Math.round(rawPct), st=aiStatus(pct);
-    const pctDisp=(used>0 && rawPct%1!==0)?rawPct.toFixed(1):String(pct);   // โชว์ทศนิยมเมื่อใช้ไปบ้างแล้วแต่ปัดเป็นเต็ม
+    const meta=AI_META[k];
+    const d=neosMap[k]||{ok:true,remaining_usd:null,pct:null};
+    const a=agg[k]||{today:0,todayCost:0,wkCost:0,total:0};
+    const pct=d.pct!==null?Math.round(d.pct):null;
+    const rawPct=d.pct||0;
+    const color=aiColor(pct);
+    const st=aiStatus(pct);
+    const remUSD=d.remaining_usd!==null?d.remaining_usd.toFixed(3):'-';
     return `<div class="ai-card">
       <div class="ai-head"><span class="ai-dot" style="background:${meta.dot}"></span>
         <div><div class="ai-name">${esc(meta.name)}</div><div class="ai-role">${esc(meta.role)}</div></div>
-        <span class="ai-pill ${st.cls}">${budget?st.txt:'ยังไม่ตั้งงบ'}</span></div>
-      <div class="ai-pct">${pctDisp}<small>% เหลือ</small></div>
-      <div class="ai-bar-wrap"><div class="ai-bar" style="width:${rawPct.toFixed(1)}%;background:${st.bar}"></div></div>
-      <div class="ai-used">ใช้ไป ฿${fmt(used)} / ฿${fmt(budget)}</div>
-      <div class="ai-stat-row"><span>📅 วันนี้ <b>${a.today}</b> ครั้ง (฿${(a.todayCost||0).toFixed(1)})</span><span>7 วัน ฿${(a.wkCost||0).toFixed(1)}</span><span>รวม <b>${a.total}</b> ครั้ง</span></div>
-      <div class="ai-actions">
-        <button class="btn btn-gold btn-sm needs-edit" onclick="openAiBudget('${k}')">🔋 จัดการงบ</button>
-      </div></div>`; }).join('');
+        <span class="ai-pill ${st.cls}">${st.txt}</span></div>
+      <div class="ai-pct">${pct!==null?pct:'-'}<small>% เหลือ</small></div>
+      <div class="ai-bar-wrap"><div class="ai-bar" style="width:${rawPct.toFixed(1)}%;background:${color}"></div></div>
+      <div class="ai-used">คงเหลือ $${remUSD} · วันนี้ ${a.today} ครั้ง (฿${(a.todayCost||0).toFixed(1)})</div>
+      <div class="ai-stat-row"><span>7 วัน ฿${(a.wkCost||0).toFixed(1)}</span><span>รวม <b>${a.total}</b> ครั้ง</span></div>
+    </div>`; }).join('');
+
   const usage=AI_USAGE||[];
   document.getElementById('aiHistory').innerHTML = usage.length
     ? `<table><thead><tr><th>เวลา</th><th>งาน</th><th>AI</th><th style="text-align:right">ใช้ไป</th></tr></thead><tbody>
       ${usage.slice(0,20).map(h=>`<tr><td style="color:var(--muted)">${h.created_at?new Date(h.created_at).toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):''}</td><td>${esc(h.task||'-')}</td><td>${esc((AI_META[h.agent]||{}).name||h.agent||h.model||'-')}</td><td style="text-align:right"><b>฿${Number(h.cost||0).toFixed(2)}</b></td></tr>`).join('')}</tbody></table>`
     : '<div class="empty-state"><span>🧾</span>ยังไม่มีประวัติการใช้พลัง AI</div>';
 }
-let AIB_AGENT=null;
-function openAiBudget(agent){
-  if(!requireEdit()) return;
-  const {cm,agg}=aiAgg(); const c=cm[agent]||{budget:0}; const a=agg[agent]||{cost:0}; const meta=AI_META[agent]||{name:agent};
-  AIB_AGENT=agent;
-  document.getElementById('aib-model').textContent=meta.name;
-  const budget=Number(c.budget||0), used=Number(a.cost||0);
-  document.getElementById('aib-info').innerHTML=`งบปัจจุบัน <b>฿${fmt(budget)}</b> · ใช้ไปแล้ว ฿${fmt(used)} · เหลือ <b style="color:var(--green)">฿${fmt(Math.max(0,budget-used))}</b>`;
-  document.getElementById('aib-amount').value='';
-  document.getElementById('aiBudgetBg').classList.add('open');
-  setTimeout(()=>{ const el=document.getElementById('aib-amount'); if(el) el.focus(); },60);
-}
-function closeAiBudget(){ document.getElementById('aiBudgetBg').classList.remove('open'); }
-async function aiBudgetApply(mode){
-  if(!AIB_AGENT || !requireEdit()) return;
-  const amt=Number(document.getElementById('aib-amount').value||0);
-  if(!amt||amt<=0){ toast('ใส่จำนวนเงินก่อนนะคะ',true); return; }
-  const {cm}=aiAgg(); const c=cm[AIB_AGENT]||{budget:0}; const meta=AI_META[AIB_AGENT]||{name:AIB_AGENT};
-  const newBudget = mode==='add' ? Number(c.budget||0)+amt : amt;
-  const { error } = await sb.from('ai_agent_budgets').upsert({ agent:AIB_AGENT, budget:newBudget, updated_at:new Date().toISOString() }, { onConflict:'agent' });
-  if(error){ toast('บันทึกไม่สำเร็จ: '+esc(error.message),true); return; }
-  closeAiBudget(); await renderAiPower();
-  toast(mode==='add'?`เติมงบ ${meta.name} +฿${fmt(amt)} (รวม ฿${fmt(newBudget)}) ค่ะ`:`ตั้งงบ ${meta.name} = ฿${fmt(newBudget)} ค่ะ`);
-}
+
 async function aiRefresh(){ await renderAiPower(); toast('รีเฟรชพลัง AI แล้วค่ะ'); }
 async function aiSendLine(){
-  const {cm,agg}=aiAgg();
+  const neosMap={};
+  (AI_NEOS_DATA||[]).forEach(d=>neosMap[d.pool]=d);
   const text='🔋 สรุปพลัง AI · '+new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short'})+'\n'+
-    AI_ORDER.map(k=>{ const c=cm[k]||{budget:0,used:0}; const a=agg[k]||{today:0}; const pct=c.budget?Math.round((c.budget-c.used)/c.budget*100):0; return `• ${AI_META[k].name}: เหลือ ${pct}% (วันนี้ ${a.today} ครั้ง)`; }).join('\n');
+    AI_ORDER.map(k=>{ const d=neosMap[k]||{}; const pct=d.pct!==null?Math.round(d.pct||0):'-'; return `• ${AI_META[k].name}: เหลือ ${pct}%`; }).join('\n');
   toast('กำลังส่งสรุปเข้า LINE…');
   const r=await workerPost('/admin/notify',{ text });
   if(r.ok){ toast('📤 ส่งสรุปพลัง AI เข้า LINE แล้วค่ะ'); return; }
