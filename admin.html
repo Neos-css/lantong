@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
 :root{
@@ -789,17 +790,34 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   </div>
 </div>
 
-<!-- AI budget modal (พลัง AI) -->
-<div class="modal-bg" id="aiBudgetBg">
-  <div class="modal">
-    <h3>🔋 จัดการงบ · <span id="aib-model"></span></h3>
-    <div id="aib-info" style="font-size:.86rem;color:var(--muted);margin-bottom:14px"></div>
-    <div class="field"><label>จำนวนเงิน (บาท)</label><input id="aib-amount" type="number" min="0" placeholder="เช่น 100"></div>
-    <p style="font-size:.74rem;color:var(--muted);margin:-4px 0 6px">➕ <b>เติมเข้า</b> = เพิ่มงบจากของเดิม · ✏️ <b>ตั้งเป็นค่านี้</b> = กำหนดงบใหม่ทับของเดิม<br>⚠️ งบนี้ไว้<b>ติดตาม/เตือน</b>เท่านั้น — ไม่ใช่การจ่ายเงินจริง (เงินจริงเติมที่ Anthropic/Google/SlipOK)</p>
+<!-- NEOS Topup modal (เติมพลัง AI จริง · PromptPay + SlipOK) -->
+<div class="modal-bg" id="neosTopupBg">
+  <div class="modal" style="max-width:420px">
+    <h3>🔋 เติมพลัง AI · <span id="ntup-name"></span></h3>
+    <div id="ntup-fx-bar" style="font-size:.82rem;color:var(--muted);margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn btn-ghost btn-sm" onclick="ntupSetAmt(200)">฿200</button>
+      <button class="btn btn-ghost btn-sm" onclick="ntupSetAmt(500)">฿500</button>
+      <button class="btn btn-ghost btn-sm" onclick="ntupSetAmt(1000)">฿1,000</button>
+    </div>
+    <div class="field"><label>จำนวนเงิน (บาท) · ขั้นต่ำ ฿200</label>
+      <input id="ntup-amount" type="number" min="200" step="100" placeholder="200" oninput="ntupOnInput()">
+    </div>
+    <div id="ntup-usd" style="font-size:.8rem;color:var(--muted);margin:-6px 0 10px"></div>
+    <div id="ntup-qr-wrap" style="display:none;text-align:center;margin-bottom:10px">
+      <div id="ntup-qr" style="display:inline-block"></div>
+      <div id="ntup-qr-info" style="font-size:.78rem;color:var(--muted);margin-top:4px"></div>
+    </div>
+    <div id="ntup-slip-wrap" style="display:none">
+      <div class="field"><label>แนบสลิป (หลังโอนแล้ว)</label>
+        <input id="ntup-slip" type="file" accept="image/*" style="padding:6px" onchange="ntupOnSlip()">
+      </div>
+      <div id="ntup-slip-name" style="font-size:.8rem;color:var(--muted);margin-top:-8px;margin-bottom:6px"></div>
+    </div>
+    <div id="ntup-msg" style="font-size:.83rem;padding:8px 10px;border-radius:8px;margin-bottom:8px;display:none"></div>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeAiBudget()">ยกเลิก</button>
-      <button class="btn btn-gold" onclick="aiBudgetApply('set')">✏️ ตั้งเป็นค่านี้</button>
-      <button class="btn btn-primary" onclick="aiBudgetApply('add')">➕ เติมเข้า</button>
+      <button class="btn btn-ghost" onclick="closeNeosTopup()">ยกเลิก</button>
+      <button class="btn btn-primary" id="ntup-submit" onclick="submitNeosTopup()" disabled>✅ ยืนยันเติมพลัง</button>
     </div>
   </div>
 </div>
@@ -2226,6 +2244,7 @@ async function renderAiPower(){
       <div class="ai-bar-wrap"><div class="ai-bar" style="width:${rawPct.toFixed(1)}%;background:${color}"></div></div>
       <div class="ai-used">คงเหลือ $${remUSD} · วันนี้ ${a.today} ครั้ง (฿${(a.todayCost||0).toFixed(1)})</div>
       <div class="ai-stat-row"><span>7 วัน ฿${(a.wkCost||0).toFixed(1)}</span><span>รวม <b>${a.total}</b> ครั้ง</span></div>
+      <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" style="width:100%;font-size:.78rem" onclick="openNeosTopup('${k}','${esc(meta.name)}',${d.cap||0},${d.remaining_usd||0})">🔋 เติมพลัง</button></div>
     </div>`; }).join('');
 
   const usage=AI_USAGE||[];
@@ -2236,6 +2255,123 @@ async function renderAiPower(){
 }
 
 async function aiRefresh(){ await renderAiPower(); toast('รีเฟรชพลัง AI แล้วค่ะ'); }
+
+// ─── PromptPay QR (EMVCo + CRC16) ───────────────────────────────────────────
+function _ppF(id,val){ return id+String(val.length).padStart(2,'0')+val; }
+function _crc16(s){ let c=0xFFFF; for(let i=0;i<s.length;i++){ c^=s.charCodeAt(i)<<8; for(let j=0;j<8;j++){ c=(c&0x8000)?((c<<1)^0x1021):(c<<1); c&=0xFFFF; } } return c.toString(16).toUpperCase().padStart(4,'0'); }
+function promptPayPayload(target,amount){
+  const id=(target||'').replace(/[^0-9]/g,''); let acc;
+  if(id.length>=15) acc=_ppF('03',id);
+  else if(id.length===13) acc=_ppF('02',id);
+  else { let p=id.replace(/^0/,'66'); p=('0000000000000'+p).slice(-13); acc=_ppF('01',p); }
+  const merchant=_ppF('29',_ppF('00','A000000677010111')+acc);
+  let pl=_ppF('00','01')+_ppF('01',amount?'12':'11')+merchant+_ppF('53','764');
+  if(amount) pl+=_ppF('54',Number(amount).toFixed(2));
+  pl+=_ppF('58','TH')+'6304';
+  return pl+_crc16(pl);
+}
+function renderQR(el,text){
+  el.innerHTML='';
+  try{ const qr=qrcode(0,'M'); qr.addData(text); qr.make(); el.innerHTML=qr.createSvgTag({cellSize:5,margin:2,scalable:true}); const svg=el.querySelector('svg'); if(svg){svg.setAttribute('width','180');svg.setAttribute('height','180');} }
+  catch(e){ el.innerHTML='<div style="color:#dc2626;font-size:.8rem">สร้าง QR ไม่ได้ ลองรีเฟรชค่ะ</div>'; }
+}
+
+// ─── NEOS Topup modal ────────────────────────────────────────────────────────
+let _ntupPool='', _ntupSlipFile=null;
+function openNeosTopup(pool, name, cap, remaining){
+  _ntupPool=pool; _ntupSlipFile=null;
+  document.getElementById('ntup-name').textContent=name;
+  document.getElementById('ntup-amount').value='';
+  document.getElementById('ntup-usd').textContent='';
+  document.getElementById('ntup-qr-wrap').style.display='none';
+  document.getElementById('ntup-slip-wrap').style.display='none';
+  document.getElementById('ntup-slip').value='';
+  document.getElementById('ntup-slip-name').textContent='';
+  document.getElementById('ntup-submit').disabled=true;
+  ntupMsg('','none');
+  // แถบเรต
+  const fxBar=document.getElementById('ntup-fx-bar');
+  if(AI_FX && AI_FX.rate){
+    const fee=AI_FX.fee_pct!=null?Number(AI_FX.fee_pct):7;
+    fxBar.innerHTML=`💱 เรตวันนี้ <b>${Number(AI_FX.usd_thb||0).toFixed(2)} ฿/$</b> + VAT ${fee}% → <b>${Number(AI_FX.rate).toFixed(2)} ฿/$</b> · ถังปัจจุบัน: คงเหลือ $${Number(remaining).toFixed(2)} / ความจุ $${cap}`;
+  } else {
+    fxBar.innerHTML='💱 กำลังดึงเรตค่ะ…';
+  }
+  document.getElementById('neosTopupBg').style.display='flex';
+}
+function closeNeosTopup(){
+  document.getElementById('neosTopupBg').style.display='none';
+}
+function ntupSetAmt(n){
+  document.getElementById('ntup-amount').value=n;
+  ntupOnInput();
+}
+function ntupOnInput(){
+  const amt=Math.round(Number(document.getElementById('ntup-amount').value)||0);
+  const fx=AI_FX&&AI_FX.rate?Number(AI_FX.rate):34;
+  const usdEl=document.getElementById('ntup-usd');
+  const qrWrap=document.getElementById('ntup-qr-wrap');
+  const slipWrap=document.getElementById('ntup-slip-wrap');
+  ntupMsg('','none');
+  if(amt>=200){
+    usdEl.innerHTML=`≈ <b>$${(amt/fx).toFixed(2)}</b> USD เข้าถัง ${esc(_ntupPool)} · เรต ${fx.toFixed(2)} ฿/$`;
+    qrWrap.style.display='block'; slipWrap.style.display='block';
+    const pp=CONFIG&&CONFIG.promptpay;
+    if(pp){
+      renderQR(document.getElementById('ntup-qr'), promptPayPayload(pp, amt));
+      document.getElementById('ntup-qr-info').innerHTML=`พร้อมเพย์ <b>${esc(pp)}</b> · ยอด <b>฿${amt.toLocaleString()}</b> (ฝังใน QR แล้ว)`;
+    } else {
+      document.getElementById('ntup-qr').innerHTML='<div style="font-size:.82rem;color:#b45309;padding:8px">⚠️ ยังไม่ได้ตั้งเลข PromptPay<br>ตั้งได้ที่แท็บ ⚙️ ตั้งค่าร้าน</div>';
+      document.getElementById('ntup-qr-info').textContent='';
+    }
+  } else {
+    usdEl.textContent=amt>0?'ขั้นต่ำ ฿200 ค่ะ':'';
+    qrWrap.style.display='none'; slipWrap.style.display='none';
+  }
+  ntupUpdateSubmit();
+}
+function ntupOnSlip(){
+  const f=document.getElementById('ntup-slip').files[0];
+  _ntupSlipFile=f||null;
+  document.getElementById('ntup-slip-name').textContent=f?('📎 '+f.name):'';
+  ntupUpdateSubmit();
+}
+function ntupUpdateSubmit(){
+  const amt=Math.round(Number(document.getElementById('ntup-amount').value)||0);
+  document.getElementById('ntup-submit').disabled=!(amt>=200 && !!_ntupSlipFile);
+}
+function ntupMsg(html,kind){
+  const el=document.getElementById('ntup-msg');
+  if(kind==='none'||!html){ el.style.display='none'; return; }
+  el.style.display='block'; el.innerHTML=html;
+  el.style.background=kind==='ok'?'#dcfce7':'#fee2e2';
+  el.style.color=kind==='ok'?'#15803d':'#b91c1c';
+}
+async function submitNeosTopup(){
+  const amt=Math.round(Number(document.getElementById('ntup-amount').value)||0);
+  if(amt<200){ toast('ขั้นต่ำ ฿200 ค่ะ'); return; }
+  if(!_ntupSlipFile){ toast('แนบสลิปก่อนนะคะ 🧾'); return; }
+  const tok=await getToken(); if(!tok){ toast('กรุณาล็อกอินใหม่ค่ะ 🔒'); return; }
+  const btn=document.getElementById('ntup-submit'); btn.disabled=true; const old=btn.textContent; btn.textContent='กำลังตรวจสลิป… ⏳';
+  ntupMsg('','none');
+  const fd=new FormData();
+  fd.append('pool',_ntupPool);
+  fd.append('amount_thb',String(amt));
+  fd.append('slip',_ntupSlipFile);
+  try{
+    const r=await fetch(WORKER_URL+'/admin/neos-topup',{ method:'POST', headers:{ 'Authorization':'Bearer '+tok }, body:fd });
+    const d=await r.json().catch(()=>({}));
+    if(r.status===401){ ntupMsg('หมดสิทธิ์ — ล็อกอินใหม่ค่ะ 🔒','err'); btn.disabled=false; btn.textContent=old; return; }
+    if(d&&d.ok){
+      ntupMsg(`✅ เติมสำเร็จ! ฿${Number(d.amount_thb).toLocaleString()} → +$${Number(d.amount_usd).toFixed(2)} เข้าถัง ${esc(_ntupPool)} แล้วค่ะ`,'ok');
+      toast(`⚡ เติมพลัง ${_ntupPool} สำเร็จ ฿${Number(d.amount_thb).toLocaleString()}`);
+      setTimeout(()=>{ closeNeosTopup(); renderAiPower(); }, 1800);
+    } else {
+      ntupMsg((d&&d.message)||'ตรวจสลิปไม่ผ่านค่ะ ลองใหม่นะคะ','err');
+      btn.disabled=false; btn.textContent=old;
+    }
+  }catch(e){ ntupMsg('เชื่อมต่อไม่ได้ค่ะ ลองใหม่นะคะ','err'); btn.disabled=false; btn.textContent=old; }
+}
 async function aiSendLine(){
   const neosMap={};
   (AI_NEOS_DATA||[]).forEach(d=>neosMap[d.pool]=d);
