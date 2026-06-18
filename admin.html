@@ -573,6 +573,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
           <div id="loyaltyOverview"><div class="loading">กด 🔄 เพื่อโหลด…</div></div>
         </div>
       </div>
+
+      <!-- F6b: โปรซื้อครบลด อัตโนมัติ (auto-apply promotions) -->
+      <div class="card" style="margin-top:18px">
+        <div class="toolbar"><div class="section-title" style="margin:0">🎁 โปรซื้อครบลด (ลดอัตโนมัติ)</div><div class="spacer"></div><button class="btn btn-ghost btn-sm" onclick="loadAutoPromos()">🔄 โหลด</button></div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:10px">ตั้ง "ซื้อครบ ฿X ลด Y" — ลูกค้าไม่ต้องใส่โค้ด พอยอดถึงระบบลดให้อัตโนมัติในหน้าเว็บร้านทันที (ถ้าตั้งหลายขั้น ระบบเลือกขั้นที่ลดมากสุดให้ลูกค้า)</p>
+        <div class="exp-add needs-edit" style="flex-wrap:wrap;align-items:center;gap:8px">
+          <span style="font-size:.82rem;color:var(--muted)">ซื้อครบ ฿</span>
+          <input id="ap-min" type="number" min="0" placeholder="2000" style="width:96px" aria-label="ยอดซื้อขั้นต่ำ">
+          <span style="font-size:.82rem;color:var(--muted)">ลด</span>
+          <select id="ap-type" aria-label="ประเภทส่วนลด"><option value="baht">฿ บาท</option><option value="percent">% เปอร์เซ็นต์</option></select>
+          <input id="ap-value" type="number" min="0" placeholder="ส่วนลด" style="width:90px" aria-label="ค่าส่วนลด">
+          <button class="btn btn-primary btn-sm" onclick="addAutoPromo()">➕ เพิ่มโปร</button>
+        </div>
+        <div id="autoPromosTable"><div class="loading">กด 🔄 เพื่อโหลด…</div></div>
+      </div>
     </div>
 
     <!-- ═══ ที่ปรึกษาธุรกิจ AI (#6) ═══ -->
@@ -985,7 +1000,7 @@ function navTo(id){
   toggleSidebar(false);
   if(id==='chat' && !CHATS) loadChats();
   if(id==='users') loadAdminUsers();
-  if(id==='marketing'){ renderContentIdeas(); loadCoupons(); loadLoyaltyOverview(); renderClipThumbs(); }
+  if(id==='marketing'){ renderContentIdeas(); loadCoupons(); loadAutoPromos(); loadLoyaltyOverview(); renderClipThumbs(); }
   if(id==='advisor') initAdvisor();
   if(id==='aipower') renderAiPower();
   if(id==='finance') renderFinance();
@@ -2494,9 +2509,10 @@ async function loadCoupons(){
 }
 function renderCoupons(){
   const el=document.getElementById('couponsTable'); if(!el)return;
-  if(!COUPONS||!COUPONS.length){ el.innerHTML='<div class="empty-state"><span>🎟️</span>ยังไม่มีคูปอง — เพิ่มด้านบนได้เลยค่ะ</div>'; return; }
+  const rows=(COUPONS||[]).filter(c=>!String(c.code||'').startsWith('AUTO')); // โปรอัตโนมัติ (code AUTO*) แยกไปอีกกล่อง
+  if(!rows.length){ el.innerHTML='<div class="empty-state"><span>🎟️</span>ยังไม่มีคูปอง — เพิ่มด้านบนได้เลยค่ะ</div>'; return; }
   el.innerHTML='<table><thead><tr><th>โค้ด</th><th>ส่วนลด</th><th>ขั้นต่ำ</th><th>สถานะ</th><th></th></tr></thead><tbody>'+
-    COUPONS.map(c=>`<tr><td><b>${esc(c.code)}</b></td><td>${c.discount_type==='percent'?c.value+'%':'฿'+fmt(c.value)}</td><td>${c.min_total?'฿'+fmt(c.min_total):'-'}</td>
+    rows.map(c=>`<tr><td><b>${esc(c.code)}</b></td><td>${c.discount_type==='percent'?c.value+'%':'฿'+fmt(c.value)}</td><td>${c.min_total?'฿'+fmt(c.min_total):'-'}</td>
       <td><button class="btn btn-sm needs-edit" style="background:${c.active?'var(--green)':'#bbb'};color:#fff" onclick="toggleCoupon('${esc(c.code)}',${!c.active})">${c.active?'✓ เปิด':'ปิด'}</button></td>
       <td style="text-align:right"><button class="btn btn-del btn-sm needs-edit" onclick="deleteCoupon('${esc(c.code)}')" aria-label="ลบคูปอง">🗑</button></td></tr>`).join('')+'</tbody></table>';
 }
@@ -2522,6 +2538,46 @@ async function deleteCoupon(code){
   if(!(await confirmAction({ title:'🗑 ลบคูปอง', message:`ลบคูปอง <b>${esc(code)}</b> ?`, detail:'⚠️ ลูกค้าจะใช้โค้ดนี้ไม่ได้อีก', confirmText:'ลบคูปอง' }))) return;
   const { error } = await sb.from('coupons').delete().eq('code',code);
   if(error){ toast('ลบไม่สำเร็จ',true); return; } toast('ลบคูปองแล้วค่ะ'); loadCoupons();
+}
+// ── F6b: โปรซื้อครบลด (auto-apply) — เก็บใน coupons + auto_apply=true · worker ตรวจ code+min เหมือนคูปองปกติ ──
+let AUTO_PROMOS=null;
+async function loadAutoPromos(){
+  const el=document.getElementById('autoPromosTable'); if(!el)return; el.innerHTML='<div class="loading">โหลด…</div>';
+  const { data, error } = await sb.from('coupons').select('*').like('code','AUTO%').order('min_total');
+  if(error){ el.innerHTML='<div class="empty-state"><span>🎁</span>โหลดโปรไม่ได้: '+esc(error.message)+'</div>'; return; }
+  AUTO_PROMOS=data||[]; renderAutoPromos();
+}
+function renderAutoPromos(){
+  const el=document.getElementById('autoPromosTable'); if(!el)return;
+  if(!AUTO_PROMOS||!AUTO_PROMOS.length){ el.innerHTML='<div class="empty-state"><span>🎁</span>ยังไม่มีโปร — เพิ่มด้านบนได้เลยค่ะ</div>'; return; }
+  el.innerHTML='<table><thead><tr><th>เงื่อนไข</th><th>ลด</th><th>สถานะ</th><th></th></tr></thead><tbody>'+
+    AUTO_PROMOS.map(c=>`<tr><td>ซื้อครบ <b>฿${fmt(c.min_total)}</b></td><td>${c.discount_type==='percent'?c.value+'%':'฿'+fmt(c.value)}</td>
+      <td><button class="btn btn-sm needs-edit" style="background:${c.active?'var(--green)':'#bbb'};color:#fff" onclick="toggleAutoPromo('${esc(c.code)}',${!c.active})">${c.active?'✓ เปิด':'ปิด'}</button></td>
+      <td style="text-align:right"><button class="btn btn-del btn-sm needs-edit" onclick="deleteAutoPromo('${esc(c.code)}')" aria-label="ลบโปร">🗑</button></td></tr>`).join('')+'</tbody></table>';
+}
+async function addAutoPromo(){
+  if(!requireEdit())return;
+  const discount_type=document.getElementById('ap-type').value;
+  const value=Number(document.getElementById('ap-value').value||0);
+  const min_total=Number(document.getElementById('ap-min').value||0);
+  if(min_total<=0||value<=0){ toast('กรอกยอดซื้อขั้นต่ำ + ส่วนลดก่อนนะคะ',true); return; }
+  if(discount_type==='percent'&&value>100){ toast('เปอร์เซ็นต์ลดต้องไม่เกิน 100 ค่ะ',true); return; }
+  const code='AUTO'+min_total+'_'+value+(discount_type==='percent'?'P':'B'); // prefix AUTO = โปรอัตโนมัติ (ไม่ต้องมีคอลัมน์พิเศษ)
+  const { error } = await sb.from('coupons').upsert({ code, discount_type, value, min_total, active:true },{ onConflict:'code' });
+  if(error){ toast('เพิ่มไม่สำเร็จ: '+esc(error.message),true); return; }
+  document.getElementById('ap-value').value=''; document.getElementById('ap-min').value='';
+  toast('บันทึกโปรซื้อครบ ฿'+fmt(min_total)+' แล้วค่ะ'); loadAutoPromos();
+}
+async function toggleAutoPromo(code,active){
+  if(!requireEdit())return;
+  const { error } = await sb.from('coupons').update({ active }).eq('code',code);
+  if(error){ toast('อัปเดตไม่สำเร็จ',true); return; } loadAutoPromos();
+}
+async function deleteAutoPromo(code){
+  if(!requireEdit())return;
+  if(!(await confirmAction({ title:'🗑 ลบโปร', message:'ลบโปรซื้อครบลดนี้?', detail:'⚠️ ลูกค้าจะไม่ได้ส่วนลดอัตโนมัตินี้อีก', confirmText:'ลบโปร' }))) return;
+  const { error } = await sb.from('coupons').delete().eq('code',code);
+  if(error){ toast('ลบไม่สำเร็จ',true); return; } toast('ลบโปรแล้วค่ะ'); loadAutoPromos();
 }
 async function loadLoyaltyOverview(){
   const el=document.getElementById('loyaltyOverview'); if(!el)return; el.innerHTML='<div class="loading">โหลด…</div>';
