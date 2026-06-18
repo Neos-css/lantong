@@ -1080,15 +1080,28 @@ function renderDailySummary(){
 }
 
 // #6 traffic source on overview (from visits table)
+// แสดง 4 ช่องทางหลักเสมอ (Facebook / LINE / TikTok / เว็บ) แม้ยอด 0 — เจ้าของเห็นภาพรวมครบทุกช่อง
+const VISIT_CHANNELS = [
+  { key:'facebook', label:'📘 Facebook',   match:s=>s.includes('face')||s==='fb' },
+  { key:'line',     label:'💚 LINE',        match:s=>s.includes('line')||s.includes('liff') },
+  { key:'tiktok',   label:'🎵 TikTok',      match:s=>s.includes('tiktok') },
+  { key:'web',      label:'🌐 เว็บ / ค้นหา', match:s=>true }, // catch-all: เข้าตรง, google, อื่นๆ
+];
+function visitBucket(src){
+  const s=(src||'direct').toLowerCase();
+  for(const c of VISIT_CHANNELS){ if(c.match(s)) return c.key; }
+  return 'web';
+}
 function renderVisitSource(){
   const el=document.getElementById('visitSource'); if(!el) return;
-  const by={}; (DATA.visits||[]).forEach(v=>{ const k=v.source||'direct'; by[k]=(by[k]||0)+1; });
-  const entries=Object.entries(by).sort((a,b)=>b[1]-a[1]);
-  const total=entries.reduce((s,[,n])=>s+n,0);
-  if(!total){ el.innerHTML='<div class="empty-state"><span>📍</span>ยังไม่มีข้อมูลการเข้าชม<br><span style="font-size:.74rem">(เริ่มนับเมื่อ deploy เว็บร้านเวอร์ชันใหม่)</span></div>'; return; }
-  el.innerHTML=`<div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">เข้าชมทั้งหมด <b style="color:var(--text);font-size:1rem">${fmt(total)}</b> ครั้ง</div>`+entries.map(([k,n])=>{
-    const pct=Math.round(n/total*100);
-    return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:.84rem;margin-bottom:4px"><span>${srcLabel(k)}</span><span><b>${n}</b> <span style="color:var(--muted)">· ${pct}%</span></span></div>
+  const by={ facebook:0, line:0, tiktok:0, web:0 };
+  (DATA.visits||[]).forEach(v=>{ by[visitBucket(v.source)]++; });
+  const total=VISIT_CHANNELS.reduce((s,c)=>s+by[c.key],0);
+  const head=`<div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">เข้าชมทั้งหมด <b style="color:var(--text);font-size:1rem">${fmt(total)}</b> ครั้ง`+
+    (total?'':' <span style="font-size:.74rem">(เริ่มนับเมื่อมีคนเข้าเว็บร้าน)</span>')+`</div>`;
+  el.innerHTML=head+VISIT_CHANNELS.map(c=>{
+    const n=by[c.key], pct=total?Math.round(n/total*100):0;
+    return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:.84rem;margin-bottom:4px"><span>${c.label}</span><span><b>${n}</b> <span style="color:var(--muted)">· ${pct}%</span></span></div>
       <div style="height:9px;border-radius:6px;background:var(--border);overflow:hidden"><div style="height:9px;border-radius:6px;width:${pct}%;background:linear-gradient(90deg,var(--gold),var(--orange));transition:width .5s"></div></div></div>`;
   }).join('');
 }
