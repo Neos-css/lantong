@@ -730,7 +730,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <button onclick="applyCoupon()" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
     </div>
     <div id="coupon-msg" style="font-size:.76rem;margin-bottom:8px;display:none"></div>
-    <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span>ส่วนลด</span><span id="cart-discount">-฿0</span></div>
+    <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span id="cart-discount-label">ส่วนลด</span><span id="cart-discount">-฿0</span></div>
     <div class="cart-total-row">
       <span>ยอดรวม</span>
       <span class="cart-total-price" id="cart-total">฿0</span>
@@ -975,6 +975,22 @@ let currentProduct = null;
 let WISHLIST = JSON.parse(localStorage.getItem('lt_wishlist')||'[]');
 let REVIEWS = {};      // product_id -> [{stars,text,...}]
 let COUPON = null, DISCOUNT = 0;
+// โปรซื้อครบลด (auto-apply) — ดึงครั้งเดียว แล้วเลือกอันที่ลดมากสุดอัตโนมัติเมื่อยอดถึง
+var AUTO_PROMOS = [];
+function promoDiscount(c, subtotal){
+  if(!c || subtotal < (Number(c.min_total)||0)) return 0;
+  return c.discount_type==='percent' ? Math.round(subtotal*(Number(c.value)||0)/100) : Math.min(Number(c.value)||0, subtotal);
+}
+function bestAutoPromo(subtotal){
+  var best=null, bestD=0;
+  for(var i=0;i<AUTO_PROMOS.length;i++){ var d=promoDiscount(AUTO_PROMOS[i],subtotal); if(d>bestD){ bestD=d; best=AUTO_PROMOS[i]; } }
+  return best;
+}
+function loadAutoPromos(){
+  return fetch(SUPA_URL+'/rest/v1/coupons?code=like.AUTO*&active=eq.true&select=*',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}})
+    .then(function(r){return r.json();}).then(function(rows){ AUTO_PROMOS=Array.isArray(rows)?rows:[]; try{updateCartUI();}catch(e){} })
+    .catch(function(){ AUTO_PROMOS=[]; });
+}
 function isWished(slug){ return WISHLIST.includes(slug); }
 function reviewStarsHTML(pid){
   const r=REVIEWS[pid]; if(!r||!r.length) return '<div class="review-stars"><span class="rc">ยังไม่มีรีวิว</span></div>';
@@ -1136,6 +1152,11 @@ function addCurrentToCart() {
 function updateCartUI() {
   localStorage.setItem('lt_cart', JSON.stringify(cart));
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  // โปรซื้อครบลด: ถ้าลูกค้าไม่ได้พิมพ์โค้ดเอง เลือกโปรที่ลดมากสุดให้อัตโนมัติเมื่อยอดถึง
+  if (!COUPON || COUPON._auto) {
+    const ap = bestAutoPromo(subtotal);
+    COUPON = ap ? Object.assign({ _auto: true }, ap) : null;
+  }
   // recompute coupon discount against current subtotal
   DISCOUNT = 0;
   if (COUPON && subtotal >= (COUPON.min_total||0)) {
@@ -1147,7 +1168,7 @@ function updateCartUI() {
   badge.textContent = count;
   badge.style.display = count > 0 ? 'flex' : 'none';
   const dr=document.getElementById('cart-discount-row');
-  if(dr){ if(DISCOUNT>0){ dr.style.display='flex'; document.getElementById('cart-discount').textContent='-฿'+DISCOUNT; } else dr.style.display='none'; }
+  if(dr){ if(DISCOUNT>0){ dr.style.display='flex'; document.getElementById('cart-discount').textContent='-฿'+DISCOUNT; const dl=document.getElementById('cart-discount-label'); if(dl) dl.textContent=(COUPON&&COUPON._auto)?('🎁 ซื้อครบ ฿'+COUPON.min_total+' ลด'):'ส่วนลด'; } else dr.style.display='none'; }
   document.getElementById('cart-total').textContent = `฿${total}`;
   const listEl = document.getElementById('cart-items-list');
   if (cart.length === 0) {
@@ -1410,6 +1431,9 @@ window.MEMBER = null;
 
 // log one visit per session (for admin "ช่องทางการเข้าชม")
 try { if (!sessionStorage.getItem('lt_visited')) { sessionStorage.setItem('lt_visited','1'); sbAuth.from('visits').insert({ source: (localStorage.getItem('lt_source') || LT_SOURCE) }); } } catch (e) {}
+
+// โหลดโปรซื้อครบลด (auto-apply) แล้ว refresh ตะกร้าให้ลดอัตโนมัติเมื่อยอดถึง
+try { loadAutoPromos(); } catch (e) {}
 
 // W7 autofill checkout from saved profile
 try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ const set=(id,v)=>{const e=document.getElementById(id);if(e&&v)e.value=v;}; set('order-name',pf.name); set('order-phone',pf.phone); set('order-address',pf.address); } } catch (e) {}
