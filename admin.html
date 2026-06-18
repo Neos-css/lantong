@@ -588,6 +588,23 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         </div>
         <div id="autoPromosTable"><div class="loading">กด 🔄 เพื่อโหลด…</div></div>
       </div>
+
+      <!-- Flash Sale -->
+      <div class="card" style="margin-top:18px">
+        <div class="toolbar"><div class="section-title" style="margin:0">⚡ ตั้ง Flash Sale</div><div class="spacer"></div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;cursor:pointer"><input type="checkbox" id="fs-active" class="needs-edit" style="width:auto"> เปิดใช้งาน</label>
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:10px">เลือกสินค้า + ใส่ราคา flash + ตั้งเวลาเริ่ม–จบ → กดบันทึก · หน้าร้านจะขึ้นแถบ ⚡FLASH SALE กระพริบ + นับถอยหลัง (หมดเวลา/ปิด = กลับราคาปกติเอง)</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px">
+          <div class="field" style="margin:0"><label>เริ่ม</label><input type="datetime-local" id="fs-start" class="needs-edit"></div>
+          <div class="field" style="margin:0"><label>จบ</label><input type="datetime-local" id="fs-end" class="needs-edit"></div>
+        </div>
+        <div id="fsProducts"><div class="loading">กด 🔄 เพื่อโหลด…</div></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-ghost btn-sm" onclick="loadFlashSale()">🔄 โหลด</button>
+          <button class="btn btn-primary btn-sm needs-edit" onclick="saveFlashSale()">💾 บันทึก Flash Sale</button>
+        </div>
+      </div>
     </div>
 
     <!-- ═══ ที่ปรึกษาธุรกิจ AI (#6) ═══ -->
@@ -729,8 +746,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     <div class="field"><label>ชื่อสินค้า</label><input id="pm-name"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="field" style="margin-bottom:12px"><label>ราคาขาย (บาท)</label><input id="pm-price" type="number" min="0" step="1"></div>
-      <div class="field" style="margin-bottom:12px"><label>ราคาทุน (บาท)</label><input id="pm-cost" type="number" min="0" step="1" placeholder="0"></div>
+      <div class="field" style="margin-bottom:12px"><label>ราคาเดิม ก่อนลด</label><input id="pm-orig" type="number" min="0" step="1" placeholder="เว้นว่าง = ไม่ลด"></div>
     </div>
+    <div class="field" style="margin-bottom:12px"><label>ราคาทุน (บาท)</label><input id="pm-cost" type="number" min="0" step="1" placeholder="0"></div>
+    <small style="display:block;margin:-6px 0 12px;color:var(--muted);font-size:.72rem">💡 ใส่ "ราคาเดิม" สูงกว่า "ราคาขาย" → หน้าร้านจะขึ้นราคาขีดฆ่า + %ส่วนลด อัตโนมัติ</small>
     <div class="field"><label>หมวดหมู่</label><input id="pm-category" placeholder="ขนมไทยโบราณ"></div>
     <div class="field"><label>หน่วย/น้ำหนัก</label><input id="pm-unit" placeholder="100g"></div>
     <div class="field"><label>สต็อกคงเหลือ</label><input id="pm-available" type="number" min="0" step="1" value="0"></div>
@@ -1000,7 +1019,7 @@ function navTo(id){
   toggleSidebar(false);
   if(id==='chat' && !CHATS) loadChats();
   if(id==='users') loadAdminUsers();
-  if(id==='marketing'){ renderContentIdeas(); loadCoupons(); loadAutoPromos(); loadLoyaltyOverview(); renderClipThumbs(); }
+  if(id==='marketing'){ renderContentIdeas(); loadCoupons(); loadAutoPromos(); loadFlashSale(); loadLoyaltyOverview(); renderClipThumbs(); }
   if(id==='advisor') initAdvisor();
   if(id==='aipower') renderAiPower();
   if(id==='finance') renderFinance();
@@ -1452,6 +1471,7 @@ function openProductModal(id){
   document.getElementById('pm-id').value=p?p.id:''; document.getElementById('pm-id').disabled=!!p;
   document.getElementById('pm-name').value=p?p.name:'';
   document.getElementById('pm-price').value=p?p.price:'';
+  document.getElementById('pm-orig').value=p?(p.orig_price||''):'';
   document.getElementById('pm-cost').value=p?(p.cost_price||''):'';
   document.getElementById('pm-category').value=p?(p.category||''):'';
   document.getElementById('pm-unit').value=p?(p.unit||''):'';
@@ -1475,7 +1495,7 @@ async function saveProduct(){
   const id=document.getElementById('pm-id').value.trim();
   const name=document.getElementById('pm-name').value.trim();
   if(!id||!name){ toast('กรุณากรอกรหัสและชื่อสินค้า',true); return; }
-  const prod={ name, price:Number(document.getElementById('pm-price').value||0), cost_price:Number(document.getElementById('pm-cost').value||0),
+  const prod={ name, price:Number(document.getElementById('pm-price').value||0), orig_price:(Number(document.getElementById('pm-orig').value||0)||null), cost_price:Number(document.getElementById('pm-cost').value||0),
     category:document.getElementById('pm-category').value.trim(), unit:document.getElementById('pm-unit').value.trim(),
     min_stock_alert:Number(document.getElementById('pm-min').value||0), image_url:document.getElementById('pm-image').value.trim(),
     ingredients:document.getElementById('pm-ingredients').value.trim(), allergens:document.getElementById('pm-allergens').value.trim(),
@@ -2509,7 +2529,7 @@ async function loadCoupons(){
 }
 function renderCoupons(){
   const el=document.getElementById('couponsTable'); if(!el)return;
-  const rows=(COUPONS||[]).filter(c=>!String(c.code||'').startsWith('AUTO')); // โปรอัตโนมัติ (code AUTO*) แยกไปอีกกล่อง
+  const rows=(COUPONS||[]).filter(c=>{const k=String(c.code||'');return !k.startsWith('AUTO')&&!k.startsWith('FLASH');}); // โปรอัตโนมัติ(AUTO*)+flash(FLASH*) แยกออก
   if(!rows.length){ el.innerHTML='<div class="empty-state"><span>🎟️</span>ยังไม่มีคูปอง — เพิ่มด้านบนได้เลยค่ะ</div>'; return; }
   el.innerHTML='<table><thead><tr><th>โค้ด</th><th>ส่วนลด</th><th>ขั้นต่ำ</th><th>สถานะ</th><th></th></tr></thead><tbody>'+
     rows.map(c=>`<tr><td><b>${esc(c.code)}</b></td><td>${c.discount_type==='percent'?c.value+'%':'฿'+fmt(c.value)}</td><td>${c.min_total?'฿'+fmt(c.min_total):'-'}</td>
@@ -2578,6 +2598,42 @@ async function deleteAutoPromo(code){
   if(!(await confirmAction({ title:'🗑 ลบโปร', message:'ลบโปรซื้อครบลดนี้?', detail:'⚠️ ลูกค้าจะไม่ได้ส่วนลดอัตโนมัตินี้อีก', confirmText:'ลบโปร' }))) return;
   const { error } = await sb.from('coupons').delete().eq('code',code);
   if(error){ toast('ลบไม่สำเร็จ',true); return; } toast('ลบโปรแล้วค่ะ'); loadAutoPromos();
+}
+// ── ⚡ Flash Sale — config เก็บเป็น JSON ในแถว coupons code=FLASHCFG (ไม่แตะ schema) ──
+function fsToLocalInput(iso){ try{ const d=new Date(iso); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); }catch(e){ return ''; } }
+async function loadFlashSale(){
+  const el=document.getElementById('fsProducts'); if(!el) return; el.innerHTML='<div class="loading">โหลด…</div>';
+  const { data } = await sb.from('coupons').select('active,discount_type').eq('code','FLASHCFG').maybeSingle();
+  let cfg={start:null,end:null,items:{}}, active=false;
+  if(data){ active=!!data.active; try{ const c=JSON.parse(data.discount_type||'{}'); cfg={start:c.start||null,end:c.end||null,items:c.items||{}}; }catch(e){} }
+  const a=document.getElementById('fs-active'); if(a) a.checked=active;
+  const s=document.getElementById('fs-start'); if(s) s.value=cfg.start?fsToLocalInput(cfg.start):'';
+  const e=document.getElementById('fs-end'); if(e) e.value=cfg.end?fsToLocalInput(cfg.end):'';
+  renderFlashProducts(cfg.items||{});
+}
+function renderFlashProducts(items){
+  const el=document.getElementById('fsProducts'); if(!el) return;
+  const ps=DATA.products||[];
+  if(!ps.length){ el.innerHTML='<div class="empty-state"><span>📦</span>ยังไม่มีสินค้า</div>'; return; }
+  el.innerHTML='<table><thead><tr><th></th><th>สินค้า</th><th>ราคาปกติ</th><th>ราคา Flash</th></tr></thead><tbody>'+
+    ps.map(p=>{ const fp=items[p.id]; const on=fp!=null;
+      return `<tr><td><input type="checkbox" class="fs-pick needs-edit" data-id="${esc(p.id)}" ${on?'checked':''} style="width:auto"></td>
+      <td>${esc(p.name)}</td><td style="color:var(--muted)">฿${fmt(p.price)}</td>
+      <td><input type="number" min="0" step="1" class="fs-price needs-edit" data-id="${esc(p.id)}" value="${on?fp:''}" placeholder="฿" style="width:88px"></td></tr>`;
+    }).join('')+'</tbody></table>';
+}
+async function saveFlashSale(){
+  if(!requireEdit())return;
+  const active=document.getElementById('fs-active').checked;
+  const startV=document.getElementById('fs-start').value, endV=document.getElementById('fs-end').value;
+  const items={};
+  document.querySelectorAll('.fs-pick').forEach(cb=>{ if(cb.checked){ const id=cb.getAttribute('data-id'); const pr=document.querySelector('.fs-price[data-id="'+id+'"]'); const v=Number((pr&&pr.value)||0); if(v>0) items[id]=v; } });
+  if(active && !Object.keys(items).length){ toast('เลือกสินค้า + ใส่ราคา flash อย่างน้อย 1 ตัวค่ะ',true); return; }
+  if(active && (!startV||!endV)){ toast('ตั้งเวลาเริ่ม-จบก่อนนะคะ',true); return; }
+  const cfg={ start:startV?new Date(startV).toISOString():null, end:endV?new Date(endV).toISOString():null, items };
+  const { error } = await sb.from('coupons').upsert({ code:'FLASHCFG', active, discount_type:JSON.stringify(cfg), value:0, min_total:0 },{ onConflict:'code' });
+  if(error){ toast('บันทึกไม่สำเร็จ: '+esc(error.message),true); return; }
+  toast(active?'เปิด Flash Sale แล้วค่ะ ⚡ (หน้าร้านขึ้นทันที)':'บันทึกแล้ว (Flash Sale ปิดอยู่)'); loadFlashSale();
 }
 async function loadLoyaltyOverview(){
   const el=document.getElementById('loyaltyOverview'); if(!el)return; el.innerHTML='<div class="loading">โหลด…</div>';
