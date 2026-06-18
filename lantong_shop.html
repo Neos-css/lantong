@@ -584,7 +584,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <section id="trust">
   <div class="trust-row">
     <div class="trust-item"><div class="ti-ic">🔒</div><div class="ti-t" data-i18n="trust1t">ชำระเงินปลอดภัย</div><div class="ti-s" data-i18n="trust1s">PromptPay · ตรวจสลิปอัตโนมัติ</div></div>
-    <div class="trust-item"><div class="ti-ic">✅</div><div class="ti-t" data-i18n="trust2t">รีวิวจริงจากลูกค้า</div><div class="ti-s" data-i18n="trust2s">Verified Purchase ทุกรีวิว</div></div>
+    <div class="trust-item"><div class="ti-ic">✅</div><div class="ti-t" data-i18n="trust2t">รีวิวจริงจากลูกค้า</div><div class="ti-s" data-i18n="trust2s">รีวิวจากลูกค้าจริงในเว็บ</div></div>
     <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿600</div></div>
     <div class="trust-item"><div class="ti-ic">🍯</div><div class="ti-t" data-i18n="trust4t">วัตถุดิบแท้ คัดสรร</div><div class="ti-s" data-i18n="trust4s">ไม่ใส่สี ไม่ใส่สารกันบูด</div></div>
   </div>
@@ -602,29 +602,11 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 </section>
 
 <!-- TESTIMONIALS -->
-<section id="testimonials">
+<section id="testimonials" style="display:none">
   <div class="section-label" data-i18n="tLabel">✦ เสียงจากลูกค้า</div>
   <h2 class="section-title" data-i18n="tTitle">รีวิวจากลูกค้าจริง</h2>
-  <div class="testimonials-grid">
-    <div class="testimonial-card">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-text">"ขนมเปี๊ยะอร่อยมากค่ะ รสชาติต้นตำรับ ไพลินตอบไว ซื้อซ้ำแน่นอนค่ะ"</p>
-      <div class="testimonial-author">คุณแนน</div>
-      <div class="testimonial-verified">✓ Verified Purchase</div>
-    </div>
-    <div class="testimonial-card">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-text">"กล้วยเบรคแตกกรอบอร่อยมากครับ ซื้อให้คนในบ้าน ชอบกันทุกคนเลย"</p>
-      <div class="testimonial-author">คุณบอย</div>
-      <div class="testimonial-verified">✓ Verified Purchase</div>
-    </div>
-    <div class="testimonial-card">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-text">"ถั่วตัดโบราณอร่อยมาก เหมาะเป็นของฝากมากๆ บรรจุภัณฑ์สวย"</p>
-      <div class="testimonial-author">คุณมิ้น</div>
-      <div class="testimonial-verified">✓ Verified Purchase</div>
-    </div>
-  </div>
+  <!-- รีวิวจริงจากตาราง reviews (renderTestimonials) — ไม่มีรีวิวจริงพอ = ซ่อนทั้ง section -->
+  <div class="testimonials-grid" id="testimonialsGrid"></div>
 </section>
 
 <!-- FOOTER -->
@@ -1008,7 +990,7 @@ function renderProducts(arr) {
       else if(av<=5){ stockBadge=`<span class="stock-badge low">ใกล้หมด</span>`; } }
     return `<div class="product-card${soldout}">
       <div class="product-card-img-wrap">
-        <img class="product-card-img" src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+        <img class="product-card-img" src="${imgUrl(p)}" alt="${p.name_th}" loading="lazy">
         ${disc ? `<span class="discount-badge">-${disc}%</span>` : ''}
         ${stockBadge}
         <button class="wish-btn${isWished(p.slug)?' on':''}" title="ถูกใจ" aria-label="เพิ่ม/เอาออกจากรายการที่ถูกใจ" onclick="toggleWish(event,'${p.slug}')">${isWished(p.slug)?'❤️':'🤍'}</button>
@@ -1057,46 +1039,63 @@ const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
 async function syncProductsFromSupabase() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,price,orig_price,category,ingredients,allergens,shelf_life,storage,pack_size,suitable_for&order=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,is_bundle,deleted_at&order=id`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
     if (!res.ok) return;
-    const rows = await res.json();
+    let rows = await res.json();
     if (!Array.isArray(rows) || !rows.length) return;
-    const byId = {};
-    rows.forEach(r => { byId[r.id] = r; });
+    rows = rows.filter(r => !r.deleted_at && !r.is_bundle);   // ตัดสินค้าที่ลบแล้ว + ชุด bundle ออกจากหน้าร้าน
+    if (!rows.length) return;
     // stock (for in-stock badges / sold-out)
     const stockById = {};
     try {
       const sres = await fetch(`${SUPA_URL}/rest/v1/stock?select=product_id,available`, { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } });
       if (sres.ok) (await sres.json()).forEach(s => { stockById[s.product_id] = s.available; });
     } catch (e) {}
-    PRODUCTS = PRODUCTS.filter(p => byId[p.id]).map(p => ({
-      ...p,
-      name_th: byId[p.id].name || p.name_th,
-      price:   byId[p.id].price != null ? Number(byId[p.id].price) : p.price,
-      orig:    byId[p.id].orig_price != null ? Number(byId[p.id].orig_price) : null,
-      cat:     byId[p.id].category || p.cat,
-      available: stockById[p.id] != null ? Number(stockById[p.id]) : null,
-      ingredients:  byId[p.id].ingredients  || '',
-      allergens:    byId[p.id].allergens    || '',
-      shelf_life:   byId[p.id].shelf_life   || '',
-      storage:      byId[p.id].storage      || '',
-      pack_size:    byId[p.id].pack_size    || '',
-      suitable_for: byId[p.id].suitable_for || '',
-    }));
+    // presentation extras (slug/รูป/highlights) จาก static list — key ด้วย id
+    const extra = {}; PRODUCTS.forEach(p => { extra[p.id] = p; });
+    // DB = แหล่งข้อมูลจริง (source of truth) → สินค้าที่เพิ่ม/แก้/ลบในแอดมินสะท้อนหน้าร้านอัตโนมัติ
+    PRODUCTS = rows.map(r => {
+      const ex = extra[r.id] || {};
+      const slug = ex.slug || String(r.id);
+      const img  = r.image_url || (ex.slug ? ('รูปสินค้า_web/' + ex.slug + '.jpg') : '');
+      return {
+        id: r.id,
+        slug,
+        img,
+        name_th: r.name || ex.name_th || r.id,
+        name_en: r.name_en || ex.name_en || '',
+        cat: r.category || ex.cat || 'อื่นๆ',
+        price: r.price != null ? Number(r.price) : (ex.price || 0),
+        orig: r.orig_price != null ? Number(r.orig_price) : null,
+        weight: r.unit || ex.weight || '',
+        desc: r.description || ex.desc || '',
+        hl: (ex.hl && ex.hl.length) ? ex.hl : [],
+        available: stockById[r.id] != null ? Number(stockById[r.id]) : null,
+        ingredients:  r.ingredients  || '',
+        allergens:    r.allergens    || '',
+        shelf_life:   r.shelf_life   || '',
+        storage:      r.storage      || '',
+        pack_size:    r.pack_size    || '',
+        suitable_for: r.suitable_for || '',
+      };
+    });
     applyProductView();
+    try { renderRecent(); renderForYou(); } catch (e) {}
   } catch (e) {
     /* keep static fallback */
   }
 }
 syncProductsFromSupabase();
 
+// รูปสินค้า: ใช้ image_url จาก DB ก่อน (สินค้าใหม่อัปขึ้น Storage) · ไม่มีก็ fallback ไฟล์ในเว็บตาม slug
+function imgUrl(p){ return (p && p.img) || ((p && p.slug) ? ('รูปสินค้า_web/' + p.slug + '.jpg') : ''); }
 function openProductModal(slug) {
-  const p = PRODUCTS.find(x => x.slug === slug);
+  const p = PRODUCTS.find(x => x.slug === slug) || PRODUCTS.find(x => x.id === slug);
   if (!p) return;
   currentProduct = p;
-  document.getElementById('pm-img').src = `รูปสินค้า_web/${p.slug}.jpg`;
+  document.getElementById('pm-img').src = imgUrl(p);
   document.getElementById('pm-img').alt = p.name_th;
   document.getElementById('pm-cat').textContent = p.cat;
   document.getElementById('pm-name').textContent = p.name_th;
@@ -1112,7 +1111,7 @@ function openProductModal(slug) {
     origEl.style.display = 'none'; saveEl.style.display = 'none';
   }
   document.getElementById('pm-desc').textContent = p.desc;
-  document.getElementById('pm-highlights').innerHTML = p.hl.map(h => `<span class="highlight-chip">✓ ${h}</span>`).join('');
+  document.getElementById('pm-highlights').innerHTML = (p.hl||[]).map(h => `<span class="highlight-chip">✓ ${h}</span>`).join('');
   renderFoodInfo(p);
   renderProductReviews(p.id);
   document.getElementById('product-modal').classList.add('show');
@@ -1176,7 +1175,7 @@ function updateCartUI() {
   } else {
     listEl.innerHTML = cart.map((item, idx) => `
       <div class="cart-item">
-        <img class="cart-item-img" src="รูปสินค้า_web/${item.slug}.jpg" alt="${item.name_th}">
+        <img class="cart-item-img" src="${imgUrl(item)}" alt="${item.name_th}">
         <div class="cart-item-info">
           <div class="cart-item-name">${item.name_th}</div>
           <div class="cart-item-price">฿${item.price} / ชิ้น · รวม ฿${item.price * item.qty}</div>
@@ -1328,21 +1327,32 @@ function showToast(msg) {
 const LISA = {
   'สวัสดี':'สวัสดีค่ะ ยินดีต้อนรับสู่ขนมลานทอง ดิฉันไพลินค่ะ มีอะไรให้ช่วยไหมคะ? 😊',
   'ว่าไง':'สวัสดีค่ะ ยินดีต้อนรับ มีอะไรให้ช่วยบอกได้เลยนะคะ',
-  'ราคา':'ราคาสินค้าเริ่มต้น ฿45 ถึง ฿99 ค่ะ กด VIEW DETAILS ที่การ์ดสินค้าเพื่อดูราคาได้เลยค่ะ 🏷️',
-  'เท่าไร':'ราคาเริ่มต้น ฿45 ค่ะ กด VIEW DETAILS ที่สินค้าที่สนใจเพื่อดูราคาและรายละเอียดได้เลยค่ะ',
   'สั่ง':'วิธีสั่งซื้อง่ายมากค่ะ 1) กด VIEW DETAILS 2) เลือกจำนวน กด "เพิ่มในตะกร้า" 3) กดไอคอนตะกร้า 4) กรอกข้อมูลและกด "ยืนยันออเดอร์" ค่ะ 🛒',
   'วิธีสั่ง':'วิธีสั่งซื้อ: กด VIEW DETAILS → เพิ่มในตะกร้า → กดตะกร้า → ชำระเงิน ง่ายมากค่ะ',
-  'ชำระ':'ชำระผ่าน PromptPay: 0982695608 หรือกสิกรไทย: 1443385696 ชื่อบัญชี ร้านลานทอง ค่ะ 💳',
-  'โอน':'โอนได้ที่ PromptPay: 0982695608 หรือกสิกรไทย: 1443385696 ชื่อบัญชี ร้านลานทอง แล้วส่งสลิปให้ไพลินด้วยนะคะ',
-  'ช่องทาง':'ช่องทางชำระเงิน:\n💳 PromptPay: 0982695608\n🏦 กสิกรไทย: 1443385696\nชื่อบัญชี: ร้านลานทอง ค่ะ',
   'ส่ง':'จัดส่งทั่วไทยค่ะ ปกติ 3-5 วันทำการหลังยืนยันการชำระเงิน 🚚',
-  'ดูสินค้า':'ดูสินค้าทั้งหมด 15 รายการได้ที่หน้านี้เลยค่ะ กดปุ่ม "ทั้งหมด" หรือเลือกหมวดหมู่ได้เลยค่ะ 🛍️',
-  'แนะนำ':'สินค้าขายดีค่ะ ✨\n1. กล้วยตากอบน้ำผึ้ง ฿99\n2. ขนมเปี๊ยะชาวจีน ฿120\n3. ถั่วตัดโบราณ ฿55',
-  'สินค้าแนะนำ':'สินค้าขายดีของลานทองค่ะ 🏆\n1. กล้วยตากอบน้ำผึ้ง ฿99 (ลด 17%)\n2. ขนมเปี๊ยะชาวจีน ฿120 (ลด 20%)\n3. ถั่วตัดโบราณ ฿55\n4. มะขามคลุก 4 รส ฿65',
 };
+
+// คำตอบที่อิงข้อมูลจริง — ดึงจาก PRODUCTS (sync DB) + SHOP_CFG (ตั้งค่าร้าน) ไม่ฝังราคา/บัญชีตาย
+function lisaRecommend(){
+  const list=(PRODUCTS||[]).filter(p=>p.price>0&&(p.available==null||p.available>0)).slice(0,4);
+  if(!list.length) return 'ดูสินค้าทั้งหมดได้ที่หน้านี้เลยค่ะ กดปุ่ม "ทั้งหมด" ได้เลยนะคะ 🛍️';
+  return 'สินค้าแนะนำของลานทองค่ะ ✨\n'+list.map((p,i)=>`${i+1}. ${p.name_th} ฿${p.price}${p.orig?` (ลด ${Math.round((1-p.price/p.orig)*100)}%)`:''}`).join('\n');
+}
+function lisaPayment(){
+  const c=window.SHOP_CFG||{};
+  const pp=c.promptpay||'0982695608', bank=c.bank_name||'กสิกรไทย', bno=c.bank_no||'1443385696', acc=c.bank_account||'ร้านลานทอง';
+  return `ช่องทางชำระเงินค่ะ 💳\n💳 PromptPay: ${pp}\n🏦 ${bank}: ${bno}\nชื่อบัญชี: ${acc}\nโอนแล้วส่งสลิปให้ไพลินได้เลยนะคะ`;
+}
 
 function getLisaReply(msg) {
   const m = msg.toLowerCase();
+  if (m.includes('แนะนำ')) return lisaRecommend();
+  if (m.includes('ชำระ')||m.includes('โอน')||m.includes('ช่องทาง')||m.includes('จ่าย')||m.includes('บัญชี')||m.includes('พร้อมเพย์')||m.includes('promptpay')) return lisaPayment();
+  if (m.includes('ราคา')||m.includes('เท่าไร')||m.includes('กี่บาท')) {
+    const ps=(PRODUCTS||[]).filter(p=>p.price>0).map(p=>p.price);
+    return ps.length ? `ราคาสินค้าตอนนี้ ฿${Math.min(...ps)}–฿${Math.max(...ps)} ค่ะ กด VIEW DETAILS ที่สินค้าเพื่อดูราคาเต็มได้เลยค่ะ 🏷️` : 'กด VIEW DETAILS ที่สินค้าเพื่อดูราคาได้เลยค่ะ 🏷️';
+  }
+  if (m.includes('ดูสินค้า')||m.includes('สินค้าทั้งหมด')) return `ดูสินค้าทั้งหมด ${(PRODUCTS||[]).length} รายการได้ที่หน้านี้เลยค่ะ กดปุ่ม "ทั้งหมด" หรือเลือกหมวดได้เลยค่ะ 🛍️`;
   for (const [k, v] of Object.entries(LISA)) { if (m.includes(k)) return v; }
   return 'ขอบคุณที่ติดต่อค่ะ ไพลินจะรีบช่วยเหลือค่ะ หากมีคำถามเพิ่มเติมกดปุ่มด้านล่างได้เลยนะคะ 😊';
 }
@@ -1624,8 +1634,25 @@ function toggleWish(ev, slug){ ev.stopPropagation(); const i=WISHLIST.indexOf(sl
 
 async function loadReviews(){
   try{ const res=await fetch(SUPA_URL+'/rest/v1/reviews?select=product_id,customer_name,stars,text&order=created_at.desc',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}});
-    if(!res.ok) return; const rows=await res.json(); REVIEWS={}; rows.forEach(r=>{ (REVIEWS[r.product_id]=REVIEWS[r.product_id]||[]).push(r); }); applyProductView();
+    if(!res.ok) return; const rows=await res.json(); REVIEWS={}; rows.forEach(r=>{ (REVIEWS[r.product_id]=REVIEWS[r.product_id]||[]).push(r); }); applyProductView(); renderTestimonials();
   }catch(e){}
+}
+// หน้าแรก "รีวิวจากลูกค้าจริง" — ดึงจากตาราง reviews จริง (★≥4 + มีข้อความ) · ไม่ถึง 2 รีวิว = ซ่อน section (ไม่โชว์ของปลอม)
+function renderTestimonials(){
+  const sec=document.getElementById('testimonials'), grid=document.getElementById('testimonialsGrid');
+  if(!sec||!grid) return;
+  const esc=s=>String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const all=[];
+  Object.values(REVIEWS||{}).forEach(arr=>(arr||[]).forEach(r=>{ if(r&&r.text&&String(r.text).trim()&&Number(r.stars)>=4) all.push(r); }));
+  const top=all.slice(0,3);
+  if(top.length<2){ sec.style.display='none'; return; }
+  sec.style.display='';
+  grid.innerHTML=top.map(r=>{
+    const st=Math.max(1,Math.min(5,Math.round(Number(r.stars)||5)));
+    return `<div class="testimonial-card"><div class="testimonial-stars">${'★'.repeat(st)}${'☆'.repeat(5-st)}</div>
+      <p class="testimonial-text">"${esc(r.text)}"</p>
+      <div class="testimonial-author">${esc(r.customer_name||'ลูกค้า')}</div></div>`;
+  }).join('');
 }
 loadReviews();
 
@@ -1691,7 +1718,7 @@ if(localStorage.getItem('lt_theme')==='dark'){ document.body.classList.add('dark
 const I18N={ en:{
   navChat:'Chat Pailin', addCart:'Add to cart', buyTogether:'🍯 Great together',
   trust1t:'Secure payment',trust1s:'PromptPay · auto slip check',
-  trust2t:'Real customer reviews',trust2s:'Verified purchase',
+  trust2t:'Real customer reviews',trust2s:'Genuine on-site reviews',
   trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿600',
   trust4t:'Real selected ingredients',trust4s:'No dye, no preservatives',
   storyTitle:'The story of Lanthong sweets',
@@ -1817,7 +1844,7 @@ function quickAdd(slug,ev){
   const ex=cart.find(i=>i.slug===slug); if(ex)ex.qty++; else cart.push({...p,qty:1});
   updateCartUI();
   const img=ev&&ev.target.closest('.product-card')&&ev.target.closest('.product-card').querySelector('img');
-  flyToCart(`รูปสินค้า_web/${slug}.jpg`, img);
+  flyToCart(imgUrl(p), img);
   showToast(`เพิ่ม "${p.name_th}" แล้วค่ะ 🛒`);
   pushRecent(slug); track('add_to_cart',{item_id:p.id,value:p.price});
 }
@@ -1832,7 +1859,7 @@ function renderRecent(){
   if(items.length<2){ sec.style.display='none'; return; }
   sec.style.display='block';
   row.innerHTML=items.map(p=>`<div class="recent-card" onclick="openProductModal('${p.slug}')">
-    <img src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+    <img src="${imgUrl(p)}" alt="${p.name_th}" loading="lazy">
     <div class="rc-b"><div class="rc-n">${p.name_th}</div><div class="rc-p">฿${p.price}</div></div></div>`).join('');
 }
 
@@ -1847,7 +1874,7 @@ function renderCrossSell(p){
   const recs=crossSellFor(p); if(!recs.length){ box.style.display='none'; return; }
   box.style.display='block';
   row.innerHTML=recs.map(x=>`<div class="xsell-item" onclick="openProductModal('${x.slug}')">
-    <img src="รูปสินค้า_web/${x.slug}.jpg" alt="${x.name_th}" loading="lazy">
+    <img src="${imgUrl(x)}" alt="${x.name_th}" loading="lazy">
     <div class="xn">${x.name_th}</div><div class="xp">฿${x.price}</div></div>`).join('');
 }
 
@@ -1866,7 +1893,7 @@ function renderForYou(){
   grid.innerHTML=scored.map(p=>{
     const disc=p.orig?Math.round((1-p.price/p.orig)*100):0;
     return `<div class="product-card" onclick="openProductModal('${p.slug}')" style="cursor:pointer">
-      <div class="product-card-img-wrap"><img class="product-card-img" src="รูปสินค้า_web/${p.slug}.jpg" alt="${p.name_th}" loading="lazy">
+      <div class="product-card-img-wrap"><img class="product-card-img" src="${imgUrl(p)}" alt="${p.name_th}" loading="lazy">
       ${disc?`<span class="discount-badge">-${disc}%</span>`:''}</div>
       <div class="product-card-body"><div class="product-cat">${p.cat}</div><div class="product-name">${p.name_th}</div>
       <div class="product-price-row"><span class="product-price">฿${p.price}</span>${p.orig?`<span class="product-price-orig">฿${p.orig}</span>`:''}</div></div></div>`;
@@ -1904,7 +1931,7 @@ function showStickyBuy(p){ STICKY_P=p; const en=localStorage.getItem('lt_lang')=
   $('sb-name').textContent=p.name_th; $('sb-price').textContent='฿'+p.price;
   if(window.innerWidth<=600) $('sticky-buy').classList.add('show'); }
 function stickyAdd(){ if(!STICKY_P)return; const ex=cart.find(i=>i.slug===STICKY_P.slug); if(ex)ex.qty++; else cart.push({...STICKY_P,qty:1});
-  updateCartUI(); flyToCart(`รูปสินค้า_web/${STICKY_P.slug}.jpg`,$('pm-img')); showToast(`เพิ่ม "${STICKY_P.name_th}" แล้วค่ะ 🛒`); track('add_to_cart',{item_id:STICKY_P.id}); }
+  updateCartUI(); flyToCart(imgUrl(STICKY_P),$('pm-img')); showToast(`เพิ่ม "${STICKY_P.name_th}" แล้วค่ะ 🛒`); track('add_to_cart',{item_id:STICKY_P.id}); }
 window.stickyAdd=stickyAdd;
 /* hide sticky when product modal closes */
 (function(){ const m=$('product-modal'); if(m){ new MutationObserver(()=>{ if(!m.classList.contains('show')) $('sticky-buy').classList.remove('show'); }).observe(m,{attributes:true,attributeFilter:['class']}); } })();
@@ -2126,7 +2153,7 @@ function injectSchema(){
   try{
     const items=PRODUCTS.slice(0,15).map((p,idx)=>({
       "@type":"Product",position:idx+1,name:p.name_th,category:p.cat,
-      image:`https://neos-css.github.io/lantong/รูปสินค้า_web/${p.slug}.jpg`,
+      image:(p.img&&/^https?:/.test(p.img))?p.img:('https://neos-css.github.io/lantong/'+imgUrl(p)),
       offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}
     }));
     const ld={"@context":"https://schema.org","@type":"Store",name:"ขนมลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
