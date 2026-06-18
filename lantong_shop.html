@@ -539,29 +539,12 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <!-- PRODUCTS -->
 <style>
-@keyframes ltflash{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes ltflash{0%,100%{opacity:1}50%{opacity:.4}}
 .flash-blink{animation:ltflash 1s ease-in-out infinite}
-.fb-tile{background:#fff;color:#A32D2D;font-weight:800;font-size:1.15rem;padding:4px 9px;border-radius:8px;min-width:38px;text-align:center;display:inline-block;font-variant-numeric:tabular-nums}
-.fb-colon{color:#fff;font-weight:800;font-size:1.1rem}
-.fb-unit{font-size:.6rem;color:#f7c1c1;text-align:center;display:block;margin-top:2px}
-.flash-card-badge{display:inline-flex;align-items:center;gap:3px;background:#A32D2D;color:#fff;font-size:.66rem;font-weight:800;padding:3px 8px;border-radius:10px;margin:3px 0 2px;animation:ltflash 1s ease-in-out infinite;letter-spacing:.3px}
+.flash-card-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0 2px}
+.flash-card-badge{display:inline-flex;align-items:center;gap:3px;background:#A32D2D;color:#fff;font-size:.66rem;font-weight:800;padding:3px 8px;border-radius:10px;animation:ltflash 1s ease-in-out infinite;letter-spacing:.3px}
+.flash-countdown{font-size:.74rem;font-weight:800;color:#A32D2D;background:#FCEBEB;border:1px solid #F0997B;border-radius:6px;padding:2px 7px;font-variant-numeric:tabular-nums;letter-spacing:.5px;white-space:nowrap}
 </style>
-<!-- FLASH SALE banner — เปิดโดย JS เมื่อ active (renderFlashBanner) -->
-<section id="flash-banner" style="display:none;max-width:1280px;margin:18px auto 0;padding:0 24px;">
-  <div style="background:#A32D2D;border-radius:16px;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:10px;color:#fff;font-size:1.3rem;font-weight:800;">
-      <span class="flash-blink" style="font-size:1.5rem;">⚡</span><span class="flash-blink">FLASH SALE</span>
-    </div>
-    <div style="display:flex;align-items:flex-start;gap:7px;">
-      <span style="color:#f7c1c1;font-size:.8rem;align-self:center;margin-right:2px;">หมดใน</span>
-      <div><span id="fb-h" class="fb-tile">00</span><span class="fb-unit">ชม.</span></div>
-      <span class="fb-colon" style="padding-top:5px;">:</span>
-      <div><span id="fb-m" class="fb-tile">00</span><span class="fb-unit">นาที</span></div>
-      <span class="fb-colon" style="padding-top:5px;">:</span>
-      <div><span id="fb-s" class="fb-tile">00</span><span class="fb-unit">วินาที</span></div>
-    </div>
-  </div>
-</section>
 
 <section id="products">
   <div class="section-label" data-i18n="prodLabel">✦ สินค้าของเรา</div>
@@ -1006,7 +989,7 @@ function loadFlashSale(){
     .then(function(r){return r.json();}).then(function(rows){
       var row=Array.isArray(rows)&&rows[0]; FLASH=null;
       if(row&&row.active&&row.discount_type){ try{ var c=JSON.parse(row.discount_type); FLASH={start:c.start||null,end:c.end||null,items:c.items||{}}; }catch(e){ FLASH=null; } }
-      applyFlash(); try{applyProductView();}catch(e){} renderFlashBanner();
+      applyFlash(); try{applyProductView();}catch(e){} renderFlashTimers();
     }).catch(function(){ FLASH=null; });
 }
 function flashActiveNow(){
@@ -1025,17 +1008,15 @@ function applyFlash(){
     else { p.flashOn=false; }
   });
 }
-function renderFlashBanner(){
-  var sec=document.getElementById('flash-banner'); if(!sec) return;
+function renderFlashTimers(){
   if(FLASH_TIMER){ clearInterval(FLASH_TIMER); FLASH_TIMER=null; }
-  if(!flashActiveNow()){ sec.style.display='none'; return; }
-  sec.style.display='block';
+  if(!flashActiveNow()) return;
   var z=function(n){return String(n).padStart(2,'0');};
   var tick=function(){
-    if(!flashActiveNow()){ applyFlash(); try{applyProductView();}catch(e){} sec.style.display='none'; if(FLASH_TIMER){clearInterval(FLASH_TIMER);FLASH_TIMER=null;} return; }
+    if(!flashActiveNow()){ applyFlash(); try{applyProductView();}catch(e){} if(FLASH_TIMER){clearInterval(FLASH_TIMER);FLASH_TIMER=null;} return; }
     var rem=FLASH.end?Math.max(0,Date.parse(FLASH.end)-Date.now()):0;
-    var H=document.getElementById('fb-h'),M=document.getElementById('fb-m'),S=document.getElementById('fb-s');
-    if(H)H.textContent=z(Math.floor(rem/3600000)); if(M)M.textContent=z(Math.floor((rem%3600000)/60000)); if(S)S.textContent=z(Math.floor((rem%60000)/1000));
+    var t=z(Math.floor(rem/3600000))+':'+z(Math.floor((rem%3600000)/60000))+':'+z(Math.floor((rem%60000)/1000));
+    var els=document.querySelectorAll('.flash-countdown'); for(var i=0;i<els.length;i++) els[i].textContent=t;
   };
   tick(); FLASH_TIMER=setInterval(tick,1000);
 }
@@ -1065,7 +1046,7 @@ function renderProducts(arr) {
         <div class="product-cat">${p.cat}</div>
         <div class="product-name">${p.name_th}</div>
         <div class="product-name-en">${p.name_en}</div>
-        ${p.flashOn?'<span class="flash-card-badge">⚡ FLASH SALE</span>':''}
+        ${p.flashOn?'<div class="flash-card-row"><span class="flash-card-badge">⚡ FLASH SALE</span><span class="flash-countdown">--:--:--</span></div>':''}
         ${reviewStarsHTML(p.id)}
         <div class="product-price-row">
           <span class="product-price">฿${p.price}</span>
@@ -1150,7 +1131,7 @@ async function syncProductsFromSupabase() {
     });
     try { applyFlash(); } catch (e) {}
     applyProductView();
-    try { renderRecent(); renderForYou(); renderFlashBanner(); } catch (e) {}
+    try { renderRecent(); renderForYou(); renderFlashTimers(); } catch (e) {}
   } catch (e) {
     /* keep static fallback */
   }
