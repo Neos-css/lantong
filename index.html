@@ -37,7 +37,8 @@ input,textarea{font-family:inherit}
 #announce-bar button{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;color:rgba(255,255,255,.7);font-size:1rem}
 
 /* NAVBAR */
-#navbar{position:sticky;top:0;z-index:900;background:var(--cream);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px var(--shadow)}
+#topbar{position:sticky;top:0;z-index:901}
+#navbar{position:relative;z-index:900;background:var(--cream);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px var(--shadow)}
 .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--primary);letter-spacing:1px}
 .nav-logo span{color:var(--gold)}
 .nav-links{display:flex;align-items:center;gap:6px}
@@ -498,6 +499,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   </symbol>
 </defs></svg>
 
+<div id="topbar">
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
   <span id="announce-text">🍯 ยินดีต้อนรับสู่ขนมลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
@@ -524,6 +526,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
     </button>
   </div>
 </nav>
+</div><!-- /#topbar -->
 
 <!-- HERO -->
 <section id="hero">
