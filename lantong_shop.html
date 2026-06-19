@@ -715,6 +715,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <div class="freeship-txt" id="freeship-txt"></div>
       <div class="freeship-track"><div class="freeship-fill" id="freeship-fill"></div></div>
     </div>
+    <div id="promo-hint" style="display:none;font-size:.82rem;font-weight:700;color:var(--primary);background:#FCEBEB;border:1px solid #F0997B;border-radius:10px;padding:8px 12px;margin-bottom:10px;text-align:center"></div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
       <input id="coupon-code" placeholder="โค้ดส่วนลด (เช่น LANTONG10)" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:inherit;text-transform:uppercase">
       <button onclick="applyCoupon()" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
@@ -978,8 +979,21 @@ function bestAutoPromo(subtotal){
 }
 function loadAutoPromos(){
   return fetch(SUPA_URL+'/rest/v1/coupons?code=like.AUTO*&active=eq.true&select=*',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}})
-    .then(function(r){return r.json();}).then(function(rows){ AUTO_PROMOS=Array.isArray(rows)?rows:[]; try{updateCartUI();}catch(e){} })
+    .then(function(r){return r.json();}).then(function(rows){ AUTO_PROMOS=Array.isArray(rows)?rows:[]; try{updateCartUI();}catch(e){} try{updateAnnounceBar();}catch(e){} })
     .catch(function(){ AUTO_PROMOS=[]; });
+}
+// แถบประกาศด้านบน — ประกอบ: ข้อความร้าน + โปรซื้อครบลด (AUTO_PROMOS) + ไพลิน
+var BANNER_BASE='';
+function updateAnnounceBar(){
+  var a=document.getElementById('announce-text'); if(!a) return;
+  var parts=[];
+  if(BANNER_BASE) parts.push('🍯 '+BANNER_BASE);
+  (AUTO_PROMOS||[]).slice().sort(function(x,y){return (x.min_total||0)-(y.min_total||0);}).forEach(function(c){
+    var amt=c.discount_type==='percent'?(c.value+'%'):('฿'+c.value);
+    parts.push('🎁 ซื้อครบ ฿'+c.min_total+' ลด '+amt);
+  });
+  parts.push('💬 ไพลิน AI ดูแล 24 ชม.');
+  a.innerHTML=parts.join(' &nbsp;·&nbsp; ');
 }
 
 // ===== FLASH SALE (config เก็บใน coupons code=FLASHCFG · worker คิดราคา flash ฝั่ง server ด้วย) =====
@@ -1217,6 +1231,19 @@ function updateCartUI() {
   badge.style.display = count > 0 ? 'flex' : 'none';
   const dr=document.getElementById('cart-discount-row');
   if(dr){ if(DISCOUNT>0){ dr.style.display='flex'; document.getElementById('cart-discount').textContent='-฿'+DISCOUNT; const dl=document.getElementById('cart-discount-label'); if(dl) dl.textContent=(COUPON&&COUPON._auto)?('🎁 ซื้อครบ ฿'+COUPON.min_total+' ลด'):'ส่วนลด'; } else dr.style.display='none'; }
+  // โปรซื้อครบลด: กระตุ้น "ซื้ออีก ฿X รับส่วนลด!" หรือชมเมื่อได้แล้ว
+  const ph=document.getElementById('promo-hint');
+  if(ph){
+    let nextTier=null;
+    (AUTO_PROMOS||[]).forEach(c=>{ const mt=Number(c.min_total)||0; if(mt>0 && subtotal<mt && (!nextTier||mt<Number(nextTier.min_total))) nextTier=c; });
+    if(cart.length && nextTier){
+      const need=Math.max(0,Number(nextTier.min_total)-subtotal);
+      const amt=nextTier.discount_type==='percent'?(nextTier.value+'%'):('฿'+nextTier.value);
+      ph.style.display='block'; ph.innerHTML='🎁 ซื้ออีก <b>฿'+need+'</b> รับส่วนลด <b>'+amt+'</b> ทันที!';
+    } else if(cart.length && COUPON && COUPON._auto && DISCOUNT>0){
+      ph.style.display='block'; ph.innerHTML='🎉 ยินดีด้วย! ได้ส่วนลด <b>฿'+DISCOUNT+'</b> จากโปรซื้อครบแล้ว';
+    } else ph.style.display='none';
+  }
   document.getElementById('cart-total').textContent = `฿${total}`;
   const listEl = document.getElementById('cart-items-list');
   if (cart.length === 0) {
@@ -1504,7 +1531,7 @@ try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ c
   const { data } = await sbAuth.from('app_config').select('*').eq('id',1).maybeSingle();
   if (!data) return; window.SHOP_CFG = data;
   const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.textContent=v; };
-  if (data.promo_banner) { const a=document.getElementById('announce-text'); if(a) a.innerHTML='🍯 '+data.promo_banner+' &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.'; }
+  if (data.promo_banner) { BANNER_BASE=data.promo_banner; try{updateAnnounceBar();}catch(e){} }
   set('pi-promptpay', data.promptpay); set('pi-bank-label', data.bank_name); set('pi-bank-no', data.bank_no); set('pi-account', data.bank_account);
 } catch (e) {} })();
 
