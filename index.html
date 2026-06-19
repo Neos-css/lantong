@@ -252,15 +252,16 @@ input,textarea{font-family:inherit}
 /* CHAT */
 #chat-btn{position:fixed;bottom:16px;right:16px;width:auto;background:none;border:none;padding:0;z-index:800;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .2s}
 #chat-btn:hover{transform:scale(1.06)}
-#chat-btn:hover .pailin-wrap{animation-play-state:paused}
+#chat-btn:hover .pailin-wrap,#chat-btn:hover .pailin-img{animation-play-state:paused}
 .pailin-bubble{background:#fff;color:var(--primary);font-weight:800;font-size:.76rem;padding:5px 12px;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.2);white-space:nowrap;position:relative;animation:pailinBob 2.4s ease-in-out infinite}
 .pailin-bubble::after{content:"";position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #fff}
-.pailin-wrap{position:relative;display:block;animation:pailinFloat 3.2s ease-in-out infinite;transform-origin:bottom center}
-.pailin-img{width:96px;height:auto;display:block;filter:drop-shadow(0 7px 14px rgba(122,26,18,.4))}
+.pailin-wrap{position:relative;display:block;animation:pailinFloat 3.4s ease-in-out infinite;transform-origin:bottom center}
+.pailin-img{width:78px;height:auto;display:block;filter:drop-shadow(0 6px 12px rgba(122,26,18,.45));animation:pailinWave 10s ease-in-out infinite;transform-origin:bottom center}
 .chat-badge{position:absolute;top:6px;right:2px;background:var(--gold);color:var(--dark);font-size:.55rem;font-weight:700;padding:2px 5px;border-radius:8px}
-@keyframes pailinFloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-8px) rotate(1.5deg)}}
+@keyframes pailinFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes pailinBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@media(max-width:600px){.pailin-img{width:74px}.pailin-bubble{font-size:.68rem;padding:4px 10px}}
+@keyframes pailinWave{0%,84%,100%{transform:rotate(0)}88%{transform:rotate(-13deg)}92%{transform:rotate(9deg)}96%{transform:rotate(-5deg)}}
+@media(max-width:600px){.pailin-img{width:62px}.pailin-bubble{font-size:.66rem;padding:4px 9px}}
 #chat-panel{position:fixed;bottom:90px;right:24px;width:320px;background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:801;display:none;flex-direction:column;overflow:hidden;animation:chatIn .25s ease}
 #chat-panel.open{display:flex}
 @keyframes chatIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -523,7 +524,6 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="nav-links">
     <button class="nav-btn" data-i18n="navProducts" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">สินค้า</button>
     <button class="nav-btn" data-i18n="navAbout" onclick="openAbout()">เกี่ยวกับเรา</button>
-    <button class="nav-btn outline" onclick="document.getElementById('chat-panel').classList.toggle('open')" data-i18n="navChat">CHAT ไพลิน</button>
     <button class="theme-toggle" id="lang-toggle" title="ภาษา / Language" onclick="toggleLang()">🌐</button>
     <button class="theme-toggle" id="theme-toggle" title="โหมดมืด/สว่าง" onclick="toggleTheme()">🌙</button>
     <button class="nav-btn" id="nav-myorders" data-i18n="navMyOrders" style="display:none" onclick="openMyOrders()">📦 ออเดอร์ของฉัน</button>
