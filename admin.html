@@ -445,6 +445,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
               <span class="ch-name" id="chatHeaderName"></span>
               <span id="chatHeaderIp" style="font-size:.7rem;color:var(--muted);display:none"></span>
               <button id="chatBlockBtn" class="needs-edit" style="display:none;background:var(--danger);color:#fff;border:none;border-radius:8px;padding:3px 9px;font-size:.7rem;cursor:pointer" onclick="blockChatIp()" title="บล็อก IP นี้ไม่ให้แชตเว็บ">🚫 บล็อก IP</button>
+              <span style="flex:1"></span>
+              <label class="needs-edit" style="display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:600;color:var(--green);cursor:pointer;white-space:nowrap" title="ปิด AI เพื่อให้แอดมินตอบลูกค้าเอง (เฉพาะแชตนี้)">
+                <span id="aiToggleLabel">🤖 AI ตอบอัตโนมัติ</span>
+                <input type="checkbox" id="aiToggle" onchange="toggleTakeover(this.checked)" style="width:30px;height:16px;accent-color:var(--danger);cursor:pointer;margin:0">
+              </label>
             </div>
             <div class="chat-thread" id="chatThread"><div class="empty-state"><span>💬</span>เลือกลูกค้าเพื่อดูบทสนทนา</div></div>
             <div class="chat-reply" id="chatReply" style="display:none">
@@ -2127,6 +2132,7 @@ function openThread(key,liEl){
   const ipEl=document.getElementById('chatHeaderIp'), blkBtn=document.getElementById('chatBlockBtn');
   if(c.ip && String(key).startsWith('web:')){ ipEl.textContent='· IP '+c.ip; ipEl.style.display=''; blkBtn.style.display=''; blkBtn.dataset.ip=c.ip; }
   else { ipEl.style.display='none'; blkBtn.style.display='none'; blkBtn.dataset.ip=''; }
+  loadTakeoverState(key);
 }
 async function blockChatIp(){
   if(!requireEdit()) return;
