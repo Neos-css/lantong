@@ -2298,7 +2298,6 @@ abTest('hero_cta',['a','b']);
   if(sessionStorage.getItem('lt_proactive')) return;
   let fired=false;
   const fire=()=>{ if(fired)return; fired=true; sessionStorage.setItem('lt_proactive','1');
-    const badge=document.querySelector('#chat-btn .chat-badge'); if(badge)badge.textContent='1';
     setTimeout(()=>{ if(typeof addChatMsg==='function'){
       addChatMsg('สวัสดีค่ะ 👋 หาขนมเป็นของฝากอยู่ใช่ไหมคะ? บอกงบหรือโอกาส เช่น "ของขวัญผู้ใหญ่ งบ 500" ไพลินช่วยจัดเซ็ตให้ได้เลยค่ะ 🎁','bot'); } },400);
   };
