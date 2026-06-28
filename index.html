@@ -1352,7 +1352,7 @@ function openProductModal(slug) {
 
 function renderFoodInfo(p){
   const host=document.getElementById('pm-foodinfo'); if(!host) return;
-  const esc=s=>String(s||'').replace(/[<>]/g,'');
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const rows=[
     ['🧾','ส่วนประกอบ',p.ingredients],
     ['⚠️','สารก่อภูมิแพ้',p.allergens],
@@ -1604,7 +1604,8 @@ function addChatMsg(text, type) {
   const el = document.getElementById('chat-messages');
   const d = document.createElement('div');
   d.className = `chat-msg ${type}`;
-  d.innerHTML = `<div class="chat-msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  const safe = String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\n/g,'<br>');
+  d.innerHTML = `<div class="chat-msg-bubble">${safe}</div>`;
   el.appendChild(d);
   el.scrollTop = el.scrollHeight;
 }
@@ -1886,7 +1887,7 @@ async function loadReviews(){
 function renderTestimonials(){
   const sec=document.getElementById('testimonials'), grid=document.getElementById('testimonialsGrid');
   if(!sec||!grid) return;
-  const esc=s=>String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const all=[];
   Object.values(REVIEWS||{}).forEach(arr=>(arr||[]).forEach(r=>{ if(r&&r.text&&String(r.text).trim()&&Number(r.stars)>=4) all.push(r); }));
   const top=all.slice(0,3);
@@ -1904,7 +1905,7 @@ loadReviews();
 function renderProductReviews(pid){
   const el=document.getElementById('pm-reviews'); if(!el) return;
   const r=REVIEWS[pid]||[]; const avg=r.length?(r.reduce((s,x)=>s+x.stars,0)/r.length):0;
-  const esc=s=>String(s||'').replace(/[<>]/g,'');
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   el.innerHTML=`<div style="font-weight:700;margin-bottom:8px">⭐ รีวิว ${r.length?`(${avg.toFixed(1)} จาก ${r.length})`:''}</div>
     ${r.slice(0,5).map(x=>`<div style="border-bottom:1px solid var(--border);padding:6px 0"><div style="color:#e0a800;font-size:.82rem">${'★'.repeat(x.stars)}${'☆'.repeat(5-x.stars)} <span style="color:var(--muted);font-size:.74rem">${esc(x.customer_name)||'ลูกค้า'}</span></div>${x.text?`<div style="font-size:.82rem">${esc(x.text)}</div>`:''}</div>`).join('')||'<div style="font-size:.8rem;color:var(--muted)">ยังไม่มีรีวิว เป็นคนแรกเลยค่ะ 💛</div>'}
     <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
