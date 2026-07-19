@@ -2330,7 +2330,7 @@
 <div class="page" id="page-power">
   <div style="max-width:980px;margin:0 auto">
     <div class="page-title">🔋 พลัง AI</div>
-    <div class="page-sub">เครดิตพลังงาน AI แยกรายผู้ช่วย — บิลโปร่งใส: <b>ราคาจริง</b> + <b>ค่าบริการ/VAT <span id="pw-fee-label">7%</span></b> = <b>รวม</b> (หักจากถัง)</div>
+    <div class="page-sub">เครดิตพลังงาน AI แยกรายผู้ช่วย — หักตาม <b>ราคาจริง</b> (ต้นทุน AI จริง · ไม่มีค่าบริการเพิ่ม)</div>
 
     <!-- ── เรตวันนี้ (จากถังแม่ NEOS) ── -->
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:white;border-radius:14px;padding:13px 20px;box-shadow:0 2px 12px rgba(201,168,124,0.12);margin-bottom:18px">
@@ -2383,15 +2383,15 @@
       </div>
     </div>
 
-    <!-- ── ประวัติการใช้พลัง (ราคาจริง / ค่าบริการ / รวม) ── -->
+    <!-- ── ประวัติการใช้พลัง (ราคาจริง / รวม) ── -->
     <div style="background:white;border-radius:16px;padding:24px 28px;box-shadow:0 2px 12px rgba(201,168,124,0.12);margin-bottom:24px">
       <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:14px">📉 ประวัติการใช้พลัง (ล่าสุด 20)</div>
       <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
         <thead><tr style="text-align:left;color:var(--text-s);border-bottom:1px solid var(--gold-l)">
           <th style="padding:8px 6px">เวลา</th><th style="padding:8px 6px">ผู้ช่วย</th><th style="padding:8px 6px">รายละเอียด</th>
-          <th style="padding:8px 6px;text-align:right">ราคาจริง</th><th style="padding:8px 6px;text-align:right">ค่าบริการ</th><th style="padding:8px 6px;text-align:right">รวม</th>
+          <th style="padding:8px 6px;text-align:right">ราคาจริง</th><th style="padding:8px 6px;text-align:right">รวม</th>
         </tr></thead>
-        <tbody id="pw-usage-tbody"><tr><td colspan="6" style="padding:14px;text-align:center;color:var(--text-s)">—</td></tr></tbody>
+        <tbody id="pw-usage-tbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--text-s)">—</td></tr></tbody>
       </table></div>
     </div>
 
@@ -3682,10 +3682,9 @@
           <td style="padding:8px 6px">${pwAgName(l.agent || l.source)}</td>
           <td style="padding:8px 6px;color:var(--text-s)">${(l.note || '')}${l.input_tokens ? ` <span style="font-size:11px">(${l.input_tokens}+${l.output_tokens} tok)</span>` : ''}</td>
           <td style="padding:8px 6px;text-align:right;color:var(--text-s)">${hasBreak ? m4(l.cost_net) : '—'}</td>
-          <td style="padding:8px 6px;text-align:right;color:var(--text-s)">${hasBreak ? m4(l.cost_fee) : '—'}</td>
           <td style="padding:8px 6px;text-align:right;color:#c0392b;font-weight:700">-${m4(l.cost)}</td></tr>`;
         }).join('');
-      } else tb.innerHTML = '<tr><td colspan="6" style="padding:14px;text-align:center;color:var(--text-s)">ยังไม่มีการใช้พลัง</td></tr>';
+      } else tb.innerHTML = '<tr><td colspan="5" style="padding:14px;text-align:center;color:var(--text-s)">ยังไม่มีการใช้พลัง</td></tr>';
     } catch (e) {}
     try {
       const { data: tps } = await sb.from('ai_topups').select('*').order('created_at', { ascending: false }).limit(20);
