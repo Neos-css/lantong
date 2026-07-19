@@ -901,7 +901,13 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <button onclick="applyCoupon()" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">ใช้</button>
     </div>
     <div id="coupon-msg" style="font-size:.76rem;margin-bottom:8px;display:none"></div>
+    <div id="redeem-box" style="display:none;gap:8px;margin-bottom:10px">
+      <input id="redeem-input" type="number" min="0" placeholder="ใช้แต้ม" style="flex:1;padding:9px 12px;border:2px solid var(--border);border-radius:10px;font-size:.82rem;font-family:inherit">
+      <button onclick="applyRedeem()" data-i18n="redeemBtn" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.82rem">🎁 แลก</button>
+    </div>
+    <div id="redeem-msg" style="font-size:.76rem;margin-bottom:8px;display:none"></div>
     <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span id="cart-discount-label">ส่วนลด</span><span id="cart-discount">-฿0</span></div>
+    <div id="cart-redeem-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span data-i18n="redeemRow">🎁 ใช้แต้มสะสม</span><span id="cart-redeem">-฿0</span></div>
     <div id="cart-ship-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--muted)"><span data-i18n="cartShip">🚚 ค่าจัดส่ง</span><span id="cart-ship">฿50</span></div>
     <div class="cart-total-row">
       <span>ยอดรวม</span>
@@ -1136,6 +1142,7 @@ let currentProduct = null;
 let WISHLIST = JSON.parse(localStorage.getItem('lt_wishlist')||'[]');
 let REVIEWS = {};      // product_id -> [{stars,text,...}]
 let COUPON = null, DISCOUNT = 0;
+let REDEEM_PTS = 0;   // 🎁 แต้มที่ลูกค้าเลือกแลกในตะกร้า (server คิดจริงตอนสร้างออเดอร์)
 // โปรซื้อครบลด (auto-apply) — ดึงครั้งเดียว แล้วเลือกอันที่ลดมากสุดอัตโนมัติเมื่อยอดถึง
 var AUTO_PROMOS = [];
 function promoDiscount(c, subtotal){
@@ -1273,7 +1280,7 @@ const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
 async function syncProductsFromSupabase() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,is_bundle,deleted_at&order=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,is_bundle,deleted_at,stock&order=id`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
     if (!res.ok) return;
@@ -1281,12 +1288,7 @@ async function syncProductsFromSupabase() {
     if (!Array.isArray(rows) || !rows.length) return;
     rows = rows.filter(r => !r.deleted_at && !r.is_bundle);   // ตัดสินค้าที่ลบแล้ว + ชุด bundle ออกจากหน้าร้าน
     if (!rows.length) return;
-    // stock (for in-stock badges / sold-out)
-    const stockById = {};
-    try {
-      const sres = await fetch(`${SUPA_URL}/rest/v1/stock?select=product_id,available`, { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } });
-      if (sres.ok) (await sres.json()).forEach(s => { stockById[s.product_id] = s.available; });
-    } catch (e) {}
+    // stock (for in-stock badges / sold-out) — อ่านจากคอลัมน์ products.stock ตรง ๆ (เลิกใช้ตาราง stock แยก)
     // presentation extras (slug/รูป/highlights) จาก static list — key ด้วย id
     const extra = {}; PRODUCTS.forEach(p => { extra[p.id] = p; });
     // DB = แหล่งข้อมูลจริง (source of truth) → สินค้าที่เพิ่ม/แก้/ลบในแอดมินสะท้อนหน้าร้านอัตโนมัติ
@@ -1306,7 +1308,7 @@ async function syncProductsFromSupabase() {
         weight: r.unit || ex.weight || '',
         desc: r.description || ex.desc || '',
         hl: (ex.hl && ex.hl.length) ? ex.hl : [],
-        available: stockById[r.id] != null ? Number(stockById[r.id]) : null,
+        available: r.stock != null ? Number(r.stock) : null,
         ingredients:  r.ingredients  || '',
         allergens:    r.allergens    || '',
         shelf_life:   r.shelf_life   || '',
@@ -1396,9 +1398,15 @@ function updateCartUI() {
   if (COUPON && subtotal >= (COUPON.min_total||0)) {
     DISCOUNT = COUPON.discount_type==='percent' ? Math.round(subtotal*COUPON.value/100) : Math.min(COUPON.value, subtotal);
   }
-  // ค่าจัดส่ง (ตรงกับ worker: ยอดหลังหักส่วนลด >= เกณฑ์ส่งฟรี = ฟรี ไม่งั้นคิดค่าส่ง)
+  // 🎁 แลกแต้ม (สมาชิก) — preview เท่านั้น · server คิดจริงตอนสร้างออเดอร์
+  let REDEEM_DISC = 0;
+  const _lcfg = window.LOY && window.LOY.config;
+  if (window.MEMBER && REDEEM_PTS > 0 && _lcfg && _lcfg.enabled !== false) {
+    REDEEM_DISC = Math.min(Math.round(REDEEM_PTS * (_lcfg.redeem_point_baht || 1)), Math.max(0, subtotal - DISCOUNT));
+  }
+  // ค่าจัดส่ง (ตรงกับ worker: ยอดหลังหักส่วนลด+แต้ม >= เกณฑ์ส่งฟรี = ฟรี ไม่งั้นคิดค่าส่ง)
   // คำนวณ inline จาก SHOP_CFG ตรง ๆ (ห้ามพึ่ง FREE_TH/SHIP_FEE — ประกาศทีหลัง เรียกก่อน = TDZ พังทั้งหน้า)
-  const afterDisc = Math.max(0, subtotal - DISCOUNT);
+  const afterDisc = Math.max(0, subtotal - DISCOUNT - REDEEM_DISC);
   const _cfg = window.SHOP_CFG || {};
   const _freeTh = Number(_cfg.free_threshold) || 500, _shipFee = Number(_cfg.shipping_fee) || 50;
   const SHIP = (afterDisc > 0 && afterDisc < _freeTh) ? _shipFee : 0;
@@ -1413,6 +1421,14 @@ function updateCartUI() {
   badge.style.display = count > 0 ? 'flex' : 'none';
   const dr=document.getElementById('cart-discount-row');
   if(dr){ if(DISCOUNT>0){ dr.style.display='flex'; document.getElementById('cart-discount').textContent='-฿'+DISCOUNT; const dl=document.getElementById('cart-discount-label'); if(dl) dl.textContent=(COUPON&&COUPON._auto)?('🎁 ซื้อครบ ฿'+COUPON.min_total+' ลด'):'ส่วนลด'; } else dr.style.display='none'; }
+  // 🎁 แลกแต้ม: โชว์ช่องเมื่อเป็นสมาชิก+มีแต้ม · แถวส่วนลดแต้ม
+  const rbx=document.getElementById('redeem-box'), rin=document.getElementById('redeem-input');
+  if(rbx){ const showR=!!(window.MEMBER && window.LOY && window.LOY.points>0 && (!_lcfg || _lcfg.enabled!==false));
+    rbx.style.display=showR?'flex':'none';
+    if(showR&&rin&&document.activeElement!==rin) rin.placeholder=(localStorage.getItem('lt_lang')==='en'?('Use points (have '+window.LOY.points+')'):('ใช้แต้ม (มี '+window.LOY.points+')'));
+    if(!showR){ REDEEM_PTS=0; const rm=document.getElementById('redeem-msg'); if(rm)rm.style.display='none'; } }
+  const rr=document.getElementById('cart-redeem-row');
+  if(rr){ if(REDEEM_DISC>0){ rr.style.display='flex'; document.getElementById('cart-redeem').textContent='-฿'+REDEEM_DISC; } else rr.style.display='none'; }
   // โปรซื้อครบลด: กระตุ้น "ซื้ออีก ฿X รับส่วนลด!" หรือชมเมื่อได้แล้ว
   const ph=document.getElementById('promo-hint');
   if(ph){
@@ -1522,6 +1538,7 @@ async function submitOrder() {
         items: cart.map(i => ({ product_id: i.id, qty: i.qty })),
         name, phone, address, payMethod,
         coupon: (COUPON && COUPON.code) || '',
+        redeem_points: (window.MEMBER ? REDEEM_PTS : 0),
         client_ref: window.CHECKOUT_REF || '',
         member_token: memberToken,
         source: localStorage.getItem('lt_source') || LT_SOURCE,
@@ -1554,6 +1571,8 @@ async function submitOrder() {
     if(!cod){ showPromptPayQR(total); document.getElementById('slip-status').textContent = ''; }
     document.getElementById('confirm-modal').classList.add('show');
     cart = [];
+    REDEEM_PTS = 0;                                      // consumed on this order
+    try { if (typeof refreshLoyalty === 'function') refreshLoyalty(); } catch (e) {}
     updateCartUI();
     window.CHECKOUT_REF = '';                            // consumed; next checkout makes a fresh ref
   } catch (e) {
@@ -1616,7 +1635,7 @@ function addChatMsg(text, type) {
   const el = document.getElementById('chat-messages');
   const d = document.createElement('div');
   d.className = `chat-msg ${type}`;
-  const safe = String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\n/g,'<br>');
+  const safe = String(text).replace(/\*\*(.+?)\*\*/g,'$1').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\n/g,'<br>');
   d.innerHTML = `<div class="chat-msg-bubble">${safe}</div>`;
   el.appendChild(d);
   el.scrollTop = el.scrollHeight;
@@ -1791,26 +1810,55 @@ function updateAuthUI(){
   document.getElementById('nav-myorders').style.display = u?'':'none';
   if(u) document.getElementById('nav-user-name').textContent = (u.email||'').split('@')[0];
 }
-sbAuth.auth.onAuthStateChange((_e,session)=>{ window.MEMBER = session?session.user:null; updateAuthUI(); });
-sbAuth.auth.getSession().then(({data:{session}})=>{ window.MEMBER = session?session.user:null; updateAuthUI(); });
+sbAuth.auth.onAuthStateChange((_e,session)=>{ window.MEMBER = session?session.user:null; updateAuthUI(); refreshLoyalty(); });
+sbAuth.auth.getSession().then(({data:{session}})=>{ window.MEMBER = session?session.user:null; updateAuthUI(); refreshLoyalty(); });
+
+// 🎁 Loyalty state (แต้ม/กฎการแลก) — แต้มจาก worker /points/me · กฎจากตาราง loyalty_config
+window.LOY = { points:0, config:null, member_no:null };
+async function refreshLoyalty(){
+  try{
+    let t='';
+    if(window.MEMBER){ const s=await sbAuth.auth.getSession(); t=(s.data&&s.data.session&&s.data.session.access_token)||''; }
+    const r=await fetch(WEB_API+'/points/me',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t})});
+    const j=await r.json();
+    if(j&&j.ok){ window.LOY={ points:j.points||0, config:j.config||window.LOY.config||null, member_no:j.member_no||null }; }
+  }catch(e){}
+  // กฎแลกแต้ม (earn/redeem/min) — อ่านตรงจากตาราง loyalty_config (anon) ถ้า worker ไม่ส่ง config มา
+  if(!window.LOY.config){
+    try{ const { data }=await sbAuth.from('loyalty_config').select('earn_baht_per_point,redeem_point_baht,min_redeem_points,enabled').limit(1);
+      if(data&&data[0]) window.LOY.config=data[0]; }catch(e){}
+  }
+  if(typeof updateCartUI==='function') updateCartUI();
+}
 
 // ===== My Orders (tracked on this device) =====
 const ORDER_STEPS=['PENDING','SLIP_RECEIVED','PAID','SHIPPED','DONE'];
 const ORDER_TH={PENDING:'รอชำระ',SLIP_RECEIVED:'ตรวจสลิป',PAID:'ชำระแล้ว',SHIPPED:'จัดส่งแล้ว',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
 function orderTrack(status){ const i=ORDER_STEPS.indexOf(status); return `<div style="display:flex;gap:3px;margin-top:8px">${ORDER_STEPS.map((s,idx)=>`<div style="flex:1;height:5px;border-radius:3px;background:${i>=0&&idx<=i?'var(--primary)':'#e8d5b5'}"></div>`).join('')}</div><div style="font-size:.72rem;color:var(--primary);margin-top:4px;font-weight:600">${ORDER_TH[status]||status}</div>`; }
+// 🚚 ลิงก์ติดตามพัสดุตามขนส่ง (Flash/Kerry/J&T/ไปรษณีย์ไทย/Ninja) — ไม่รู้จักขนส่ง = โชว์เลขเฉย ๆ
+function webTrackingLink(carrier,no){ if(!no) return ''; const map={flash:'https://www.flashexpress.com/fle/tracking?se={NO}',kerry:'https://th.kerryexpress.com/th/track/?track={NO}',jt:'https://www.jtexpress.co.th/index/query/gzquery.html?bills={NO}',thailandpost:'https://track.thailandpost.co.th/?trackNumber={NO}',thaipost:'https://track.thailandpost.co.th/?trackNumber={NO}','ไปรษณีย์':'https://track.thailandpost.co.th/?trackNumber={NO}',ninja:'https://www.ninjavan.co/th-th/tracking?id={NO}'}; const p=String(carrier||'').toLowerCase().replace(/express|\s|&|\./g,''); for(const k in map){ if(p.includes(k)) return map[k].replace('{NO}',encodeURIComponent(no)); } return ''; }
 async function openMyOrders(){
   let modal=document.getElementById('myorders-modal');
   if(!modal){ modal=document.createElement('div'); modal.id='myorders-modal'; modal.className='modal-overlay';
     modal.onclick=(e)=>{ if(e.target===modal) modal.classList.remove('show'); }; document.body.appendChild(modal); }
+  const en=localStorage.getItem('lt_lang')==='en';
+  // 🎁 แบนเนอร์แต้มสะสมจริง (/points/me) — โชว์เฉพาะสมาชิก
+  const ptsBanner=()=>{ if(!window.MEMBER) return ''; const L=window.LOY||{};
+    return `<div style="background:linear-gradient(135deg,#FFF9EC,#F8ECD4);border:1px solid #e8d5b5;border-radius:14px;padding:14px 16px;margin:14px 0;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <div><div style="font-size:.72rem;color:#8a6d4b;font-weight:600">${en?'My points':'แต้มสะสมของฉัน'}${L.member_no?(' · '+(en?'Member no. ':'สมาชิกหมายเลข ')+L.member_no):''}</div>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--primary);font-family:'Charm','Sarabun',cursive">✨ ${Number(L.points||0).toLocaleString()} <span style="font-size:.8rem;font-weight:600">${en?'pts':'แต้ม'}</span></div></div>
+      <button onclick="openRewards()" data-i18n="rewardsBtn" style="padding:9px 16px;border-radius:10px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.8rem;border:none;cursor:pointer">${en?'🎁 Rewards':'🎁 ของรางวัล'}</button>
+    </div>`; };
   const shell=(body)=>`<div class="modal-box" style="max-width:480px"><button class="modal-close-btn" onclick="document.getElementById('myorders-modal').classList.remove('show')">✕</button>
-    <div style="padding:28px 26px"><div class="order-modal-title">📦 ออเดอร์ของฉัน</div>${body}</div></div>`;
+    <div style="padding:28px 26px"><div class="order-modal-title">📦 ออเดอร์ของฉัน</div>${ptsBanner()}${body}</div></div>`;
   modal.innerHTML=shell('<div style="text-align:center;color:var(--muted);padding:30px">กำลังโหลด…</div>');
   modal.classList.add('show');
+  if(window.MEMBER && typeof refreshLoyalty==='function'){ try{ await refreshLoyalty(); }catch(e){} }
   let live=null;
   if(window.MEMBER){ try{ const { data:{ session } }=await sbAuth.auth.getSession();
     const res=await fetch(WEB_API+'/web-orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:session.access_token})});
     const j=await res.json(); if(j.ok) live=j.orders; }catch(e){} }
-  const rows = live!=null ? live.map(o=>({order_id:o.order_id,total:o.total_amount,items:o.items,status:o.status,tracking:o.tracking_number,carrier:o.carrier,at:o.created_at}))
+  const rows = live!=null ? live.map(o=>({order_id:o.order_id,total:o.total_amount,items:o.items,status:o.status,tracking:o.tracking_number,carrier:o.carrier||o.shipping_provider,at:o.created_at}))
                           : JSON.parse(localStorage.getItem('lt_myorders')||'[]');
   const sub = live!=null ? 'อัปเดตสถานะแบบเรียลไทม์ (สมาชิก)' : 'รายการที่สั่งจากอุปกรณ์นี้ · ล็อกอินเพื่อดูสถานะสด';
   window._myOrderMap={}; rows.forEach(o=>{ window._myOrderMap[o.order_id]={total:o.total,items:o.items||[]}; });
@@ -1820,10 +1868,56 @@ async function openMyOrders(){
       <div style="display:flex;justify-content:space-between;font-weight:700;color:var(--primary)"><span>${o.order_id}</span><span>฿${o.total}</span></div>
       <div style="font-size:.8rem;color:var(--muted);margin-top:4px">${(o.items||[]).map(i=>i.name+' ×'+i.qty).join(', ')}</div>
       ${o.status?orderTrack(o.status):''}
-      ${o.tracking?`<div style="font-size:.74rem;margin-top:5px">🚚 ${o.carrier||''} <b>${o.tracking}</b></div>`:''}
+      ${o.tracking?`<div style="font-size:.74rem;margin-top:5px">🚚 ${o.carrier||''} <b>${o.tracking}</b>${(function(){var l=webTrackingLink(o.carrier,o.tracking);return l?` · <a href="${l}" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700">ติดตามพัสดุ ↗</a>`:'';})()}</div>`:''}
       ${_payable(o)?`<button style="margin-top:8px;padding:7px 16px;border-radius:8px;background:var(--gold);color:var(--dark);font-weight:700;font-size:.8rem;border:none;cursor:pointer" onclick="payAgain('${o.order_id}')">💳 ชำระเงิน / ดู QR</button>`:''}
     </div>`).join('') : '<div style="text-align:center;color:var(--muted);padding:30px">ยังไม่มีออเดอร์ค่ะ</div>'}`);
 }
+// 🎁 เมนูของรางวัล — แคตตาล็อกจากตาราง rewards (anon อ่านได้ · active=true)
+async function openRewards(){
+  let modal=document.getElementById('rewards-modal');
+  if(!modal){ modal=document.createElement('div'); modal.id='rewards-modal'; modal.className='modal-overlay';
+    modal.onclick=(e)=>{ if(e.target===modal) modal.classList.remove('show'); }; document.body.appendChild(modal); }
+  const en=localStorage.getItem('lt_lang')==='en';
+  const myPts=Number((window.LOY||{}).points||0);
+  const shell=(body)=>`<div class="modal-box" style="max-width:520px"><button class="modal-close-btn" onclick="document.getElementById('rewards-modal').classList.remove('show')">✕</button>
+    <div style="padding:26px 24px"><div class="order-modal-title">🎁 ${en?'Rewards':'ของรางวัล'}</div>
+    <div class="order-modal-sub">${en?'Collect points and redeem sweet rewards':'สะสมแต้มแลกของรางวัลจากลานทองค่ะ'} 🍯${window.MEMBER?((en?' · You have ':' · คุณมี ')+myPts.toLocaleString()+(en?' pts':' แต้ม')):(en?' · Sign in to collect points':' · ล็อกอินเพื่อสะสมแต้มค่ะ')}</div>${body}</div></div>`;
+  modal.innerHTML=shell('<div style="text-align:center;color:var(--muted);padding:30px">กำลังโหลด…</div>');
+  modal.classList.add('show');
+  let rewards=[];
+  try{ const { data }=await sbAuth.from('rewards').select('*').eq('active',true).order('sort').order('id'); rewards=data||[]; }catch(e){}
+  if(!rewards.length){ modal.innerHTML=shell('<div style="text-align:center;color:var(--muted);padding:34px">เร็ว ๆ นี้มีของรางวัลมาให้แลกนะคะ 🎁</div>'); return; }
+  window.__REWARDS=rewards;
+  const cards=rewards.map(r=>{ const cost=Number(r.points_cost)||0, ok=window.MEMBER&&myPts>=cost;
+    const action = ok
+      ? `<button onclick="redeemReward('${r.id}',${cost})" style="font-size:.75rem;font-weight:800;padding:8px 15px;border-radius:20px;white-space:nowrap;border:none;background:var(--gold);color:var(--dark);cursor:pointer">🎁 ${en?'Redeem':'แลกเลย'}</button>`
+      : `<span style="font-size:.72rem;font-weight:700;padding:6px 12px;border-radius:20px;white-space:nowrap;background:#f9f0e8;color:#a08a6f">${window.MEMBER?((en?'Need ':'อีก ')+Math.max(0,cost-myPts).toLocaleString()+(en?' more pts':' แต้ม')):(en?'Sign in first':'ล็อกอินก่อนค่ะ')}</span>`;
+    return `<div style="display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px">
+      ${r.image_url?`<img src="${r.image_url}" style="width:64px;height:64px;object-fit:cover;border-radius:10px" alt="" onerror="this.style.display='none'">`:'<div style="width:64px;height:64px;border-radius:10px;background:#F8ECD4;display:flex;align-items:center;justify-content:center;font-size:28px">🎁</div>'}
+      <div style="flex:1;min-width:0"><div style="font-weight:700;color:var(--dark)">${r.title||r.name||''}</div>${r.description?`<div style="font-size:.8rem;color:var(--muted);margin-top:2px">${r.description}</div>`:''}
+        <div style="font-size:.85rem;color:var(--primary);font-weight:800;margin-top:4px">${cost.toLocaleString()} ${en?'pts':'แต้ม'}</div></div>
+      ${action}
+    </div>`; }).join('');
+  modal.innerHTML=shell(cards+`<div style="font-size:.74rem;color:var(--muted);text-align:center;margin-top:8px">${en?'* Points are deducted on redeem · our team will contact you to deliver the reward':'* แลกของรางวัลแล้ว หักแต้มทันที · ทีมงานจะติดต่อจัดส่งของรางวัลให้นะคะ'} 🍯</div>`);
+}
+window.openRewards=openRewards;
+
+// 🎁 แลกของรางวัลจริง → หักแต้ม + ออกคำขอ (worker /rewards/redeem) · ยืนยันก่อนแลก
+async function redeemReward(rewardId, cost){
+  if(!window.MEMBER){ alert('ล็อกอินก่อนแลกของรางวัลนะคะ 🍯'); return; }
+  const rw=(window.__REWARDS||[]).find(x=>String(x.id)===String(rewardId));
+  const title=(rw&&(rw.title||rw.name))||'ของรางวัล';
+  if(!confirm(`ยืนยันแลก "${title}"\nใช้ ${Number(cost).toLocaleString()} แต้ม?`)) return;
+  try{
+    const s=await sbAuth.auth.getSession(); const t=(s.data&&s.data.session&&s.data.session.access_token)||'';
+    const r=await fetch(WEB_API+'/rewards/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t,member_token:t,reward_id:rewardId})});
+    const j=await r.json();
+    if(j&&j.ok){ if(typeof j.points==='number')window.LOY.points=j.points; try{await refreshLoyalty();}catch(e){} alert(j.message||'แลกสำเร็จค่ะ 🎉'); openRewards(); }
+    else { alert((j&&j.message)||'แลกไม่สำเร็จค่ะ ลองใหม่นะคะ 🙏'); }
+  }catch(e){ alert('เกิดข้อผิดพลาด ลองใหม่อีกครั้งนะคะ 🙏'); }
+}
+window.redeemReward=redeemReward;
+
 // F3: เปิดหน้าชำระเงิน (QR + อัปโหลดสลิป) ของออเดอร์ที่ยังไม่จ่ายขึ้นมาใหม่
 function payAgain(orderId){
   const o=(window._myOrderMap||{})[orderId]; if(!o) return;
@@ -1891,8 +1985,10 @@ updateCartUI();
 function toggleWish(ev, slug){ ev.stopPropagation(); const i=WISHLIST.indexOf(slug); if(i>=0)WISHLIST.splice(i,1); else WISHLIST.push(slug); localStorage.setItem('lt_wishlist',JSON.stringify(WISHLIST)); applyProductView(); }
 
 async function loadReviews(){
-  try{ const res=await fetch(SUPA_URL+'/rest/v1/reviews?select=product_id,customer_name,stars,text&order=created_at.desc',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}});
-    if(!res.ok) return; const rows=await res.json(); REVIEWS={}; rows.forEach(r=>{ (REVIEWS[r.product_id]=REVIEWS[r.product_id]||[]).push(r); }); applyProductView(); renderTestimonials();
+  try{ const res=await fetch(SUPA_URL+'/rest/v1/reviews?select=*&order=created_at.desc',{headers:{apikey:SUPA_ANON,Authorization:'Bearer '+SUPA_ANON}});
+    if(!res.ok) return; const rows=await res.json(); REVIEWS={};
+    rows.forEach(r=>{ if(!r||r.active===false) return; r.text=r.text||r.review_text||''; (REVIEWS[r.product_id]=REVIEWS[r.product_id]||[]).push(r); });
+    applyProductView(); renderTestimonials();
   }catch(e){}
 }
 // หน้าแรก "รีวิวจากลูกค้าจริง" — ดึงจากตาราง reviews จริง (★≥4 + มีข้อความ) · ไม่ถึง 2 รีวิว = ซ่อน section (ไม่โชว์ของปลอม)
@@ -1934,6 +2030,21 @@ async function submitReview(pid){
     showToast('ขอบคุณสำหรับรีวิวค่ะ 💛'); await loadReviews(); renderProductReviews(pid);
   }catch(e){ showToast('ส่งรีวิวไม่สำเร็จค่ะ'); }
 }
+
+// 🎁 กดใช้แต้มในตะกร้า — validate ฝั่งหน้าเว็บ (ขั้นต่ำ/ยอดแต้ม) · server คิดจริงตอนสร้างออเดอร์
+function applyRedeem(){
+  const inp=document.getElementById('redeem-input'), msg=document.getElementById('redeem-msg');
+  const cfg=window.LOY&&window.LOY.config, bal=(window.LOY&&window.LOY.points)||0;
+  if(msg) msg.style.display='block';
+  if(!window.MEMBER){ if(msg){msg.style.color='var(--primary2)';msg.textContent='ล็อกอินก่อนแลกแต้มนะคะ';} REDEEM_PTS=0; updateCartUI(); return; }
+  let v=Math.floor(Number(inp&&inp.value)||0);
+  if(v<=0){ REDEEM_PTS=0; if(msg)msg.style.display='none'; updateCartUI(); return; }
+  const minR=(cfg&&cfg.min_redeem_points)||0, per=(cfg&&cfg.redeem_point_baht)||1;
+  if(v<minR){ if(msg){msg.style.color='var(--primary2)';msg.textContent='แลกขั้นต่ำ '+minR+' แต้มค่ะ';} REDEEM_PTS=0; updateCartUI(); return; }
+  if(v>bal){ v=bal; if(inp)inp.value=bal; }
+  REDEEM_PTS=v; if(msg){msg.style.color='#1e8a4f';msg.textContent='ใช้ '+v+' แต้ม = ลด ฿'+Math.round(v*per)+' ค่ะ';} updateCartUI();
+}
+window.applyRedeem=applyRedeem;
 
 async function applyCoupon(){
   const code=(document.getElementById('coupon-code').value||'').trim().toUpperCase(); const msg=document.getElementById('coupon-msg');
@@ -2005,6 +2116,7 @@ const I18N={ en:{
   aboutF3t:'Fast delivery', aboutF3s:'Sturdy packaging, fresh on arrival',
   aboutStat1:'Available at 7-11', aboutStat2:'Products', aboutStat3:'Authentic Thai',
   noProducts:'😔 No products found', emptyCart:'Your cart is empty', cartTitle:'🛒 Cart', cartTotal:'Total', cartShip:'🚚 Shipping', checkout:'Checkout →',
+  redeemBtn:'🎁 Use points', redeemRow:'🎁 Points discount', rewardsBtn:'🎁 Rewards',
   demoTxt:'· System is under development & improvement — no real purchases'
 }};
 function applyLang(lang){
@@ -2380,22 +2492,10 @@ if(_openMyOrders){
       const ref=myReferralCode();
       // register this member's code as an owner row (best-effort; code is unique so dupes 409 harmlessly)
       if(window.MEMBER && typeof sbInsertAnon==='function') sbInsertAnon('referrals',{ code:ref, owner_id:'USER-'+window.MEMBER.id });
-      // Phase 4 — loyalty points + tier (1 point / ฿100 spent)
-      // sum the totals actually shown (live /web-orders for members, localStorage for guests)
-      let spent=0; cards.forEach(c=>{ const mm=c.textContent.match(/฿([\d,]+)/); if(mm) spent+=parseInt(mm[1].replace(/,/g,'')); });
-      if(!spent) spent=mine.reduce((s,o)=>s+(Number(o.total)||0),0);
-      const pts=Math.floor(spent/100);
-      const tier = spent>=5000?{n:en?'Platinum':'แพลทินัม',ic:'💎'}:spent>=2000?{n:en?'Gold':'ทอง',ic:'🥇'}:{n:en?'Silver':'เงิน',ic:'🥈'};
+      // 🗑️ ลบการ์ดแต้มเก่า (฿100=1 · ระดับ เงิน/ทอง) — ใช้แบนเนอร์แต้มจริงด้านบน (/points/me) แทน · เหลือแค่ "ชวนเพื่อน"
       const extra=document.createElement('div'); extra.className='lt-extra';
       extra.style.cssText='margin-top:16px;border-top:1px solid var(--border);padding-top:14px';
-      extra.innerHTML=`<div style="background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div><div style="font-size:.74rem;opacity:.85">${en?'My points':'แต้มสะสม'}</div><div style="font-family:'Charm','Sarabun',cursive;font-size:1.8rem;font-weight:700">${pts} <span style="font-size:.9rem">${en?'pts':'แต้ม'}</span></div></div>
-            <div style="text-align:right"><div style="font-size:.74rem;opacity:.85">${en?'Tier':'ระดับ'}</div><div style="font-size:1.05rem;font-weight:700">${tier.ic} ${tier.n}</div></div>
-          </div>
-          <div style="font-size:.72rem;opacity:.8;margin-top:6px">${en?'Earn 1 point per ฿100 spent':'ทุกการใช้จ่าย ฿100 = 1 แต้ม'}</div>
-        </div>
-        <div style="font-size:.84rem;font-weight:700;margin-bottom:6px">🎁 ${en?'Invite friends':'ชวนเพื่อน รับส่วนลด'}</div>
+      extra.innerHTML=`<div style="font-size:.84rem;font-weight:700;margin-bottom:6px">🎁 ${en?'Invite friends':'ชวนเพื่อน รับส่วนลด'}</div>
         <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${en?'Share your code — you both get a discount.':'แชร์โค้ดของคุณ ทั้งคุณและเพื่อนรับส่วนลด'}</div>
         <div style="display:flex;gap:8px;align-items:center">
           <code style="flex:1;background:#f9f0e8;padding:8px 12px;border-radius:8px;font-weight:700;color:var(--primary);letter-spacing:1px">${ref}</code>
@@ -2416,7 +2516,7 @@ function injectSchema(){
       offers:{"@type":"Offer",price:p.price,priceCurrency:"THB",availability:(p.available==null||p.available>0)?"https://schema.org/InStock":"https://schema.org/OutOfStock"}
     }));
     const ld={"@context":"https://schema.org","@type":"Store",name:"ขนมลานทอง",description:"ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน",
-      url:"https://neos-css.github.io/lantong/",image:"https://neos-css.github.io/lantong/รูปสินค้า_web/chinese-moji.jpg",
+      url:"https://neos-css.github.io/lantong/",image:"https://neos-css.github.io/lantong/รูปสินค้า_web/tua-tat.jpg",
       hasOfferCatalog:{"@type":"OfferCatalog",name:"ขนมไทย",itemListElement:items}};
     const s=document.createElement('script'); s.type='application/ld+json'; s.textContent=JSON.stringify(ld); document.head.appendChild(s);
   }catch(e){}
