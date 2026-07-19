@@ -5373,11 +5373,11 @@
 
     let error;
     if (editingProductId) {
-      ({ error } = await sb.from('products').update(payload).eq('product_id', editingProductId));
+      ({ error } = await sb.from('products').update(payload).eq('id', editingProductId));
     } else {
       // สร้าง product_id จากชื่อ ถ้าไม่ได้กรอก
       const manualId = document.getElementById('prod-product-id').value.trim();
-      payload.product_id = manualId || 'p-' + Date.now();
+      payload.id = manualId || 'LT-P' + Date.now().toString(36).toUpperCase();
       ({ error } = await sb.from('products').insert(payload));
     }
 
@@ -5402,7 +5402,7 @@
   }
 
   async function toggleProductActive(productId, currentActive) {
-    const { error } = await sb.from('products').update({ active: !currentActive }).eq('product_id', productId);
+    const { error } = await sb.from('products').update({ active: !currentActive }).eq('id', productId);
     if (error) { showToast('❌ อัปเดตไม่สำเร็จ'); return; }
     const idx = allProducts.findIndex(p => (p.product_id || p.id) === productId);
     if (idx !== -1) allProducts[idx].active = !currentActive;
@@ -5412,7 +5412,7 @@
 
   async function deleteProduct(productId, productName) {
     if (!confirm(`⚠️ ต้องการลบสินค้า "${productName}" ใช่ไหม?\n\nการลบนี้ไม่สามารถย้อนกลับได้`)) return;
-    const { error } = await sb.from('products').delete().eq('product_id', productId);
+    const { error } = await sb.from('products').delete().eq('id', productId);
     if (error) { showToast('❌ ลบไม่สำเร็จ: ' + error.message); return; }
     allProducts = allProducts.filter(p => (p.product_id || p.id) !== productId);
     renderProducts();
@@ -5656,12 +5656,12 @@
 
   async function loadContentProducts() {
     if (contentProducts.length) return;
-    const { data } = await sb.from('products').select('product_id,name,price,description,benefits,image_url').eq('active', true);
+    const { data } = await sb.from('products').select('id,name,price,description,image_url').eq('active', true);
     contentProducts = data || [];
     const sel = document.getElementById('content-product');
     if (!sel) return;
     sel.innerHTML = contentProducts.map(p =>
-      `<option value="${escHtml(p.product_id)}">${escHtml(p.name)} — ฿${Number(p.price).toLocaleString()}</option>`
+      `<option value="${escHtml(p.id)}">${escHtml(p.name)} — ฿${Number(p.price).toLocaleString()}</option>`
     ).join('');
   }
 
@@ -5674,7 +5674,7 @@
     const hashtag     = document.getElementById('content-hashtag').value;
     const extra       = document.getElementById('content-extra').value.trim();
 
-    const product = contentProducts.find(p => p.product_id === productId) || contentProducts[0];
+    const product = contentProducts.find(p => p.id === productId) || contentProducts[0];
     if (!product) { showToast('⚠️ ยังไม่มีข้อมูลสินค้า'); return; }
 
     const typeMap = {
@@ -5784,7 +5784,7 @@ ${extra ? `จุดเน้นพิเศษ: ${extra}` : ''}
       const fromDate = new Date(Date.now() - days * 86400000).toISOString();
       const [{ data: orders }, { data: products }] = await Promise.all([
         sb.from('orders').select('order_id,items,total_amount,status,created_at,customer_id').gte('created_at', fromDate),
-        sb.from('products').select('product_id,name,price,stock,active'),
+        sb.from('products').select('id,name,price,stock,active'),
       ]);
 
       // 2. สรุปข้อมูลยอดขาย
@@ -5892,7 +5892,7 @@ ${summary}
       const sel = document.getElementById('video-product');
       if (sel && sel.options[0]?.text.includes('โหลด')) {
         sel.innerHTML = contentProducts.map(p =>
-          `<option value="${escHtml(p.product_id)}">${escHtml(p.name)} — ฿${Number(p.price).toLocaleString()}</option>`
+          `<option value="${escHtml(p.id)}">${escHtml(p.name)} — ฿${Number(p.price).toLocaleString()}</option>`
         ).join('');
       }
       return;
@@ -5908,7 +5908,7 @@ ${summary}
     const hook      = document.getElementById('video-hook').value;
     const extra     = document.getElementById('video-extra').value.trim();
 
-    const product = contentProducts.find(p => p.product_id === productId) || contentProducts[0];
+    const product = contentProducts.find(p => p.id === productId) || contentProducts[0];
     if (!product) { showToast('⚠️ ยังไม่มีข้อมูลสินค้า'); return; }
 
     document.getElementById('video-gen-btn').disabled = true;
@@ -6814,7 +6814,7 @@ Format ที่ต้องการ:
   async function loadFlashSaleAdmin() {
     try {
       const [{ data: prods }, cfgRows] = await Promise.all([
-        sb.from('products').select('product_id,name,price,original_price').eq('active', true).order('product_id'),
+        sb.from('products').select('id,name,price,original_price').eq('active', true).order('id'),
         sb.from('coupons').select('active,discount_type').eq('code', 'FLASHCFG')
       ]);
       _fsProducts = prods || [];
@@ -6830,11 +6830,11 @@ Format ที่ต้องการ:
       document.getElementById('fsProducts').innerHTML = _fsProducts.length === 0
         ? '<div style="color:var(--text-s);font-size:13px">ไม่พบสินค้าที่ active</div>'
         : _fsProducts.map(p => {
-            const fp = fsItems[p.product_id] || '';
+            const fp = fsItems[p.id] || '';
             return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
               <span style="flex:1;font-size:13px;font-weight:600">${p.name}</span>
               <span style="font-size:12px;color:var(--text-s);white-space:nowrap">ปกติ ฿${Number(p.price).toLocaleString()}</span>
-              <input type="number" id="fp-${p.product_id}" placeholder="ราคา flash (เว้นว่าง=ไม่ร่วม)" value="${fp}"
+              <input type="number" id="fp-${p.id}" placeholder="ราคา flash (เว้นว่าง=ไม่ร่วม)" value="${fp}"
                 style="width:140px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px">
             </div>`;
           }).join('');
@@ -6847,8 +6847,8 @@ Format ที่ต้องการ:
     const end    = document.getElementById('fs-end').value;
     const items  = {};
     _fsProducts.forEach(p => {
-      const el = document.getElementById('fp-' + p.product_id);
-      if (el && el.value) { const n = Number(el.value); if (n > 0) items[p.product_id] = n; }
+      const el = document.getElementById('fp-' + p.id);
+      if (el && el.value) { const n = Number(el.value); if (n > 0) items[p.id] = n; }
     });
     const cfg = JSON.stringify({ start: start || null, end: end || null, items });
     const { error } = await sb.from('coupons').upsert({ code: 'FLASHCFG', active, discount_type: cfg }, { onConflict: 'code' });
