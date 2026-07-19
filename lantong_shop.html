@@ -1660,6 +1660,20 @@ const LT_SOURCE = (() => { try {
 } catch (e) { return 'direct'; } })();
 if (!localStorage.getItem('lt_source')) localStorage.setItem('lt_source', LT_SOURCE);
 
+// 📊 นับผู้เข้าชม → site_visits (แดชบอร์ด "คนเข้าเว็บ/ช่องทางที่มา" ของพลอย+แอดมิน) · วันละ 1 ครั้ง/เครื่อง · fire-and-forget
+(function () { try {
+  let vid = localStorage.getItem('lt_visitor_id');
+  if (!vid) { vid = 'v-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); localStorage.setItem('lt_visitor_id', vid); }
+  const today = new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem('lt_visit_date') === today) return;
+  localStorage.setItem('lt_visit_date', today);
+  fetch(SUPA_URL + '/rest/v1/site_visits', {
+    method: 'POST',
+    headers: { apikey: SUPA_ANON, Authorization: 'Bearer ' + SUPA_ANON, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+    body: JSON.stringify({ visitor_id: vid, source: localStorage.getItem('lt_source') || LT_SOURCE || 'direct' }),
+  }).catch(function () {});
+} catch (e) {} })();
+
 // Ask the real Lisa AI (Dify via the Cloudflare Worker). Falls back to the
 // offline keyword replies if the worker is unreachable.
 async function askLisa(txt) {
@@ -1832,8 +1846,8 @@ async function refreshLoyalty(){
 }
 
 // ===== My Orders (tracked on this device) =====
-const ORDER_STEPS=['PENDING','SLIP_RECEIVED','PAID','SHIPPED','DONE'];
-const ORDER_TH={PENDING:'รอชำระ',SLIP_RECEIVED:'ตรวจสลิป',PAID:'ชำระแล้ว',SHIPPED:'จัดส่งแล้ว',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
+const ORDER_STEPS=['PENDING','SLIP_RECEIVED','PAID','SHIPPED','DELIVERED'];
+const ORDER_TH={PENDING:'รอชำระ',SLIP_RECEIVED:'ตรวจสลิป',PAID:'ชำระแล้ว',SHIPPED:'จัดส่งแล้ว',DELIVERED:'ถึงมือแล้ว',DONE:'สำเร็จ',CANCELLED:'ยกเลิก'};
 function orderTrack(status){ const i=ORDER_STEPS.indexOf(status); return `<div style="display:flex;gap:3px;margin-top:8px">${ORDER_STEPS.map((s,idx)=>`<div style="flex:1;height:5px;border-radius:3px;background:${i>=0&&idx<=i?'var(--primary)':'#e8d5b5'}"></div>`).join('')}</div><div style="font-size:.72rem;color:var(--primary);margin-top:4px;font-weight:600">${ORDER_TH[status]||status}</div>`; }
 // 🚚 ลิงก์ติดตามพัสดุตามขนส่ง (Flash/Kerry/J&T/ไปรษณีย์ไทย/Ninja) — ไม่รู้จักขนส่ง = โชว์เลขเฉย ๆ
 function webTrackingLink(carrier,no){ if(!no) return ''; const map={flash:'https://www.flashexpress.com/fle/tracking?se={NO}',kerry:'https://th.kerryexpress.com/th/track/?track={NO}',jt:'https://www.jtexpress.co.th/index/query/gzquery.html?bills={NO}',thailandpost:'https://track.thailandpost.co.th/?trackNumber={NO}',thaipost:'https://track.thailandpost.co.th/?trackNumber={NO}','ไปรษณีย์':'https://track.thailandpost.co.th/?trackNumber={NO}',ninja:'https://www.ninjavan.co/th-th/tracking?id={NO}'}; const p=String(carrier||'').toLowerCase().replace(/express|\s|&|\./g,''); for(const k in map){ if(p.includes(k)) return map[k].replace('{NO}',encodeURIComponent(no)); } return ''; }
