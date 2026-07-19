@@ -4851,7 +4851,7 @@
       gi++; const gid = 'sg' + gi;
       let totalIn = 0, totalInCost = 0, totalOut = 0, latest = '';
       const detail = ms.map((m, i) => {
-        const delta = Number(m.delta) || 0;
+        const delta = Number(m.delta != null ? m.delta : m.change) || 0;   // ลานทอง: worker เขียนคอลัมน์ change (delta = ภาษา engine เดิม)
         const uc = delta > 0 ? (parseCost(m.note) || costMap[pname] || 0) : 0;
         const total = delta > 0 ? delta * uc : 0;
         if (delta > 0) { totalIn += delta; totalInCost += total; } else { totalOut += Math.abs(delta); }
