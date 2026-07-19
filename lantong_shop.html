@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ขนมลานทอง — ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน</title>
-<meta name="description" content="ขนมลานทอง ขนมไทยแท้คัดสรร 14 รายการ ถั่วตัด ขนมเปี๊ยะ กล้วยตาก สั่งง่ายผ่านเว็บ/LINE ส่งฟรีเมื่อครบ ฿600 มี AI ไพลินดูแล 24 ชม.">
+<meta name="description" content="ขนมลานทอง ขนมไทยแท้คัดสรร ถั่วตัด กล้วยตากอบน้ำผึ้ง ครองแครง กระเจี๊ยบแก้ว สั่งง่ายผ่านเว็บ/LINE มี AI ไพลินดูแล 24 ชม.">
 <meta name="theme-color" content="#8B0000">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="ขนมลานทอง — ขนมไทยแท้คัดสรร">
-<meta property="og:description" content="ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน · ส่งฟรีเมื่อครบ ฿600 · AI ไพลินดูแล 24 ชม.">
+<meta property="og:description" content="ขนมไทยแท้คัดสรร ส่งตรงถึงบ้าน · AI ไพลินดูแล 24 ชม.">
 <meta property="og:image" content="https://neos-css.github.io/lantong/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -653,7 +653,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <div id="topbar">
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
-  <span id="announce-text">🍯 ยินดีต้อนรับสู่ขนมลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿600 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
+  <span id="announce-text">🍯 ยินดีต้อนรับสู่ขนมลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿500 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
   <span id="cd-wrap">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
@@ -710,7 +710,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="trust-row">
     <div class="trust-item"><div class="ti-ic">🔒</div><div class="ti-t" data-i18n="trust1t">ชำระเงินปลอดภัย</div><div class="ti-s" data-i18n="trust1s">PromptPay · ตรวจสลิปอัตโนมัติ</div></div>
     <div class="trust-item"><div class="ti-ic">✅</div><div class="ti-t" data-i18n="trust2t">รีวิวจริงจากลูกค้า</div><div class="ti-s" data-i18n="trust2s">รีวิวจากลูกค้าจริงในเว็บ</div></div>
-    <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿600</div></div>
+    <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿500</div></div>
     <div class="trust-item"><div class="ti-ic">🍯</div><div class="ti-t" data-i18n="trust4t">วัตถุดิบแท้ คัดสรร</div><div class="ti-s" data-i18n="trust4s">ไม่ใส่สี ไม่ใส่สารกันบูด</div></div>
   </div>
 </section>
@@ -902,6 +902,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
     </div>
     <div id="coupon-msg" style="font-size:.76rem;margin-bottom:8px;display:none"></div>
     <div id="cart-discount-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--primary)"><span id="cart-discount-label">ส่วนลด</span><span id="cart-discount">-฿0</span></div>
+    <div id="cart-ship-row" class="cart-total-row" style="display:none;font-size:.86rem;color:var(--muted)"><span data-i18n="cartShip">🚚 ค่าจัดส่ง</span><span id="cart-ship">฿50</span></div>
     <div class="cart-total-row">
       <span>ยอดรวม</span>
       <span class="cart-total-price" id="cart-total">฿0</span>
@@ -1093,46 +1094,37 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 
 <script>
 let PRODUCTS = [
-  {id:"LT-P01",slug:"chinese-moji",name_th:"ขนมเปี๊ยะชาววังไส้ถั่ว",name_en:"Chinese Moji",cat:"ขนมนึ่ง",price:120,orig:150,weight:"150g",
-   desc:"ตำรับชาววัง แป้งบางนุ่มหอมเนย ไส้ถั่วกวนละมุนลิ้น ห่อสวยลายดอกไม้มงคล เหมาะเป็นของฝากทุกโอกาสพิเศษ",
-   hl:["ทำจากวัตถุดิบคัดสรร","เหมาะเป็นของขวัญมงคล","รสชาติต้นตำรับ"]},
-  {id:"LT-P02",slug:"buay-khem",name_th:"บ๊วยเค็ม",name_en:"Salted Cured Jujube",cat:"ผลไม้แปรรูป",price:45,orig:null,weight:"80g",
+  {id:"LT-P02",slug:"buay-khem",name_th:"บ๊วยเค็ม",name_en:"Salted Cured Jujube",cat:"ผลไม้แปรรูป",price:20,orig:null,weight:"90g",
    desc:"บ๊วยเค็มคัดพิเศษ รสเปรี้ยว–เค็มกลมกล่อม หอมละมุนชวนติดใจ ของว่างทานเพลินที่อมแล้วสดชื่นหายเหนื่อย",
    hl:["รสชาติต้นตำรับ","คัดพิเศษ","ของว่างยอดนิยม"]},
-  {id:"LT-P03",slug:"donut-cake",name_th:"โดนัทเค้ก",name_en:"DoNuts Cake",cat:"ขนมอบ",price:89,orig:null,weight:"120g",
-   desc:"โดนัทเค้กเนื้อนุ่มสไตล์ลานทอง เคลือบน้ำตาลแก้วระยิบ หวานกำลังดี หอมกลิ่นเนย ทานคู่ชา–กาแฟอร่อยลงตัว",
-   hl:["สูตรเฉพาะลานทอง","เนื้อนุ่มพิเศษ","รสชาติไทยแท้"]},
-  {id:"LT-P04",slug:"cheese-pineapple-cracker",name_th:"ชีสไส้สับปะรด",name_en:"Pineapple Cheese Crackers",cat:"คุกกี้/แครกเกอร์",price:65,orig:80,weight:"90g",
+  {id:"LT-P04",slug:"cheese-pineapple-cracker",name_th:"ชีสไส้สับปะรด",name_en:"Pineapple Cheese Crackers",cat:"คุกกี้/แครกเกอร์",price:20,orig:null,weight:"70g",
    desc:"แครกเกอร์กรอบสอดไส้สับปะรดแท้ หวานอมเปรี้ยวตัดเค็มมันของชีส อร่อยเพลินกรอบทุกคำ",
    hl:["สับปะรดแท้","รสชีสเข้มข้น","กรอบทุกคำ"]},
-  {id:"LT-P05",slug:"tua-tat",name_th:"ถั่วตัด",name_en:"Peanut Bar",cat:"ขนมไทยโบราณ",price:55,orig:null,weight:"100g",
+  {id:"LT-P05",slug:"tua-tat",name_th:"ถั่วตัด",name_en:"Peanut Bar",cat:"ขนมไทยโบราณ",price:20,orig:null,weight:"90g",
    desc:"ถั่วตัดสูตรโบราณ ถั่วลิสงคั่วหอมคลุกงาขาว เคลือบน้ำตาลอ้อยเป็นแผ่นกรอบ หวานมันไม่ใส่สารกันบูด",
    hl:["สูตรโบราณแท้","ไม่ใส่สารกันบูด","กรอบหอมอร่อย"]},
-  {id:"LT-P06",slug:"biscuit-pineapple",name_th:"บิสกิตไส้สับปะรด",name_en:"Biscuit Filling Pineapple",cat:"คุกกี้/แครกเกอร์",price:49,orig:null,weight:"75g",
+  {id:"LT-P06",slug:"biscuit-pineapple",name_th:"บิสกิตไส้สับปะรด",name_en:"Biscuit Filling Pineapple",cat:"คุกกี้/แครกเกอร์",price:20,orig:null,weight:"75g",
    desc:"บิสกิตกรอบประกบไส้แยมสับปะรดแท้ หวานอมเปรี้ยวสดชื่น ชิ้นพอดีคำ ทานเพลินไม่มีเบื่อ",
    hl:["ไส้สับปะรดแท้","เรียงสวย","ขนาดพอดีคำ"]},
-  {id:"LT-P07",slug:"cashewnut-cookie",name_th:"คุกกี้มะม่วงหิมพานต์",name_en:"Cashewnut Cookie",cat:"คุกกี้/แครกเกอร์",price:75,orig:null,weight:"85g",
+  {id:"LT-P07",slug:"cashewnut-cookie",name_th:"คุกกี้มะม่วงหิมพานต์",name_en:"Cashewnut Cookie",cat:"คุกกี้/แครกเกอร์",price:20,orig:null,weight:"85g",
    desc:"คุกกี้เม็ดมะม่วงหิมพานต์แท้ หอมมันเนื้อกรอบนอกนุ่มใน อบใหม่หอมกรุ่น ไม่ใส่ผงชูรส",
    hl:["มะม่วงหิมพานต์แท้","ไม่ใส่ผงชูรส","หอมมันเนย"]},
-  {id:"LT-P08",slug:"tua-pak-ar",name_th:"ถั่วปากอ้า",name_en:"Salted Broad Bean",cat:"ถั่วอบ/ทอด",price:55,orig:65,weight:"100g",
+  {id:"LT-P08",slug:"tua-pak-ar",name_th:"ถั่วปากอ้า",name_en:"Salted Broad Bean",cat:"ถั่วอบ/ทอด",price:20,orig:null,weight:"90g",
    desc:"ถั่วปากอ้าทอดกรอบ คลุกซอสหวาน–เค็มเข้มข้น หอมมันเคี้ยวมันส์ ของกินเล่นที่หยุดไม่ได้",
    hl:["กรอบทุกเม็ด","เค็มพอดี","หอมอร่อย"]},
-  {id:"LT-P09",slug:"crispy-fish",name_th:"ปลากรอบ",name_en:"Crispy Fish",cat:"ถั่วอบ/ทอด",price:59,orig:null,weight:"70g",
+  {id:"LT-P09",slug:"crispy-fish",name_th:"ปลากรอบ",name_en:"Sweet Crispy Fish",cat:"ถั่วอบ/ทอด",price:20,orig:null,weight:"70g",
    desc:"ปลาแผ่นทอดกรอบบางเบา รสเค็ม–หวานกลมกล่อม หอมกลิ่นปลาแท้ ไม่ใส่สีสังเคราะห์ ทานเพลินได้โปรตีน",
    hl:["กรอบบางพิเศษ","หอมกลิ่นปลาแท้","ไม่ใส่สีสังเคราะห์"]},
-  {id:"LT-P10",slug:"banana-chips",name_th:"กล้วยเบรคแตก",name_en:"Banana Chips",cat:"ผลไม้แปรรูป",price:89,orig:null,weight:"200g",
-   desc:"กล้วยน้ำว้าแท้ 100% ทอดกรอบหอมหวานธรรมชาติ บรรจุถุงซิปล็อกเก็บความกรอบ ถุงใหญ่จุใจคุ้มค่า",
-   hl:["กล้วยน้ำว้าแท้100%","ถุงซิปล็อคเก็บกรอบ","ขนาดใหญ่คุ้มค่า"]},
-  {id:"LT-P12",slug:"krang-krang-black-pepper",name_th:"ครองแครงพริกไทยดำ",name_en:"Krang Krang Black Pepper",cat:"ขนมไทยโบราณ",price:75,orig:90,weight:"80g",
+  {id:"LT-P10",slug:"banana-chips",name_th:"กล้วยเบรคแตก",name_en:"Banana Chips",cat:"ผลไม้แปรรูป",price:25,orig:null,weight:"120g",
+   desc:"กล้วยน้ำว้าแท้ 100% ทอดกรอบหอมหวานธรรมชาติ บรรจุถุงซิปล็อกเก็บความกรอบ",
+   hl:["กล้วยน้ำว้าแท้100%","ถุงซิปล็อคเก็บกรอบ","กรอบหอมอร่อย"]},
+  {id:"LT-P12",slug:"krang-krang-black-pepper",name_th:"ครองแครงพริกไทยดำ",name_en:"Krang Krang Black Pepper",cat:"ขนมไทยโบราณ",price:20,orig:null,weight:"90g",
    desc:"ครองแครงอบกรอบทรงเกลียวน่ารัก คลุกพริกไทยดำแท้ หอม–เผ็ดปลายลิ้น เคี้ยวกรอบเพลินจนเพลิน",
    hl:["พริกไทยดำแท้","รูปทรงน่ารัก","กรอบหอม"]},
-  {id:"LT-P13",slug:"honey-dried-banana",name_th:"กล้วยตากอบน้ำผึ้ง",name_en:"Honey Dried Banana",cat:"ผลไม้แปรรูป",price:99,orig:120,weight:"150g",
+  {id:"LT-P13",slug:"honey-dried-banana",name_th:"กล้วยตากอบน้ำผึ้ง",name_en:"Honey Dried Banana",cat:"ผลไม้แปรรูป",price:30,orig:null,weight:"155g",
    desc:"กล้วยน้ำว้าตากแดดธรรมชาติ อาบน้ำผึ้งแท้จนเงาฉ่ำ เนื้อหนึบหวานหอม ไม่แต่งกลิ่น–ไม่ใส่สี",
    hl:["น้ำผึ้งแท้100%","ไม่ใส่น้ำตาล","หวานธรรมชาติ"]},
-  {id:"LT-P14",slug:"tua-kuan",name_th:"ถั่วกวน",name_en:"Sweet Golden Bean",cat:"ขนมไทยโบราณ",price:65,orig:null,weight:"150g",
-   desc:"ถั่วกวนสูตรโบราณ ถั่วเขียวกวนกับน้ำตาลจนเนียนนุ่ม หวานมันละมุน หอมกลิ่นถั่วแท้ธรรมชาติ",
-   hl:["สูตรโบราณ","ถั่วเขียวแท้","ไม่ใส่สีผสมอาหาร"]},
-  {id:"LT-P15",slug:"roselle",name_th:"กระเจี๊ยบแก้ว",name_en:"Sweetened Roselle",cat:"ผลไม้แปรรูป",price:55,orig:null,weight:"100g",
+  {id:"LT-P15",slug:"roselle",name_th:"กระเจี๊ยบแก้ว",name_en:"Sweetened Roselle",cat:"ผลไม้แปรรูป",price:20,orig:null,weight:"100g",
    desc:"กระเจี๊ยบแดงเชื่อมเคลือบน้ำตาลแก้ว เปรี้ยว–หวานสดชื่น อุดมวิตามินซี เคี้ยวหนึบอร่อยได้ประโยชน์",
    hl:["วิตามินซีสูง","กระเจี๊ยบแท้","สีสวยธรรมชาติ"]},
 ];
@@ -1404,7 +1396,17 @@ function updateCartUI() {
   if (COUPON && subtotal >= (COUPON.min_total||0)) {
     DISCOUNT = COUPON.discount_type==='percent' ? Math.round(subtotal*COUPON.value/100) : Math.min(COUPON.value, subtotal);
   }
-  const total = Math.max(0, subtotal - DISCOUNT);
+  // ค่าจัดส่ง (ตรงกับ worker: ยอดหลังหักส่วนลด >= เกณฑ์ส่งฟรี = ฟรี ไม่งั้นคิดค่าส่ง)
+  // คำนวณ inline จาก SHOP_CFG ตรง ๆ (ห้ามพึ่ง FREE_TH/SHIP_FEE — ประกาศทีหลัง เรียกก่อน = TDZ พังทั้งหน้า)
+  const afterDisc = Math.max(0, subtotal - DISCOUNT);
+  const _cfg = window.SHOP_CFG || {};
+  const _freeTh = Number(_cfg.free_threshold) || 500, _shipFee = Number(_cfg.shipping_fee) || 50;
+  const SHIP = (afterDisc > 0 && afterDisc < _freeTh) ? _shipFee : 0;
+  const total = afterDisc + SHIP;
+  const sr=document.getElementById('cart-ship-row');
+  if(sr){ if(cart.length && SHIP>0){ sr.style.display='flex'; document.getElementById('cart-ship').textContent='฿'+SHIP; }
+    else if(cart.length){ sr.style.display='flex'; document.getElementById('cart-ship').textContent=(localStorage.getItem('lt_lang')==='en'?'FREE 🎉':'ฟรี 🎉'); }
+    else sr.style.display='none'; }
   const count = cart.reduce((s, i) => s + i.qty, 0);
   const badge = document.getElementById('cart-badge');
   badge.textContent = count;
@@ -1956,7 +1958,8 @@ async function applyCoupon(){
 const $=id=>document.getElementById(id);
 const cartSubtotal=()=>cart.reduce((s,i)=>s+i.price*i.qty,0);
 const cartCount=()=>cart.reduce((s,i)=>s+i.qty,0);
-const FREE_TH=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.free_threshold))||600;
+const FREE_TH=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.free_threshold))||500;
+const SHIP_FEE=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.shipping_fee))||50;
 function track(ev,params){ try{ if(window.gtag) gtag('event',ev,params||{}); }catch(e){} }
 
 /* ════════ THEME (dark mode) — Phase 2 ════════ */
@@ -1975,7 +1978,7 @@ const I18N={ en:{
   navChat:'Chat Pailin', chatPailin:'💬 Chat with Pailin', addCart:'Add to cart', buyTogether:'🍯 Great together',
   trust1t:'Secure payment',trust1s:'PromptPay · auto slip check',
   trust2t:'Real customer reviews',trust2s:'Genuine on-site reviews',
-  trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿600',
+  trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿500',
   trust4t:'Real selected ingredients',trust4s:'No dye, no preservatives',
   storyTitle:'The story of Lanthong sweets',
   story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
@@ -2001,7 +2004,7 @@ const I18N={ en:{
   aboutF2t:'Smart AI system', aboutF2s:'Pailin cares for customers 24/7',
   aboutF3t:'Fast delivery', aboutF3s:'Sturdy packaging, fresh on arrival',
   aboutStat1:'Available at 7-11', aboutStat2:'Products', aboutStat3:'Authentic Thai',
-  noProducts:'😔 No products found', emptyCart:'Your cart is empty', cartTitle:'🛒 Cart', cartTotal:'Total', checkout:'Checkout →',
+  noProducts:'😔 No products found', emptyCart:'Your cart is empty', cartTitle:'🛒 Cart', cartTotal:'Total', cartShip:'🚚 Shipping', checkout:'Checkout →',
   demoTxt:'· System is under development & improvement — no real purchases'
 }};
 function applyLang(lang){
@@ -2245,19 +2248,19 @@ const POLICIES={
     <h3>Eligible for return</h3><ul><li>Damaged, spoiled or expired on arrival</li><li>Wrong item shipped</li></ul>
     <h3>How to report</h3><p>Photograph the item and parcel, notify Pailin within 3 days of receipt — we'll reship or fully refund.</p>`},
   shipping:{th:`<h2>นโยบายการจัดส่ง</h2><ul><li>จัดส่งทั่วไทยผ่านขนส่งมาตรฐาน 3-5 วันทำการหลังยืนยันชำระเงิน</li>
-    <li>ส่งฟรีเมื่อซื้อครบ ฿600</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
+    <li>ค่าจัดส่ง ฿50 · ส่งฟรีเมื่อซื้อครบ ฿500</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
     en:`<h2>Shipping Policy</h2><ul><li>Nationwide standard delivery, 3-5 business days after payment confirmation</li>
-    <li>Free shipping over ฿600</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`},
+    <li>Shipping ฿50 · free over ฿500</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`},
   faq:{th:`<h2>คำถามที่พบบ่อย (FAQ)</h2>
     <h3>🚚 จัดส่งกี่วัน?</h3><p>3-5 วันทำการหลังยืนยันการชำระเงิน · ส่งทั่วไทยผ่านขนส่งมาตรฐาน</p>
-    <h3>💰 ค่าส่งเท่าไร?</h3><p>ส่งฟรีเมื่อซื้อครบ ฿600 · ต่ำกว่านั้นคิดค่าส่งตามจริง (ระบบแจ้งยอดก่อนยืนยัน)</p>
+    <h3>💰 ค่าส่งเท่าไร?</h3><p>ค่าจัดส่ง ฿50 ทั่วไทย · ส่งฟรีเมื่อซื้อครบ ฿500 (ระบบแจ้งยอดก่อนยืนยัน)</p>
     <h3>🗓️ ขนมเก็บได้นานไหม?</h3><p>ดูช่อง "อายุการเก็บ" และ "วิธีเก็บรักษา" ในหน้าสินค้าแต่ละชิ้น · ขนมแห้งส่วนใหญ่เก็บได้หลายสัปดาห์เมื่อปิดถุงสนิทในที่แห้ง</p>
     <h3>💳 ชำระเงินอย่างไร?</h3><p>โอน/PromptPay (เลขร้านในหน้าชำระเงิน) แล้วแจ้งสลิป ระบบตรวจอัตโนมัติ · หรือเลือกเก็บเงินปลายทาง (COD)</p>
     <h3>📦 ของเสียหาย/ส่งผิดทำอย่างไร?</h3><p>ถ่ายรูปสินค้า+กล่องพัสดุ แจ้งไพลินภายใน 3 วันหลังรับของ เราส่งใหม่หรือคืนเงินเต็มจำนวนค่ะ</p>
     <h3>🥜 มีข้อมูลสารก่อภูมิแพ้ไหม?</h3><p>ดูได้ในหน้าสินค้าแต่ละชิ้น (ส่วนประกอบ/สารก่อภูมิแพ้) · หากแพ้อาหารบางชนิด สอบถามไพลินก่อนสั่งได้เลยค่ะ</p>`,
     en:`<h2>FAQ</h2>
     <h3>🚚 How long is delivery?</h3><p>3-5 business days after payment confirmation, nationwide.</p>
-    <h3>💰 Shipping cost?</h3><p>Free over ฿600; otherwise actual rate (shown before you confirm).</p>
+    <h3>💰 Shipping cost?</h3><p>Shipping ฿50 nationwide · free over ฿500 (shown before you confirm).</p>
     <h3>🗓️ Shelf life?</h3><p>See "shelf life" and "storage" on each product page. Most dry snacks keep for weeks when sealed and kept dry.</p>
     <h3>💳 How to pay?</h3><p>Bank transfer / PromptPay (details on checkout) then upload the slip for auto-verification, or Cash on Delivery (COD).</p>
     <h3>📦 Damaged / wrong item?</h3><p>Photograph the item and parcel, tell Pailin within 3 days — we reship or fully refund.</p>
@@ -2265,13 +2268,13 @@ const POLICIES={
   contact:{th:`<h2>ติดต่อขนมลานทอง</h2>
     <p>เรายินดีตอบทุกคำถามค่ะ 💛</p>
     <ul><li>💬 <b>แชตไพลิน AI</b> บนเว็บนี้ — ตอบอัตโนมัติ 24 ชม. (ปุ่มแชตมุมขวาล่าง)</li>
-    <li>📱 <b>LINE OA:</b> @ลานทอง (แอดมินตอบกลับในเวลาทำการ)</li>
+    <li>📞 <b>โทร:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> (คุณนุ้ย · เวลาทำการ)</li>
     <li>🏪 <b>ร้านลานทอง</b> — ขนมไทยคัดสรร ส่งตรงถึงบ้าน</li></ul>
     <p style="margin-top:10px">ชำระเงิน: PromptPay 0982695608 / กสิกรไทย 1443385696 (ชื่อบัญชี ร้านลานทอง) — โปรดโอนเข้าบัญชีนี้เท่านั้น</p>`,
     en:`<h2>Contact Lanthong</h2>
     <p>We're happy to help 💛</p>
     <ul><li>💬 <b>Pailin AI chat</b> on this site — 24/7 auto-reply (bottom-right button)</li>
-    <li>📱 <b>LINE OA:</b> @lanthong (admin replies during business hours)</li>
+    <li>📞 <b>Phone:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> (business hours)</li>
     <li>🏪 <b>Lanthong</b> — curated Thai sweets, delivered to your door</li></ul>
     <p style="margin-top:10px">Payment: PromptPay 0982695608 / Kasikornbank 1443385696 (acct: Lanthong) — transfer to this account only.</p>`}
 };
