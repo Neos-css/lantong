@@ -654,7 +654,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
   <span id="announce-text">🍯 ยินดีต้อนรับสู่ขนมลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿500 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
-  <span id="cd-wrap">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
+  <span id="cd-wrap" style="display:none">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
 
@@ -2320,13 +2320,19 @@ window.stickyAdd=stickyAdd;
   sync();
 })();
 
-/* ════════ PROMO COUNTDOWN (folded into the announce bar) — Phase 1 ════════ */
+/* ════════ PROMO COUNTDOWN — config จริงเท่านั้น (app_config.promo_countdown_end) ════════
+   เดิม hardcode นับถึงเที่ยงคืนทุกวัน (ของประดับ) → เปลี่ยนเป็น: ตั้งเวลาโปรในแอดมิน = โชว์ · ไม่ตั้ง/หมดเวลา = ซ่อน */
 (function(){
-  const el=$('cd-time'); if(!el) return;
-  function tick(){ const now=new Date(); const end=new Date(now); end.setHours(23,59,59,999);
-    let s=Math.floor((end-now)/1000); if(s<0)s=0;
+  const el=$('cd-time'), wrap=$('cd-wrap'); if(!el||!wrap) return;
+  function tick(){
+    const endRaw=(window.SHOP_CFG&&window.SHOP_CFG.promo_countdown_end)||null;
+    const end=endRaw?Date.parse(endRaw):NaN;
+    if(!endRaw||isNaN(end)||end<=Date.now()){ wrap.style.display='none'; return; }
+    wrap.style.display='';
+    let s=Math.floor((end-Date.now())/1000);
     const h=String(Math.floor(s/3600)).padStart(2,'0'), m=String(Math.floor(s%3600/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
-    el.textContent=`${h}:${m}:${ss}`; }
+    el.textContent=`${h}:${m}:${ss}`;
+  }
   tick(); setInterval(tick,1000);
 })();
 
