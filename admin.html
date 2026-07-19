@@ -3554,7 +3554,7 @@
     showToast('🎬 คลิปเสร็จแล้วค่ะ! กดเล่น/ดาวน์โหลดไปโพสต์ได้เลย');
   }
 
-  // ===== 🔋 AI POWER v2 (ถังราย agent + บิล 3 ค่า ราคาจริง/ค่าบริการ/รวม) =====
+  // ===== 🔋 AI POWER v2 (ถังราย agent · หักตามราคาจริง · ลานทองไม่เก็บค่าบริการ) =====
   let pwBuckets = [], pwFeePct = 7, pwFx = 0;
   const PW_AG_NAME = { manager: '👩‍💼 พลอย', sales: '💁‍♀️ ไพลิน', marketing: '📣 Marketing', inventory: '📦 Inventory', finance: '💰 Finance', image: '🎨 สร้างภาพ', video: '🎬 วิดีโอ', logistic: '🚚 Logistic', eva: '👩‍💼 พลอย', lume: '💁‍♀️ ไพลิน' };
   const pwAgName = a => PW_AG_NAME[a] || a || '-';
@@ -3578,8 +3578,6 @@
         ? `เรตวันนี้ ${pwFx.toFixed(2)} บาท/$ · รวม VAT ${d.vat_pct || 7}% (vendor LLM เก็บจากต้นทาง) แล้ว`
         : 'ดึงเรตไม่ได้ค่ะ';
     } catch (e) { pwFx = 0; const rt = document.getElementById('pw-rate-text'); if (rt) rt.textContent = 'ดึงเรตไม่ได้ค่ะ'; }
-    const fl = document.getElementById('pw-fee-label');
-    if (fl) fl.textContent = (Math.round(pwFeePct * 100) / 100) + '%';
     renderBuckets();
     renderPowerAlert();
     fillAgentSelect();
