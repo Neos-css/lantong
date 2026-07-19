@@ -774,7 +774,8 @@
         <div class="nav-group-items">
           <button class="nav-tab" data-tab="power" onclick="switchTab('power', this)">🔋 พลัง AI</button>
           <button class="nav-tab admin-only" data-tab="users" onclick="switchTab('users', this)">👥 ผู้ใช้</button>
-          <button class="nav-tab" onclick="window.open('guide.html','_blank')" title="เปิดคู่มือการใช้งานในแท็บใหม่">📖 คู่มือการใช้งาน</button>
+          <!-- 📖 คู่มือการใช้งาน — ซ่อนชั่วคราว (guide.html ยัง rebrand ไม่เสร็จ = 404 · เปิดคืน session หน้า) -->
+          <button class="nav-tab" style="display:none" onclick="window.open('guide.html','_blank')" title="เปิดคู่มือการใช้งานในแท็บใหม่">📖 คู่มือการใช้งาน</button>
         </div>
       </div>
     </div>
