@@ -1953,6 +1953,17 @@
     </div>
 
     <div style="background:var(--white);border:1px solid var(--gold-l);border-radius:14px;padding:22px;margin-top:16px">
+      <div class="table-title" style="margin-bottom:6px">📢 แถบประกาศบนหน้าเว็บ</div>
+      <div class="page-sub" style="margin-bottom:14px">ข้อความวิ่งแถบบนสุดของหน้าร้าน (ระบบเติม "ไพลิน AI ดูแล 24 ชม." ให้เองท้ายแถบ) · ตั้งเวลานับถอยหลังเฉพาะตอนมีโปรจริง — เว้นว่าง = ไม่โชว์นาฬิกา</div>
+      <label style="display:block;font-weight:600;margin-bottom:6px;font-size:13px">ข้อความประกาศ</label>
+      <input class="form-input" type="text" id="cfg-banner" placeholder="เช่น ส่งฟรีเมื่อซื้อครบ ฿500" style="margin-bottom:14px">
+      <label style="display:block;font-weight:600;margin-bottom:6px;font-size:13px">🔥 นับถอยหลังโปรหมดเขต (เว้นว่าง = ปิด)</label>
+      <input class="form-input" type="datetime-local" id="cfg-countdown" style="margin-bottom:20px">
+      <button class="content-gen-btn" onclick="saveBannerCfg()" style="width:auto;padding:11px 26px">💾 บันทึกแถบประกาศ</button>
+      <span id="bannercfg-msg" style="font-size:13px;margin-left:12px;display:none"></span>
+    </div>
+
+    <div style="background:var(--white);border:1px solid var(--gold-l);border-radius:14px;padding:22px;margin-top:16px">
       <div class="table-title" style="margin-bottom:6px">🚚 AI Logistic (แจ้งส่ง + ติดตามพัสดุ)</div>
       <div class="page-sub" style="margin-bottom:14px">พอกด "จัดส่งแล้ว" + ใส่เลขพัสดุ → แจ้งลูกค้าทาง LINE พร้อมลิงก์ติดตามอัตโนมัติ + เตือนพลอยเมื่อมีของค้างส่ง</div>
       <label style="display:block;font-weight:600;margin-bottom:6px;font-size:13px">ขนส่งเริ่มต้น</label>
@@ -6522,9 +6533,12 @@ Format ที่ต้องการ:
 
   async function loadShipCfgAdmin() {
     try {
-      const { data } = await sb.from('app_config').select('ship_fee,free_threshold,default_carrier,ship_stuck_days,logi_notify_enabled,carrier_api_provider,carrier_api_key').eq('id', 1).maybeSingle();
-      document.getElementById('cfg-ship-fee').value = (data && data.ship_fee != null) ? data.ship_fee : 50;
-      document.getElementById('cfg-free-th').value  = (data && data.free_threshold != null) ? data.free_threshold : 600;
+      const { data } = await sb.from('app_config').select('shipping_fee,free_threshold,default_carrier,ship_stuck_days,logi_notify_enabled,carrier_api_provider,carrier_api_key,promo_banner,promo_countdown_end').eq('id', 1).maybeSingle();
+      document.getElementById('cfg-ship-fee').value = (data && data.shipping_fee != null) ? data.shipping_fee : 50;
+      document.getElementById('cfg-free-th').value  = (data && data.free_threshold != null) ? data.free_threshold : 500;
+      const bEl = document.getElementById('cfg-banner'); if (bEl) bEl.value = (data && data.promo_banner) || '';
+      const cEl = document.getElementById('cfg-countdown');
+      if (cEl && data && data.promo_countdown_end) { try { const d = new Date(data.promo_countdown_end); cEl.value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); } catch (e) {} }
       const setV = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
       setV('cfg-carrier',      (data && data.default_carrier) || 'Flash');
       setV('cfg-stuck-days',   (data && data.ship_stuck_days != null) ? data.ship_stuck_days : 2);
@@ -6594,12 +6608,26 @@ Format ที่ต้องการ:
     msg.style.display = 'inline';
     if (!(fee >= 0) || !(th >= 0)) { msg.style.color = 'var(--red)'; msg.textContent = 'กรอกตัวเลข ≥ 0 นะคะ'; return; }
     try {
-      const { error } = await sb.from('app_config').upsert({ id: 1, ship_fee: fee, free_threshold: th, updated_at: new Date().toISOString() });
+      const { error } = await sb.from('app_config').upsert({ id: 1, shipping_fee: fee, free_threshold: th, updated_at: new Date().toISOString() });
       if (error) { msg.style.color = 'var(--red)'; msg.textContent = '❌ ' + error.message; }
       else { msg.style.color = 'var(--green)'; msg.textContent = '✅ บันทึกแล้ว · เว็บ+ไพลินใช้ค่าใหม่ทันที'; }
     } catch (e) { msg.style.color = 'var(--red)'; msg.textContent = '❌ ' + (e.message || e); }
   }
   window.saveShipCfg = saveShipCfg;
+
+  // ===== 📢 แถบประกาศบนหน้าเว็บ (promo_banner + countdown) =====
+  async function saveBannerCfg() {
+    const msg = document.getElementById('bannercfg-msg'); if (msg) msg.style.display = 'inline';
+    const banner = (document.getElementById('cfg-banner').value || '').trim();
+    const cdRaw  = document.getElementById('cfg-countdown').value;
+    const row = { id: 1, promo_banner: banner, promo_countdown_end: cdRaw ? new Date(cdRaw).toISOString() : null, updated_at: new Date().toISOString() };
+    try {
+      const { error } = await sb.from('app_config').upsert(row);
+      if (error) { msg.style.color = 'var(--red)'; msg.textContent = '❌ ' + error.message; }
+      else { msg.style.color = 'var(--green)'; msg.textContent = '✅ บันทึกแล้ว · แถบบนเว็บเปลี่ยนทันทีที่ลูกค้ารีเฟรช'; }
+    } catch (e) { msg.style.color = 'var(--red)'; msg.textContent = '❌ ' + (e.message || e); }
+  }
+  window.saveBannerCfg = saveBannerCfg;
 
   async function saveReportConfig() {
     if (!requireEdit()) return;
