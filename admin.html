@@ -5335,7 +5335,8 @@
         ${imgHtml}
         <div class="prod-body">
           <div class="prod-name">${escHtml(p.name||'ไม่มีชื่อ')}</div>
-          <div class="prod-cat">${escHtml(p.category||'')}</div>
+          <div class="prod-cat">${escHtml(p.category||'')}${p.unit ? ` · ${escHtml(p.unit)}` : ''}</div>
+          ${p.fda_number ? `<div style="font-size:11px;color:var(--text-s);margin-bottom:5px">อย. ${escHtml(p.fda_number)}</div>` : `<div style="font-size:11px;color:#e0533d;opacity:.7;margin-bottom:5px">ยังไม่ใส่ อย.</div>`}
           ${priceHtml}
           ${costHtml}
           ${stockText ? `<div class="prod-stock">${stockText}</div>` : ''}
