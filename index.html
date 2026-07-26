@@ -947,9 +947,8 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       </div>
       <div class="payment-info" id="payment-info-box">
         <div class="payment-info-title">💳 ข้อมูลชำระเงิน</div>
-        <div class="payment-info-row"><span>PromptPay</span><span id="pi-promptpay">0982695608</span></div>
-        <div class="payment-info-row"><span id="pi-bank-label">กสิกรไทย</span><span id="pi-bank-no">1443385696</span></div>
-        <div class="payment-info-row"><span>ชื่อบัญชี</span><span id="pi-account">ร้านลานทอง</span></div>
+        <div class="payment-info-row"><span>PromptPay</span><span id="pi-promptpay">090-890-7933</span></div>
+        <div class="payment-info-row"><span>ชื่อบัญชี</span><span id="pi-account">แววตา อุดมทรัพย์สกุล</span></div>
         <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:.74rem;color:var(--muted);line-height:1.6">
           🔒 <b>เพื่อความปลอดภัย:</b> โอนเข้าบัญชี/PromptPay ด้านบนของ <b>ร้านลานทอง</b> เท่านั้น · ร้านจะตรวจสลิปก่อนจัดส่ง · หลังโอนเสร็จจะได้รับเลขคำสั่งซื้อทันที
         </div>
@@ -983,7 +982,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
       <div id="confirm-qr-block" style="background:#fff8ee;border:1px solid #f0d890;border-radius:14px;padding:18px 16px;margin-bottom:16px">
         <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:10px">📲 สแกนจ่ายด้วย PromptPay</div>
         <div id="pp-qr" style="width:200px;height:200px;margin:0 auto;display:flex;align-items:center;justify-content:center"></div>
-        <div style="font-size:.8rem;color:var(--muted);margin-top:8px">ร้านลานทอง · PromptPay 0982695608</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:8px">ร้านลานทอง · PromptPay 090-890-7933</div>
         <div style="font-size:.95rem;font-weight:700;color:var(--primary);margin-top:2px" id="pp-amount"></div>
       </div>
 
@@ -1614,8 +1613,8 @@ function lisaRecommend(){
 }
 function lisaPayment(){
   const c=window.SHOP_CFG||{};
-  const pp=c.promptpay||'0982695608', bank=c.bank_name||'กสิกรไทย', bno=c.bank_no||'1443385696', acc=c.bank_account||'ร้านลานทอง';
-  return `ช่องทางชำระเงินค่ะ 💳\n💳 PromptPay: ${pp}\n🏦 ${bank}: ${bno}\nชื่อบัญชี: ${acc}\nโอนแล้วส่งสลิปให้ไพลินได้เลยนะคะ`;
+  const pp=c.promptpay||'090-890-7933', acc=c.bank_account||'แววตา อุดมทรัพย์สกุล';
+  return `ช่องทางชำระเงินค่ะ 💳\n💳 PromptPay: ${pp}\nชื่อบัญชี: ${acc}\nโอนแล้วส่งสลิปให้ไพลินได้เลยนะคะ`;
 }
 
 function getLisaReply(msg) {
@@ -1745,7 +1744,7 @@ try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ c
   if (!data) return; window.SHOP_CFG = data;
   const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.textContent=v; };
   if (data.promo_banner) { BANNER_BASE=data.promo_banner; try{updateAnnounceBar();}catch(e){} }
-  set('pi-promptpay', data.promptpay); set('pi-bank-label', data.bank_name); set('pi-bank-no', data.bank_no); set('pi-account', data.bank_account);
+  set('pi-promptpay', data.promptpay); set('pi-account', data.bank_account);
 } catch (e) {} })();
 
 // Live two-way chat: receive admin replies in real time (Supabase Realtime broadcast)
@@ -1963,7 +1962,7 @@ function showPromptPayQR(amount){
   document.getElementById('pp-amount').textContent = 'ยอดชำระ ฿'+amount;
   try {
     const qr = qrcode(0, 'M');
-    qr.addData(promptPayPayload('0982695608', amount));
+    qr.addData(promptPayPayload('0908907933', amount));
     qr.make();
     document.getElementById('pp-qr').innerHTML = qr.createImgTag(5, 8);
   } catch(e){ console.warn('QR', e); }
@@ -2402,13 +2401,13 @@ const POLICIES={
     <ul><li>💬 <b>แชตไพลิน AI</b> บนเว็บนี้ — ตอบอัตโนมัติ 24 ชม. (ปุ่มแชตมุมขวาล่าง)</li>
     <li>📞 <b>โทร:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> (คุณนุ้ย · เวลาทำการ)</li>
     <li>🏪 <b>ร้านลานทอง</b> — ขนมไทยคัดสรร ส่งตรงถึงบ้าน</li></ul>
-    <p style="margin-top:10px">ชำระเงิน: PromptPay 0982695608 / กสิกรไทย 1443385696 (ชื่อบัญชี ร้านลานทอง) — โปรดโอนเข้าบัญชีนี้เท่านั้น</p>`,
+    <p style="margin-top:10px">ชำระเงิน: PromptPay 090-890-7933 (ชื่อบัญชี แววตา อุดมทรัพย์สกุล) — โปรดโอนเข้าบัญชีนี้เท่านั้น</p>`,
     en:`<h2>Contact Lanthong</h2>
     <p>We're happy to help 💛</p>
     <ul><li>💬 <b>Pailin AI chat</b> on this site — 24/7 auto-reply (bottom-right button)</li>
     <li>📞 <b>Phone:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> (business hours)</li>
     <li>🏪 <b>Lanthong</b> — curated Thai sweets, delivered to your door</li></ul>
-    <p style="margin-top:10px">Payment: PromptPay 0982695608 / Kasikornbank 1443385696 (acct: Lanthong) — transfer to this account only.</p>`}
+    <p style="margin-top:10px">Payment: PromptPay 090-890-7933 (acct: Waewta Udomsapsakul) — transfer to this account only.</p>`}
 };
 function openPolicy(key){ const en=localStorage.getItem('lt_lang')==='en'; const p=POLICIES[key]; if(!p)return;
   $('policy-content').innerHTML=en?p.en:p.th; $('policy-modal').classList.add('show'); track('view_policy',{policy:key});
