@@ -2665,6 +2665,17 @@
       </div>
     </div>
 
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">น้ำหนัก / ขนาด <span style="font-weight:400;color:var(--text-s)">(เช่น 70g)</span></label>
+        <input class="form-input" type="text" id="prod-unit" placeholder="เช่น 70g" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">เลข อย. <span style="font-weight:400;color:var(--text-s)">(เลขสารบบอาหาร)</span></label>
+        <input class="form-input" type="text" id="prod-fda" placeholder="เช่น 12-3-45678-9-0001" style="font-family:monospace;font-size:13px" />
+      </div>
+    </div>
+
     <div class="form-group">
       <label class="form-label">ราคาเต็มก่อนลด <span style="font-weight:400;color:var(--text-s)">(ใส่เมื่อจัดโปร → ขีดฆ่าโชว์คู่ราคาขาย · เว้นว่าง = ไม่มีโปร)</span></label>
       <input class="form-input" type="number" id="prod-original-price" placeholder="เช่น 4999 (ราคาเต็ม) แล้วใส่ราคาลดในช่อง 'ราคาขาย' ด้านบน" min="0" step="1" />
@@ -5360,11 +5371,13 @@
       const stockVal = p.stock !== undefined && p.stock !== null ? p.stock : (p.stock_qty !== undefined ? p.stock_qty : '');
       document.getElementById('prod-stock').value = stockVal;
       document.getElementById('prod-description').value = p.description || '';
+      document.getElementById('prod-unit').value = p.unit || '';
+      document.getElementById('prod-fda').value = p.fda_number || '';
       document.getElementById('prod-active').checked = p.active !== false;
       document.getElementById('prod-image-url').value = p.image_url || '';
       previewImage(p.image_url || '');
     } else {
-      ['prod-product-id','prod-name','prod-category','prod-price','prod-original-price','m-cost','prod-stock','prod-description','prod-image-url'].forEach(id => {
+      ['prod-product-id','prod-name','prod-category','prod-price','prod-original-price','m-cost','prod-stock','prod-description','prod-image-url','prod-unit','prod-fda'].forEach(id => {
         document.getElementById(id).value = '';
       });
       document.getElementById('prod-active').checked = true;
@@ -5444,6 +5457,8 @@
       description: document.getElementById('prod-description').value.trim() || '',
       active:      document.getElementById('prod-active').checked,
       image_url:   document.getElementById('prod-image-url').value.trim() || null,
+      unit:        document.getElementById('prod-unit').value.trim() || '',
+      fda_number:  document.getElementById('prod-fda').value.trim() || null,
     };
 
     let error;
