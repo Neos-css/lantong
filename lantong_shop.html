@@ -1279,7 +1279,7 @@ const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
 async function syncProductsFromSupabase() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,is_bundle,deleted_at,stock&order=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,fda_number,is_bundle,deleted_at,stock&order=id`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
     if (!res.ok) return;
@@ -1314,6 +1314,7 @@ async function syncProductsFromSupabase() {
         storage:      r.storage      || '',
         pack_size:    r.pack_size    || '',
         suitable_for: r.suitable_for || '',
+        fda:          r.fda_number   || '',
       };
     });
     try { applyFlash(); } catch (e) {}
@@ -1363,6 +1364,7 @@ function renderFoodInfo(p){
     ['⏳','อายุการเก็บ',p.shelf_life],
     ['🧊','วิธีเก็บรักษา',p.storage],
     ['🎁','เหมาะสำหรับ',p.suitable_for],
+    ['✅','เลข อย.',p.fda],
   ].filter(r=>r[2]&&String(r[2]).trim());
   if(!rows.length){ host.innerHTML=''; return; }
   host.innerHTML='<div style="font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--text)">📋 ข้อมูลสินค้า</div>'+
@@ -2399,13 +2401,23 @@ const POLICIES={
   contact:{th:`<h2>ติดต่อขนมลานทอง</h2>
     <p>เรายินดีตอบทุกคำถามค่ะ 💛</p>
     <ul><li>💬 <b>แชตไพลิน AI</b> บนเว็บนี้ — ตอบอัตโนมัติ 24 ชม. (ปุ่มแชตมุมขวาล่าง)</li>
-    <li>📞 <b>โทร:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> (คุณนุ้ย · เวลาทำการ)</li>
+    <li>📞 <b>โทร:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> · <a href="tel:0624156612" style="color:var(--gold)">062-415-6612</a> · <a href="tel:0908907933" style="color:var(--gold)">090-890-7933</a></li>
+    <li>📠 <b>แฟกซ์:</b> 02-957-4403</li>
+    <li>💬 <b>LINE:</b> <a href="https://line.me/R/ti/p/@447ynvuy" target="_blank" rel="noopener" style="color:var(--gold)">@447ynvuy</a></li>
+    <li>📘 <b>Facebook:</b> <a href="https://www.facebook.com/khanomlangthong" target="_blank" rel="noopener" style="color:var(--gold)">ขนมลานทอง</a></li>
+    <li>🕘 <b>เวลาทำการ:</b> จันทร์-เสาร์ 9.00-17.00 น.</li>
+    <li>📍 <b>ที่อยู่:</b> 61/188 หมู่ 8 ต.บึงบอน อ.หนองเสือ จ.ปทุมธานี 12170</li>
     <li>🏪 <b>ร้านลานทอง</b> — ขนมไทยคัดสรร ส่งตรงถึงบ้าน</li></ul>
     <p style="margin-top:10px">ชำระเงิน: PromptPay 090-890-7933 (ชื่อบัญชี แววตา อุดมทรัพย์สกุล) — โปรดโอนเข้าบัญชีนี้เท่านั้น</p>`,
     en:`<h2>Contact Lanthong</h2>
     <p>We're happy to help 💛</p>
     <ul><li>💬 <b>Pailin AI chat</b> on this site — 24/7 auto-reply (bottom-right button)</li>
-    <li>📞 <b>Phone:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> (business hours)</li>
+    <li>📞 <b>Phone:</b> <a href="tel:0847617781" style="color:var(--gold)">084-761-7781</a> · <a href="tel:0624156612" style="color:var(--gold)">062-415-6612</a> · <a href="tel:0908907933" style="color:var(--gold)">090-890-7933</a></li>
+    <li>📠 <b>Fax:</b> 02-957-4403</li>
+    <li>💬 <b>LINE:</b> <a href="https://line.me/R/ti/p/@447ynvuy" target="_blank" rel="noopener" style="color:var(--gold)">@447ynvuy</a></li>
+    <li>📘 <b>Facebook:</b> <a href="https://www.facebook.com/khanomlangthong" target="_blank" rel="noopener" style="color:var(--gold)">Khanom Lanthong</a></li>
+    <li>🕘 <b>Hours:</b> Mon-Sat 9:00-17:00</li>
+    <li>📍 <b>Address:</b> 61/188 Moo 8, Bueng Bon, Nong Suea, Pathum Thani 12170</li>
     <li>🏪 <b>Lanthong</b> — curated Thai sweets, delivered to your door</li></ul>
     <p style="margin-top:10px">Payment: PromptPay 090-890-7933 (acct: Waewta Udomsapsakul) — transfer to this account only.</p>`}
 };
