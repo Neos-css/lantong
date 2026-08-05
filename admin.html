@@ -2643,15 +2643,18 @@
         <label class="form-label">หมวดหมู่</label>
         <input class="form-input" id="prod-category" list="cat-datalist" placeholder="เลือกหรือพิมพ์หมวดใหม่..." autocomplete="off">
         <datalist id="cat-datalist">
-          <option value="ขนมไทยโบราณ"></option>
+          <option value="ขนมไทย"></option>
           <option value="ผลไม้แปรรูป"></option>
-          <option value="คุกกี้/แครกเกอร์"></option>
-          <option value="ถั่วอบ/ทอด"></option>
-          <option value="ขนมนึ่ง"></option>
-          <option value="ขนมอบ"></option>
+          <option value="ขนมปัง"></option>
+          <option value="ของทานเล่น"></option>
           <option value="Other"></option>
         </datalist>
       </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">ลำดับการแสดงผล <span style="font-weight:400;color:var(--text-s)">(เลขน้อย = อยู่หน้าสุด · แนะนำเว้นทีละ 10 เช่น 10, 20, 30 จะได้แทรกทีหลังง่าย · เว้นว่าง = ไปต่อท้าย)</span></label>
+      <input class="form-input" type="number" id="prod-sort" placeholder="เช่น 10" step="1" />
     </div>
 
     <div class="form-row">
@@ -4892,7 +4895,10 @@
 
   async function loadProducts() {
     document.getElementById('products-wrap').innerHTML = '<div class="loading-overlay"><span class="loading-spin"></span></div>';
-    const { data, error } = await sb.from('products').select('*').order('created_at', { ascending: false });
+    // เรียงตาม sort_order ให้ตรงกับหน้าร้าน (เจ้าของจะได้เห็นลำดับจริง) · ไม่มีลำดับ = ไปต่อท้าย
+    const { data, error } = await sb.from('products').select('*')
+      .order('sort_order', { ascending: true, nullsFirst: false })
+      .order('created_at', { ascending: false });
     if (error) {
       document.getElementById('products-wrap').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div>โหลดสินค้าไม่สำเร็จ: ${error.message}</div>`;
       return;
@@ -5253,7 +5259,7 @@
   function populateCatDatalist() {
     const dl = document.getElementById('cat-datalist');
     if (!dl) return;
-    const defaults = ['ขนมไทยโบราณ','ผลไม้แปรรูป','คุกกี้/แครกเกอร์','ถั่วอบ/ทอด','ขนมนึ่ง','ขนมอบ','Other'];
+    const defaults = ['ขนมไทย','ผลไม้แปรรูป','ขนมปัง','ของทานเล่น','Other'];
     const fromDb = allProducts.map(p => (p.category || '').trim()).filter(Boolean);
     const all = [...new Set([...defaults, ...fromDb])];
     dl.innerHTML = all.map(c => `<option value="${c.replace(/"/g, '&quot;')}"></option>`).join('');
@@ -5335,7 +5341,7 @@
         ${imgHtml}
         <div class="prod-body">
           <div class="prod-name">${escHtml(p.name||'ไม่มีชื่อ')}</div>
-          <div class="prod-cat">${escHtml(p.category||'')}${p.unit ? ` · ${escHtml(p.unit)}` : ''}</div>
+          <div class="prod-cat">${(p.sort_order !== undefined && p.sort_order !== null && p.sort_order !== 9999) ? `<span style="display:inline-block;background:var(--gold-l,#e8d9a8);color:#6b5518;border-radius:5px;padding:1px 6px;font-weight:800;margin-right:5px">#${p.sort_order}</span>` : ''}${escHtml(p.category||'')}${p.unit ? ` · ${escHtml(p.unit)}` : ''}</div>
           ${p.fda_number ? `<div style="font-size:11px;color:var(--text-s);margin-bottom:5px">อย. ${escHtml(p.fda_number)}</div>` : `<div style="font-size:11px;color:#e0533d;opacity:.7;margin-bottom:5px">ยังไม่ใส่ อย.</div>`}
           ${priceHtml}
           ${costHtml}
@@ -5374,11 +5380,12 @@
       document.getElementById('prod-description').value = p.description || '';
       document.getElementById('prod-unit').value = p.unit || '';
       document.getElementById('prod-fda').value = p.fda_number || '';
+      document.getElementById('prod-sort').value = (p.sort_order !== undefined && p.sort_order !== null) ? p.sort_order : '';
       document.getElementById('prod-active').checked = p.active !== false;
       document.getElementById('prod-image-url').value = p.image_url || '';
       previewImage(p.image_url || '');
     } else {
-      ['prod-product-id','prod-name','prod-category','prod-price','prod-original-price','m-cost','prod-stock','prod-description','prod-image-url','prod-unit','prod-fda'].forEach(id => {
+      ['prod-product-id','prod-name','prod-category','prod-price','prod-original-price','m-cost','prod-stock','prod-description','prod-image-url','prod-unit','prod-fda','prod-sort'].forEach(id => {
         document.getElementById(id).value = '';
       });
       document.getElementById('prod-active').checked = true;
@@ -5460,6 +5467,7 @@
       image_url:   document.getElementById('prod-image-url').value.trim() || null,
       unit:        document.getElementById('prod-unit').value.trim() || '',
       fda_number:  document.getElementById('prod-fda').value.trim() || null,
+      sort_order:  document.getElementById('prod-sort').value !== '' ? parseInt(document.getElementById('prod-sort').value) : 9999,
     };
 
     let error;
