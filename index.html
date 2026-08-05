@@ -729,12 +729,10 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <h2 class="section-title" data-i18n="prodTitle">ขนมไทยทุกชนิด</h2>
   <div class="filter-bar">
     <button class="filter-btn active" data-i18n="fAll" onclick="filterProducts('all',this)">ทั้งหมด</button>
-    <button class="filter-btn" data-i18n="fAncient" onclick="filterProducts('ขนมไทยโบราณ',this)">ขนมไทยโบราณ</button>
+    <button class="filter-btn" data-i18n="fThai" onclick="filterProducts('ขนมไทย',this)">ขนมไทย</button>
     <button class="filter-btn" data-i18n="fFruit" onclick="filterProducts('ผลไม้แปรรูป',this)">ผลไม้แปรรูป</button>
-    <button class="filter-btn" data-i18n="fCookie" onclick="filterProducts('คุกกี้/แครกเกอร์',this)">คุกกี้/แครกเกอร์</button>
-    <button class="filter-btn" data-i18n="fNuts" onclick="filterProducts('ถั่วอบ/ทอด',this)">ถั่วอบ/ทอด</button>
-    <button class="filter-btn" data-i18n="fSteam" onclick="filterProducts('ขนมนึ่ง',this)">ขนมนึ่ง</button>
-    <button class="filter-btn" data-i18n="fBaked" onclick="filterProducts('ขนมอบ',this)">ขนมอบ</button>
+    <button class="filter-btn" data-i18n="fBread" onclick="filterProducts('ขนมปัง',this)">ขนมปัง</button>
+    <button class="filter-btn" data-i18n="fSnack" onclick="filterProducts('ของทานเล่น',this)">ของทานเล่น</button>
     <button class="filter-btn" data-i18n="fWish" onclick="filterProducts('__wish__',this)">❤️ ที่ถูกใจ</button>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px">
@@ -1102,28 +1100,28 @@ let PRODUCTS = [
   {id:"LT-P02",slug:"buay-khem",name_th:"บ๊วยเค็ม",name_en:"Salted Cured Jujube",cat:"ผลไม้แปรรูป",price:20,orig:null,weight:"90g",
    desc:"บ๊วยเค็มคัดพิเศษ รสเปรี้ยว–เค็มกลมกล่อม หอมละมุนชวนติดใจ ของว่างทานเพลินที่อมแล้วสดชื่นหายเหนื่อย",
    hl:["รสชาติต้นตำรับ","คัดพิเศษ","ของว่างยอดนิยม"]},
-  {id:"LT-P04",slug:"cheese-pineapple-cracker",name_th:"ชีสไส้สับปะรด",name_en:"Pineapple Cheese Crackers",cat:"คุกกี้/แครกเกอร์",price:20,orig:null,weight:"70g",
+  {id:"LT-P04",slug:"cheese-pineapple-cracker",name_th:"ชีสไส้สับปะรด",name_en:"Pineapple Cheese Crackers",cat:"ของทานเล่น",price:20,orig:null,weight:"70g",
    desc:"แครกเกอร์กรอบสอดไส้สับปะรดแท้ หวานอมเปรี้ยวตัดเค็มมันของชีส อร่อยเพลินกรอบทุกคำ",
    hl:["สับปะรดแท้","รสชีสเข้มข้น","กรอบทุกคำ"]},
-  {id:"LT-P05",slug:"tua-tat",name_th:"ถั่วตัด",name_en:"Peanut Bar",cat:"ขนมไทยโบราณ",price:20,orig:null,weight:"90g",
+  {id:"LT-P05",slug:"tua-tat",name_th:"ถั่วตัด",name_en:"Peanut Bar",cat:"ของทานเล่น",price:20,orig:null,weight:"90g",
    desc:"ถั่วตัดสูตรโบราณ ถั่วลิสงคั่วหอมคลุกงาขาว เคลือบน้ำตาลอ้อยเป็นแผ่นกรอบ หวานมันไม่ใส่สารกันบูด",
    hl:["สูตรโบราณแท้","ไม่ใส่สารกันบูด","กรอบหอมอร่อย"]},
-  {id:"LT-P06",slug:"biscuit-pineapple",name_th:"บิสกิตไส้สับปะรด",name_en:"Biscuit Filling Pineapple",cat:"คุกกี้/แครกเกอร์",price:20,orig:null,weight:"75g",
+  {id:"LT-P06",slug:"biscuit-pineapple",name_th:"บิสกิตไส้สับปะรด",name_en:"Biscuit Filling Pineapple",cat:"ของทานเล่น",price:20,orig:null,weight:"75g",
    desc:"บิสกิตกรอบประกบไส้แยมสับปะรดแท้ หวานอมเปรี้ยวสดชื่น ชิ้นพอดีคำ ทานเพลินไม่มีเบื่อ",
    hl:["ไส้สับปะรดแท้","เรียงสวย","ขนาดพอดีคำ"]},
-  {id:"LT-P07",slug:"cashewnut-cookie",name_th:"คุกกี้มะม่วงหิมพานต์",name_en:"Cashewnut Cookie",cat:"คุกกี้/แครกเกอร์",price:20,orig:null,weight:"85g",
+  {id:"LT-P07",slug:"cashewnut-cookie",name_th:"คุกกี้มะม่วงหิมพานต์",name_en:"Cashewnut Cookie",cat:"ของทานเล่น",price:20,orig:null,weight:"85g",
    desc:"คุกกี้เม็ดมะม่วงหิมพานต์แท้ หอมมันเนื้อกรอบนอกนุ่มใน อบใหม่หอมกรุ่น ไม่ใส่ผงชูรส",
    hl:["มะม่วงหิมพานต์แท้","ไม่ใส่ผงชูรส","หอมมันเนย"]},
-  {id:"LT-P08",slug:"tua-pak-ar",name_th:"ถั่วปากอ้า",name_en:"Salted Broad Bean",cat:"ถั่วอบ/ทอด",price:20,orig:null,weight:"90g",
+  {id:"LT-P08",slug:"tua-pak-ar",name_th:"ถั่วปากอ้า",name_en:"Salted Broad Bean",cat:"ของทานเล่น",price:20,orig:null,weight:"90g",
    desc:"ถั่วปากอ้าทอดกรอบ คลุกซอสหวาน–เค็มเข้มข้น หอมมันเคี้ยวมันส์ ของกินเล่นที่หยุดไม่ได้",
    hl:["กรอบทุกเม็ด","เค็มพอดี","หอมอร่อย"]},
-  {id:"LT-P09",slug:"crispy-fish",name_th:"ปลากรอบ",name_en:"Sweet Crispy Fish",cat:"ถั่วอบ/ทอด",price:20,orig:null,weight:"70g",
+  {id:"LT-P09",slug:"crispy-fish",name_th:"ปลากรอบ",name_en:"Sweet Crispy Fish",cat:"ของทานเล่น",price:20,orig:null,weight:"70g",
    desc:"ปลาแผ่นทอดกรอบบางเบา รสเค็ม–หวานกลมกล่อม หอมกลิ่นปลาแท้ ไม่ใส่สีสังเคราะห์ ทานเพลินได้โปรตีน",
    hl:["กรอบบางพิเศษ","หอมกลิ่นปลาแท้","ไม่ใส่สีสังเคราะห์"]},
   {id:"LT-P10",slug:"banana-chips",name_th:"กล้วยเบรคแตก",name_en:"Banana Chips",cat:"ผลไม้แปรรูป",price:25,orig:null,weight:"120g",
    desc:"กล้วยน้ำว้าแท้ 100% ทอดกรอบหอมหวานธรรมชาติ บรรจุถุงซิปล็อกเก็บความกรอบ",
    hl:["กล้วยน้ำว้าแท้100%","ถุงซิปล็อคเก็บกรอบ","กรอบหอมอร่อย"]},
-  {id:"LT-P12",slug:"krang-krang-black-pepper",name_th:"ครองแครงพริกไทยดำ",name_en:"Krang Krang Black Pepper",cat:"ขนมไทยโบราณ",price:20,orig:null,weight:"90g",
+  {id:"LT-P12",slug:"krang-krang-black-pepper",name_th:"ครองแครงพริกไทยดำ",name_en:"Krang Krang Black Pepper",cat:"ของทานเล่น",price:20,orig:null,weight:"90g",
    desc:"ครองแครงอบกรอบทรงเกลียวน่ารัก คลุกพริกไทยดำแท้ หอม–เผ็ดปลายลิ้น เคี้ยวกรอบเพลินจนเพลิน",
    hl:["พริกไทยดำแท้","รูปทรงน่ารัก","กรอบหอม"]},
   {id:"LT-P13",slug:"honey-dried-banana",name_th:"กล้วยตากอบน้ำผึ้ง",name_en:"Honey Dried Banana",cat:"ผลไม้แปรรูป",price:30,orig:null,weight:"155g",
@@ -1279,7 +1277,7 @@ const SUPA_URL  = "https://nfkyczkndsjsvpqowjio.supabase.co";
 const SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ma3ljemtuZHNqc3ZwcW93amlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5OTQ2NjgsImV4cCI6MjA5NjU3MDY2OH0.GtROkScK_8o2PaL3XzrcEuntc7JqlZ0eOKFD04LqTzs";
 async function syncProductsFromSupabase() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,fda_number,is_bundle,deleted_at,stock&order=id`, {
+    const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,fda_number,is_bundle,deleted_at,stock,sort_order&order=sort_order.asc.nullslast,id.asc`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
     if (!res.ok) return;
@@ -2120,7 +2118,7 @@ const I18N={ en:{
   heroSub:'Original taste, delivered to your door', heroShop:'Shop all sweets', heroChat:'CHAT with Pailin',
   heroStat1:'Authentic Thai', heroStat2:'Home delivery', heroStat3:'Curated items', heroTrust:'Now available at 7-Eleven',
   /* products section */ prodLabel:'✦ Our products', prodTitle:'All Thai sweets',
-  fAll:'All', fAncient:'Traditional Thai', fFruit:'Dried fruit', fCookie:'Cookies/Crackers', fNuts:'Roasted nuts', fSteam:'Steamed', fBaked:'Baked', fWish:'❤️ Favourites',
+  fAll:'All', fThai:'Thai Sweets', fFruit:'Dried Fruit', fBread:'Bread', fSnack:'Snacks', fWish:'❤️ Favourites',
   searchPh:'🔍 Search sweets...', sortDefault:'Recommended', sortPriceAsc:'Price: low→high', sortPriceDesc:'Price: high→low', sortName:'Name A–Z',
   /* testimonials */ tLabel:'✦ Voices from customers', tTitle:'Reviews from real customers',
   /* footer */ fTagline:'Curated Thai sweet shop · powered by 5 AI Agents', fCredit:'Developed by neos-css.com · Comtech Solution System Co., Ltd.',
