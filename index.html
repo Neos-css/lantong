@@ -653,7 +653,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 <div id="topbar">
 <!-- ANNOUNCEMENT BAR -->
 <div id="announce-bar">
-  <span id="announce-text">🍯 ยินดีต้อนรับสู่ขนมลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿500 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
+  <span id="announce-text">🍯 ยินดีต้อนรับสู่ขนมลานทอง &nbsp;·&nbsp; 🚚 ส่งฟรีเมื่อซื้อครบ ฿200 &nbsp;·&nbsp; 💬 ไพลิน AI ดูแล 24 ชม.</span>
   <span id="cd-wrap" style="display:none">&nbsp;·&nbsp; 🔥 <span data-i18n="promoFlash">โปรวันนี้หมดใน</span> <span class="cd-time" id="cd-time">--:--:--</span></span>
   <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
@@ -710,7 +710,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="trust-row">
     <div class="trust-item"><div class="ti-ic">🔒</div><div class="ti-t" data-i18n="trust1t">ชำระเงินปลอดภัย</div><div class="ti-s" data-i18n="trust1s">PromptPay · ตรวจสลิปอัตโนมัติ</div></div>
     <div class="trust-item"><div class="ti-ic">✅</div><div class="ti-t" data-i18n="trust2t">รีวิวจริงจากลูกค้า</div><div class="ti-s" data-i18n="trust2s">รีวิวจากลูกค้าจริงในเว็บ</div></div>
-    <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿500</div></div>
+    <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿200</div></div>
     <div class="trust-item"><div class="ti-ic">🍯</div><div class="ti-t" data-i18n="trust4t">วัตถุดิบแท้ คัดสรร</div><div class="ti-s" data-i18n="trust4s">ไม่ใส่สี ไม่ใส่สารกันบูด</div></div>
   </div>
 </section>
@@ -1407,7 +1407,7 @@ function updateCartUI() {
   // คำนวณ inline จาก SHOP_CFG ตรง ๆ (ห้ามพึ่ง FREE_TH/SHIP_FEE — ประกาศทีหลัง เรียกก่อน = TDZ พังทั้งหน้า)
   const afterDisc = Math.max(0, subtotal - DISCOUNT - REDEEM_DISC);
   const _cfg = window.SHOP_CFG || {};
-  const _freeTh = Number(_cfg.free_threshold) || 500, _shipFee = Number(_cfg.shipping_fee) || 50;
+  const _freeTh = Number(_cfg.free_threshold) || 200, _shipFee = Number(_cfg.shipping_fee) || 30;
   const SHIP = (afterDisc > 0 && afterDisc < _freeTh) ? _shipFee : 0;
   const total = afterDisc + SHIP;
   const sr=document.getElementById('cart-ship-row');
@@ -2082,8 +2082,8 @@ async function applyCoupon(){
 const $=id=>document.getElementById(id);
 const cartSubtotal=()=>cart.reduce((s,i)=>s+i.price*i.qty,0);
 const cartCount=()=>cart.reduce((s,i)=>s+i.qty,0);
-const FREE_TH=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.free_threshold))||500;
-const SHIP_FEE=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.shipping_fee))||50;
+const FREE_TH=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.free_threshold))||200;
+const SHIP_FEE=()=> (window.SHOP_CFG&&Number(window.SHOP_CFG.shipping_fee))||30;
 function track(ev,params){ try{ if(window.gtag) gtag('event',ev,params||{}); }catch(e){} }
 
 /* ════════ THEME (dark mode) — Phase 2 ════════ */
@@ -2102,7 +2102,7 @@ const I18N={ en:{
   navChat:'Chat Pailin', chatPailin:'💬 Chat with Pailin', addCart:'Add to cart', buyTogether:'🍯 Great together',
   trust1t:'Secure payment',trust1s:'PromptPay · auto slip check',
   trust2t:'Real customer reviews',trust2s:'Genuine on-site reviews',
-  trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿500',
+  trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿200',
   trust4t:'Real selected ingredients',trust4s:'No dye, no preservatives',
   storyTitle:'The story of Lanthong sweets',
   story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
@@ -2379,19 +2379,19 @@ const POLICIES={
     <h3>Eligible for return</h3><ul><li>Damaged, spoiled or expired on arrival</li><li>Wrong item shipped</li></ul>
     <h3>How to report</h3><p>Photograph the item and parcel, notify Pailin within 3 days of receipt — we'll reship or fully refund.</p>`},
   shipping:{th:`<h2>นโยบายการจัดส่ง</h2><ul><li>จัดส่งทั่วไทยผ่านขนส่งมาตรฐาน 3-5 วันทำการหลังยืนยันชำระเงิน</li>
-    <li>ค่าจัดส่ง ฿50 · ส่งฟรีเมื่อซื้อครบ ฿500</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
+    <li>ค่าจัดส่ง ฿30 · ส่งฟรีเมื่อซื้อครบ ฿200</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
     en:`<h2>Shipping Policy</h2><ul><li>Nationwide standard delivery, 3-5 business days after payment confirmation</li>
-    <li>Shipping ฿50 · free over ฿500</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`},
+    <li>Shipping ฿30 · free over ฿200</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`},
   faq:{th:`<h2>คำถามที่พบบ่อย (FAQ)</h2>
     <h3>🚚 จัดส่งกี่วัน?</h3><p>3-5 วันทำการหลังยืนยันการชำระเงิน · ส่งทั่วไทยผ่านขนส่งมาตรฐาน</p>
-    <h3>💰 ค่าส่งเท่าไร?</h3><p>ค่าจัดส่ง ฿50 ทั่วไทย · ส่งฟรีเมื่อซื้อครบ ฿500 (ระบบแจ้งยอดก่อนยืนยัน)</p>
+    <h3>💰 ค่าส่งเท่าไร?</h3><p>ค่าจัดส่ง ฿30 ทั่วไทย · ส่งฟรีเมื่อซื้อครบ ฿200 (ระบบแจ้งยอดก่อนยืนยัน)</p>
     <h3>🗓️ ขนมเก็บได้นานไหม?</h3><p>ดูช่อง "อายุการเก็บ" และ "วิธีเก็บรักษา" ในหน้าสินค้าแต่ละชิ้น · ขนมแห้งส่วนใหญ่เก็บได้หลายสัปดาห์เมื่อปิดถุงสนิทในที่แห้ง</p>
     <h3>💳 ชำระเงินอย่างไร?</h3><p>โอน/PromptPay (เลขร้านในหน้าชำระเงิน) แล้วแจ้งสลิป ระบบตรวจอัตโนมัติ · หรือเลือกเก็บเงินปลายทาง (COD)</p>
     <h3>📦 ของเสียหาย/ส่งผิดทำอย่างไร?</h3><p>ถ่ายรูปสินค้า+กล่องพัสดุ แจ้งไพลินภายใน 3 วันหลังรับของ เราส่งใหม่หรือคืนเงินเต็มจำนวนค่ะ</p>
     <h3>🥜 มีข้อมูลสารก่อภูมิแพ้ไหม?</h3><p>ดูได้ในหน้าสินค้าแต่ละชิ้น (ส่วนประกอบ/สารก่อภูมิแพ้) · หากแพ้อาหารบางชนิด สอบถามไพลินก่อนสั่งได้เลยค่ะ</p>`,
     en:`<h2>FAQ</h2>
     <h3>🚚 How long is delivery?</h3><p>3-5 business days after payment confirmation, nationwide.</p>
-    <h3>💰 Shipping cost?</h3><p>Shipping ฿50 nationwide · free over ฿500 (shown before you confirm).</p>
+    <h3>💰 Shipping cost?</h3><p>Shipping ฿30 nationwide · free over ฿200 (shown before you confirm).</p>
     <h3>🗓️ Shelf life?</h3><p>See "shelf life" and "storage" on each product page. Most dry snacks keep for weeks when sealed and kept dry.</p>
     <h3>💳 How to pay?</h3><p>Bank transfer / PromptPay (details on checkout) then upload the slip for auto-verification, or Cash on Delivery (COD).</p>
     <h3>📦 Damaged / wrong item?</h3><p>Photograph the item and parcel, tell Pailin within 3 days — we reship or fully refund.</p>
