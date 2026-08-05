@@ -710,7 +710,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
   <div class="trust-row">
     <div class="trust-item"><div class="ti-ic">🔒</div><div class="ti-t" data-i18n="trust1t">ชำระเงินปลอดภัย</div><div class="ti-s" data-i18n="trust1s">PromptPay · ตรวจสลิปอัตโนมัติ</div></div>
     <div class="trust-item"><div class="ti-ic">✅</div><div class="ti-t" data-i18n="trust2t">รีวิวจริงจากลูกค้า</div><div class="ti-s" data-i18n="trust2s">รีวิวจากลูกค้าจริงในเว็บ</div></div>
-    <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿200</div></div>
+    <div class="trust-item"><div class="ti-ic">🚚</div><div class="ti-t" data-i18n="trust3t">ส่งไว ทั่วไทย</div><div class="ti-s" data-i18n="trust3s">แพ็กแน่นหนา ส่งฟรีครบ ฿{{FREE}}</div></div>
     <div class="trust-item"><div class="ti-ic">🍯</div><div class="ti-t" data-i18n="trust4t">วัตถุดิบแท้ คัดสรร</div><div class="ti-s" data-i18n="trust4s">ไม่ใส่สี ไม่ใส่สารกันบูด</div></div>
   </div>
 </section>
@@ -1096,7 +1096,7 @@ body.overlay-open #chat-btn{opacity:0;pointer-events:none;transform:scale(.6)}
 </div>
 
 <script>
-let PRODUCTS = [
+const PRESENTATION = [
   {id:"LT-P02",slug:"buay-khem",name_th:"บ๊วยเค็ม",name_en:"Salted Cured Jujube",cat:"ผลไม้แปรรูป",price:20,orig:null,weight:"90g",
    desc:"บ๊วยเค็มคัดพิเศษ รสเปรี้ยว–เค็มกลมกล่อม หอมละมุนชวนติดใจ ของว่างทานเพลินที่อมแล้วสดชื่นหายเหนื่อย",
    hl:["รสชาติต้นตำรับ","คัดพิเศษ","ของว่างยอดนิยม"]},
@@ -1131,6 +1131,10 @@ let PRODUCTS = [
    desc:"กระเจี๊ยบแดงเชื่อมเคลือบน้ำตาลแก้ว เปรี้ยว–หวานสดชื่น อุดมวิตามินซี เคี้ยวหนึบอร่อยได้ประโยชน์",
    hl:["วิตามินซีสูง","กระเจี๊ยบแท้","สีสวยธรรมชาติ"]},
 ];
+// 💰 ราคา/น้ำหนัก/หมวด มาจาก DB เท่านั้น — ลบออกจากลิสต์นำเสนอ กันโชว์ราคาเก่าถ้า DB ล่ม
+PRESENTATION.forEach(function(p){ delete p.price; delete p.orig; delete p.weight; delete p.cat; });
+let PRODUCTS = [];              // ว่างจนกว่าจะโหลดจาก Supabase สำเร็จ
+var LOAD_STATE = 'loading';     // loading | ok | error
 
 let cart = JSON.parse(localStorage.getItem('lt_cart') || '[]');
 let currentProduct = null;
@@ -1157,11 +1161,18 @@ function loadAutoPromos(){
     .catch(function(){ AUTO_PROMOS=[]; });
 }
 // แถบประกาศด้านบน — ประกอบ: ข้อความร้าน + โปรซื้อครบลด (AUTO_PROMOS) + ไพลิน
+// 🚚 แทน {{FEE}}/{{FREE}} ด้วยค่าค่าส่งจริงจาก app_config — แก้ในแอดมินที่เดียว เปลี่ยนทั้งเว็บ
+function shipTxt(s){
+  var c=window.SHOP_CFG||{};
+  var fee=Number(c.shipping_fee); if(!isFinite(fee)) fee=30;
+  var free=Number(c.free_threshold); if(!isFinite(free)) free=200;
+  return String(s==null?'':s).replace(/{{FEE}}/g, fee.toLocaleString()).replace(/{{FREE}}/g, free.toLocaleString());
+}
 var BANNER_BASE='';
 function updateAnnounceBar(){
   var a=document.getElementById('announce-text'); if(!a) return;
   var parts=[];
-  if(BANNER_BASE) parts.push('🍯 '+BANNER_BASE);
+  if(BANNER_BASE) parts.push('🍯 '+shipTxt(BANNER_BASE));
   (AUTO_PROMOS||[]).slice().sort(function(x,y){return (x.min_total||0)-(y.min_total||0);}).forEach(function(c){
     var amt=c.discount_type==='percent'?(c.value+'%'):('฿'+c.value);
     parts.push('🎁 ซื้อครบ ฿'+c.min_total+' ลด '+amt);
@@ -1216,7 +1227,15 @@ function reviewStarsHTML(pid){
 }
 function renderProducts(arr) {
   const grid=document.getElementById('productsGrid'), none=document.getElementById('noProducts');
-  if(none) none.style.display = arr.length ? 'none' : 'block';
+  if(none){
+    none.style.display = arr.length ? 'none' : 'block';
+    if(!arr.length){
+      const en=localStorage.getItem('lt_lang')==='en';
+      none.textContent = LOAD_STATE==='loading' ? (en?'⏳ Loading products…':'⏳ กำลังโหลดสินค้า…')
+                       : LOAD_STATE==='error'   ? (en?'⚠️ Cannot load products right now — please refresh.':'⚠️ โหลดสินค้าไม่สำเร็จ กรุณารีเฟรชหน้าอีกครั้ง')
+                       : (en?'😔 No products found':'😔 ไม่พบสินค้า');
+    }
+  }
   grid.innerHTML = arr.map(p => {
     const disc = p.orig ? Math.round((1 - p.price/p.orig)*100) : 0;
     const av = (p.available==null) ? null : p.available;
@@ -1280,14 +1299,14 @@ async function syncProductsFromSupabase() {
     const res = await fetch(`${SUPA_URL}/rest/v1/products?select=id,name,name_en,price,orig_price,unit,category,description,image_url,ingredients,allergens,shelf_life,storage,pack_size,suitable_for,fda_number,is_bundle,deleted_at,stock,sort_order&order=sort_order.asc.nullslast,id.asc`, {
       headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON }
     });
-    if (!res.ok) return;
+    if (!res.ok) { LOAD_STATE='error'; renderProducts([]); return; }
     let rows = await res.json();
-    if (!Array.isArray(rows) || !rows.length) return;
+    if (!Array.isArray(rows) || !rows.length) { LOAD_STATE='error'; renderProducts([]); return; }
     rows = rows.filter(r => !r.deleted_at && !r.is_bundle);   // ตัดสินค้าที่ลบแล้ว + ชุด bundle ออกจากหน้าร้าน
-    if (!rows.length) return;
+    if (!rows.length) { LOAD_STATE='ok'; renderProducts([]); return; }
     // stock (for in-stock badges / sold-out) — อ่านจากคอลัมน์ products.stock ตรง ๆ (เลิกใช้ตาราง stock แยก)
     // presentation extras (slug/รูป/highlights) จาก static list — key ด้วย id
-    const extra = {}; PRODUCTS.forEach(p => { extra[p.id] = p; });
+    const extra = {}; PRESENTATION.forEach(p => { extra[p.id] = p; });
     // DB = แหล่งข้อมูลจริง (source of truth) → สินค้าที่เพิ่ม/แก้/ลบในแอดมินสะท้อนหน้าร้านอัตโนมัติ
     PRODUCTS = rows.map(r => {
       const ex = extra[r.id] || {};
@@ -1315,11 +1334,12 @@ async function syncProductsFromSupabase() {
         fda:          r.fda_number   || '',
       };
     });
+    LOAD_STATE='ok';
     try { applyFlash(); } catch (e) {}
     applyProductView();
     try { renderRecent(); renderForYou(); renderFlashTimers(); } catch (e) {}
   } catch (e) {
-    /* keep static fallback */
+    LOAD_STATE='error'; try{ renderProducts([]); }catch(e2){}   // ไม่มี fallback ราคาเก่าอีกแล้ว
   }
 }
 syncProductsFromSupabase();
@@ -1745,6 +1765,9 @@ try { const pf=JSON.parse(localStorage.getItem('lt_profile')||'null'); if(pf){ c
   const set=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.textContent=v; };
   if (data.promo_banner) { BANNER_BASE=data.promo_banner; try{updateAnnounceBar();}catch(e){} }
   set('pi-promptpay', data.promptpay); set('pi-account', data.bank_account);
+  // ค่าส่งอาจเปลี่ยน → เขียนข้อความทั้งหน้าใหม่ด้วยเลขจริง
+  // ⚠️ ต้อง setTimeout: config อาจโหลดเสร็จก่อน <script> ก้อนล่าง (ที่นิยาม applyLang) ถูก parse
+  setTimeout(function(){ try{ applyLang(localStorage.getItem('lt_lang')==='en'?'en':'th'); }catch(e){} }, 0);
 } catch (e) {} })();
 
 // Live two-way chat: receive admin replies in real time (Supabase Realtime broadcast)
@@ -2102,7 +2125,7 @@ const I18N={ en:{
   navChat:'Chat Pailin', chatPailin:'💬 Chat with Pailin', addCart:'Add to cart', buyTogether:'🍯 Great together',
   trust1t:'Secure payment',trust1s:'PromptPay · auto slip check',
   trust2t:'Real customer reviews',trust2s:'Genuine on-site reviews',
-  trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿200',
+  trust3t:'Fast nationwide delivery',trust3s:'Well-packed · free over ฿{{FREE}}',
   trust4t:'Real selected ingredients',trust4s:'No dye, no preservatives',
   storyTitle:'The story of Lanthong sweets',
   story1t:'Hand-picked ingredients',story1p:'We select peanuts, sesame, banana and fruit from trusted local farms, batch by batch for consistent taste.',
@@ -2135,8 +2158,9 @@ const I18N={ en:{
 function applyLang(lang){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const k=el.getAttribute('data-i18n');
-    if(lang==='en'&&I18N.en[k]){ if(el.dataset.th==null)el.dataset.th=el.textContent; el.textContent=I18N.en[k]; }
-    else if(el.dataset.th!=null){ el.textContent=el.dataset.th; }
+    if(el.dataset.thTpl==null) el.dataset.thTpl=el.textContent;                 // เก็บต้นฉบับไทย (ยังมี token อยู่)
+    var src=(lang==='en'&&I18N.en[k])?I18N.en[k]:el.dataset.thTpl;
+    el.textContent=shipTxt(src);                                                  // เติมค่าค่าส่งจริงทุกครั้ง
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
     const k=el.getAttribute('data-i18n-ph');
@@ -2149,7 +2173,8 @@ function applyLang(lang){
 }
 function toggleLang(){ applyLang((localStorage.getItem('lt_lang')==='en')?'th':'en'); track('toggle_lang'); }
 window.toggleLang=toggleLang;
-if(localStorage.getItem('lt_lang')==='en') applyLang('en');
+window.applyLang=applyLang;   // ให้ก้อนสคริปต์อื่น (โหลด app_config เสร็จ) เรียกได้ → เติมเลขค่าส่งใหม่
+applyLang(localStorage.getItem('lt_lang')==='en'?'en':'th');   // เรียกเสมอ เพื่อเติม token ค่าส่งแม้อยู่ภาษาไทย
 
 /* ════════ FREE-SHIPPING BAR + bottom-nav badge — Phase 1 ════════ */
 const _updateCartUI=updateCartUI;
@@ -2379,19 +2404,19 @@ const POLICIES={
     <h3>Eligible for return</h3><ul><li>Damaged, spoiled or expired on arrival</li><li>Wrong item shipped</li></ul>
     <h3>How to report</h3><p>Photograph the item and parcel, notify Pailin within 3 days of receipt — we'll reship or fully refund.</p>`},
   shipping:{th:`<h2>นโยบายการจัดส่ง</h2><ul><li>จัดส่งทั่วไทยผ่านขนส่งมาตรฐาน 3-5 วันทำการหลังยืนยันชำระเงิน</li>
-    <li>ค่าจัดส่ง ฿30 · ส่งฟรีเมื่อซื้อครบ ฿200</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
+    <li>ค่าจัดส่ง ฿{{FEE}} · ส่งฟรีเมื่อซื้อครบ ฿{{FREE}}</li><li>บรรจุภัณฑ์กันกระแทก เก็บความกรอบ</li><li>แจ้งเลขพัสดุผ่าน "ออเดอร์ของฉัน" และ LINE</li></ul>`,
     en:`<h2>Shipping Policy</h2><ul><li>Nationwide standard delivery, 3-5 business days after payment confirmation</li>
-    <li>Shipping ฿30 · free over ฿200</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`},
+    <li>Shipping ฿{{FEE}} · free over ฿{{FREE}}</li><li>Shock-proof packaging keeps the crunch</li><li>Tracking shown in "My Orders" and via LINE</li></ul>`},
   faq:{th:`<h2>คำถามที่พบบ่อย (FAQ)</h2>
     <h3>🚚 จัดส่งกี่วัน?</h3><p>3-5 วันทำการหลังยืนยันการชำระเงิน · ส่งทั่วไทยผ่านขนส่งมาตรฐาน</p>
-    <h3>💰 ค่าส่งเท่าไร?</h3><p>ค่าจัดส่ง ฿30 ทั่วไทย · ส่งฟรีเมื่อซื้อครบ ฿200 (ระบบแจ้งยอดก่อนยืนยัน)</p>
+    <h3>💰 ค่าส่งเท่าไร?</h3><p>ค่าจัดส่ง ฿{{FEE}} ทั่วไทย · ส่งฟรีเมื่อซื้อครบ ฿{{FREE}} (ระบบแจ้งยอดก่อนยืนยัน)</p>
     <h3>🗓️ ขนมเก็บได้นานไหม?</h3><p>ดูช่อง "อายุการเก็บ" และ "วิธีเก็บรักษา" ในหน้าสินค้าแต่ละชิ้น · ขนมแห้งส่วนใหญ่เก็บได้หลายสัปดาห์เมื่อปิดถุงสนิทในที่แห้ง</p>
     <h3>💳 ชำระเงินอย่างไร?</h3><p>โอน/PromptPay (เลขร้านในหน้าชำระเงิน) แล้วแจ้งสลิป ระบบตรวจอัตโนมัติ · หรือเลือกเก็บเงินปลายทาง (COD)</p>
     <h3>📦 ของเสียหาย/ส่งผิดทำอย่างไร?</h3><p>ถ่ายรูปสินค้า+กล่องพัสดุ แจ้งไพลินภายใน 3 วันหลังรับของ เราส่งใหม่หรือคืนเงินเต็มจำนวนค่ะ</p>
     <h3>🥜 มีข้อมูลสารก่อภูมิแพ้ไหม?</h3><p>ดูได้ในหน้าสินค้าแต่ละชิ้น (ส่วนประกอบ/สารก่อภูมิแพ้) · หากแพ้อาหารบางชนิด สอบถามไพลินก่อนสั่งได้เลยค่ะ</p>`,
     en:`<h2>FAQ</h2>
     <h3>🚚 How long is delivery?</h3><p>3-5 business days after payment confirmation, nationwide.</p>
-    <h3>💰 Shipping cost?</h3><p>Shipping ฿30 nationwide · free over ฿200 (shown before you confirm).</p>
+    <h3>💰 Shipping cost?</h3><p>Shipping ฿{{FEE}} nationwide · free over ฿{{FREE}} (shown before you confirm).</p>
     <h3>🗓️ Shelf life?</h3><p>See "shelf life" and "storage" on each product page. Most dry snacks keep for weeks when sealed and kept dry.</p>
     <h3>💳 How to pay?</h3><p>Bank transfer / PromptPay (details on checkout) then upload the slip for auto-verification, or Cash on Delivery (COD).</p>
     <h3>📦 Damaged / wrong item?</h3><p>Photograph the item and parcel, tell Pailin within 3 days — we reship or fully refund.</p>
@@ -2420,7 +2445,7 @@ const POLICIES={
     <p style="margin-top:10px">Payment: PromptPay 090-890-7933 (acct: Waewta Udomsapsakul) — transfer to this account only.</p>`}
 };
 function openPolicy(key){ const en=localStorage.getItem('lt_lang')==='en'; const p=POLICIES[key]; if(!p)return;
-  $('policy-content').innerHTML=en?p.en:p.th; $('policy-modal').classList.add('show'); track('view_policy',{policy:key});
+  $('policy-content').innerHTML=shipTxt(en?p.en:p.th); $('policy-modal').classList.add('show'); track('view_policy',{policy:key});
   try{ history.replaceState(null,'','#'+key); }catch(e){} }
 window.openPolicy=openPolicy;
 // shareable deep links: #privacy #shipping #return(s) #faq #contact
